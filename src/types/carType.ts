@@ -7,4 +7,6 @@ export type carType = {
   plateNum: string;
   insuranceDate: string;
   licenseDate: string;
+  age: string;
+  inspectionDay: string;
 };

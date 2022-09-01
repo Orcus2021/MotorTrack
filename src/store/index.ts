@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user/userReducer";
 import carReducer from "./car/carReducer";
+import recordReducer from "./record/recordReducer";
 import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
 
 const store = configureStore({
-  reducer: { user: userReducer, car: carReducer },
+  reducer: { user: userReducer, car: carReducer, record: recordReducer },
 });
 
 export type AppDispatch = typeof store.dispatch;

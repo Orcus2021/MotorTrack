@@ -18,6 +18,7 @@ import {
   where,
   deleteDoc,
   updateDoc,
+  Timestamp,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -92,16 +93,17 @@ const firebase = {
   },
   async updateDoc(url: string, data: object) {
     return new Promise(async (resolve) => {
+      console.log(data);
       const ref = doc(db, url);
       await updateDoc(ref, data);
       resolve("Update doc already");
     });
   },
-  async setCarDoc(data: carType) {
+  async setCarDoc(data: carType): Promise<carType> {
     return new Promise(async (resolve) => {
       const newCrtId = doc(collection(db, "carsRecords"));
       data.id = newCrtId.id;
-      console.log(data);
+
       await setDoc(newCrtId, data);
       resolve(data);
     });

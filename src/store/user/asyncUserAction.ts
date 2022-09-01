@@ -1,8 +1,10 @@
 import { userActions } from "./userReducer";
 import asyncCarAction from "../car/asyncCarAction";
+import { carActions } from "../car/carReducer";
 import { AppDispatch } from "../index";
 import firebase from "../../utils/firebase";
 import { userLogin } from "../../types/userType";
+import { userType } from "../../types/userType";
 
 const asyncUserAction = {
   signUp(data: userLogin) {
@@ -79,8 +81,11 @@ const asyncUserAction = {
       };
 
       try {
-        const user = await signIn();
+        const user = (await signIn()) as userType;
         dispatch(userActions.signIn(user));
+        if (user.selectCar.length > 0) {
+          dispatch(carActions.selectCar(user.selectCar));
+        }
         dispatch(
           userActions.showNotification({
             status: "success",

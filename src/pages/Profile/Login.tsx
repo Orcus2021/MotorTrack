@@ -1,7 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 import styled from "styled-components";
+import SignUp from "./SignUp";
+
+const LoginContainer = styled.div`
+  width: 100%;
+  height: calc(100vh -100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const LoginWrapper = styled.div`
+  border: 2px solid var(--mainColor);
+  width: 400px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+const Input = styled.input`
+  width: 300px;
+  outline: none;
+  background-color: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  margin-bottom: 10px;
+`;
+const SubmitBtn = styled.button`
+  border: none;
+  background-color: var(--mainColor);
+  padding: 5px;
+  cursor: pointer;
+`;
+const SignUpTxt = styled.p`
+  font-size: 8px;
+`;
+const SignUpSpan = styled.span`
+  color: var(--mainColor);
+  cursor: pointer;
+`;
 
 // Initialize Firebase
 
@@ -9,11 +48,31 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [updateData, setUpdateData] = useState("");
-  const user = useAppSelector((state) => state.user.user);
-
+  const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
-  console.log(user);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user.isAuth) {
+      navigate("/profile");
+    }
+  }, [user.isAuth, navigate]);
+
+  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.id === "name") {
+      setName(e.target.value);
+    } else if (e.target.id === "email") {
+      setEmail(e.target.value);
+    } else if (e.target.id === "password") {
+      setPassword(e.target.value);
+    }
+  };
+
+  const showSingUp = () => {
+    setIsSignUp((pre) => !pre);
+  };
+
   const signUp = async () => {
     const user = {
       email,
@@ -29,52 +88,51 @@ const Login = () => {
     };
     dispatch(asyncUserAction.signIn(user));
   };
-  const updateUser = () => {
-    const newUser = {
-      selectCar: updateData,
-      cars: 2,
-    };
-    dispatch(asyncUserAction.updateUser(user.id, newUser));
-  };
+  // const updateUser = () => {
+  //   const newUser = {
+  //     selectCar: updateData,
+  //     cars: 2,
+  //   };
+  //   dispatch(asyncUserAction.updateUser(user.id, newUser));
+  // };
 
   return (
-    <div>
-      <input
-        type="text"
-        value={email}
-        placeholder="email"
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      />
-      <input
-        type="text"
-        value={password}
-        placeholder="password"
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      />
-      <input
-        type="text"
-        value={name}
-        placeholder="name"
-        onChange={(e) => {
-          setName(e.target.value);
-        }}
-      />
-      <input
-        type="text"
-        value={updateData}
-        placeholder="更新資料"
-        onChange={(e) => {
-          setUpdateData(e.target.value);
-        }}
-      />
-      <button onClick={signUp}>SIGNUP</button>
-      <button onClick={signIn}>SIGNIN</button>
-      <button onClick={updateUser}>更新個人資料</button>
-    </div>
+    <>
+      {!isSignUp && (
+        <LoginContainer>
+          <LoginWrapper>
+            <Input
+              id="email"
+              type="text"
+              placeholder="帳號"
+              value={email}
+              onChange={inputHandler}
+            />
+            <Input
+              id="password"
+              type="password"
+              placeholder="密碼"
+              value={password}
+              onChange={inputHandler}
+            />
+            <SignUpTxt>
+              尚未註冊請點擊<SignUpSpan onClick={showSingUp}>註冊</SignUpSpan>
+            </SignUpTxt>
+            <SubmitBtn onClick={signIn}>登入</SubmitBtn>
+          </LoginWrapper>
+        </LoginContainer>
+      )}
+      {isSignUp && (
+        <SignUp
+          name={name}
+          email={email}
+          password={password}
+          onInput={inputHandler}
+          onSignUp={signUp}
+          onShowSignUP={showSingUp}
+        />
+      )}
+    </>
   );
 };
 

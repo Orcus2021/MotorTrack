@@ -14,7 +14,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Noto Sans TC',  'Poppins', "sans-serif";
   }
   :root{
-    --mainColor:#11efcf;
+    --mainColor:#61dafb;
   }
   body{
    color:#fff;

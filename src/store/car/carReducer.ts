@@ -5,6 +5,8 @@ import { carType } from "../../types/carType";
 //   id: "",
 //   name: "",
 //   brand: "",
+// age:"",
+// inspectDate:""
 //   mileage: 0,
 //   plateNum: "",
 //   insuranceDate: "",
@@ -21,6 +23,7 @@ const carSlice = createSlice({
   reducers: {
     create(state, action) {
       state.cars.push(action.payload);
+      state.car = action.payload;
     },
     getCars(state, action) {
       state.cars = action.payload;
@@ -32,12 +35,16 @@ const carSlice = createSlice({
       const carIndex = state.cars.findIndex(
         (car) => car.id === action.payload.id
       );
-      state.cars[carIndex] = action.payload;
-      state.car = action.payload;
+      state.cars[carIndex] = { ...state.cars[carIndex], ...action.payload };
+      state.car = { ...state.car, ...action.payload };
     },
     delete(state, action) {
       state.cars = state.cars.filter((car) => car.id !== action.payload);
       state.car = state.cars[0];
+    },
+    clear(state) {
+      state.cars = [];
+      state.car = undefined;
     },
   },
 });
