@@ -38,7 +38,7 @@ const asyncRecordAction = {
             );
             parts[newPart.category][partIndex] = newPart;
             const url = `/carsRecords/${id}/parts/${newPart.category}`;
-            await firebase.setDoc(url, parts[newPart.category]);
+            await firebase.setDoc(url, { records: parts[newPart.category] });
           });
         }
       };

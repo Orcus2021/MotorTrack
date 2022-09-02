@@ -31,23 +31,20 @@ const SubTitle = styled.th`
 
 const RepairList: React.FC<{
   onAdd: (part: partType) => void;
-  records: partType[] | undefined;
+  parts: partType[] | [];
 }> = (props) => {
-  const { onAdd, records } = props;
-  const [recordItems, setRecordItems] = useState<partType[]>(records || []);
+  const { onAdd, parts } = props;
+
   const [showPartForm, setShowPartForm] = useState<boolean>(false);
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [selectPartIndex, setSelectPartIndex] = useState<number>(NaN);
   const showPartHandler = () => {
     setShowPartForm(true);
+    setSelectPartIndex(NaN);
   };
 
   const addPartItem = (part: partType) => {
     onAdd(part);
-    setRecordItems((pre) => {
-      const newPartList = [...pre, part];
-      return newPartList;
-    });
   };
 
   const closePartForm = () => {
@@ -68,18 +65,20 @@ const RepairList: React.FC<{
         <AddBx onClick={showPartHandler}>新增+</AddBx>
       </HeaderBx>
       <MessageTable>
-        <tr>
-          <SubTitle>零件／項目</SubTitle>
-          <SubTitle>規格</SubTitle>
-          <SubTitle>使用期限</SubTitle>
-          <SubTitle>使用里程</SubTitle>
-          <SubTitle>單價</SubTitle>
-          <SubTitle>數量</SubTitle>
-          <SubTitle>小記</SubTitle>
-          <SubTitle>備註</SubTitle>
-        </tr>
+        <thead>
+          <tr>
+            <SubTitle>零件／項目</SubTitle>
+            <SubTitle>規格</SubTitle>
+            <SubTitle>使用期限</SubTitle>
+            <SubTitle>使用里程</SubTitle>
+            <SubTitle>單價</SubTitle>
+            <SubTitle>數量</SubTitle>
+            <SubTitle>小記</SubTitle>
+            <SubTitle>備註</SubTitle>
+          </tr>
+        </thead>
         <tbody>
-          {recordItems.map((record, index) => (
+          {parts.map((record, index) => (
             <RepairItem
               record={record}
               onShow={showPartHandler}
@@ -93,7 +92,7 @@ const RepairList: React.FC<{
           <PartForm
             onAddPart={addPartItem}
             onClose={closePartForm}
-            part={recordItems[selectPartIndex]}
+            part={parts[selectPartIndex]}
           />
         </Modal>
       )}

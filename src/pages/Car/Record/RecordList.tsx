@@ -30,14 +30,16 @@ const RecordList: React.FC<{
 
   return (
     <MessageTable>
-      <tr>
-        <SubTitle>類別</SubTitle>
-        <SubTitle>日期</SubTitle>
-        <SubTitle>里程數(公里)</SubTitle>
-        <SubTitle>標題</SubTitle>
-        <SubTitle>總額</SubTitle>
-        <SubTitle>備註</SubTitle>
-      </tr>
+      <thead>
+        <tr>
+          <SubTitle>類別</SubTitle>
+          <SubTitle>日期</SubTitle>
+          <SubTitle>里程數(公里)</SubTitle>
+          <SubTitle>標題</SubTitle>
+          <SubTitle>總額</SubTitle>
+          <SubTitle>備註</SubTitle>
+        </tr>
+      </thead>
       <tbody>
         {allRecords.map((record) => (
           <RecordItem record={record} onUpdate={onUpdate}></RecordItem>

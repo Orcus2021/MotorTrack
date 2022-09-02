@@ -1,7 +1,7 @@
-import React, { useRef, Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import RepairList from "./RepairList";
 import styled from "styled-components/macro";
-import { partType, repairType } from "../../../../types/recordType";
+import { partsType, partType, repairType } from "../../../../types/recordType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
@@ -76,11 +76,25 @@ const Repair: React.FC<{
   const record = useAppSelector((state) =>
     state.record.repair.find((record) => record.id === updateId)
   );
-  const parts = useRef<partType[]>([]);
+  const initParts = useAppSelector((state) => state.record.parts);
+  // const parts = useRef<partType[]>(record?.records || []);
+  const [parts, setParts] = useState<partType[] | []>(record?.records || []);
+  console.log(parts);
   const { register, handleSubmit, reset } = useForm<repairType>();
 
-  const addPartHandler = (part: partType) => {
-    parts.current = [...parts.current, part];
+  const addPartHandler = (newPart: partType) => {
+    const partIndex = parts.findIndex(
+      (part) => part.category === newPart.category
+    );
+    if (partIndex < 0) {
+      setParts((pre) => [...pre, newPart]);
+      return;
+    }
+    setParts((pre) => {
+      const newPartArr = [...pre];
+      newPartArr[partIndex] = newPart;
+      return newPartArr;
+    });
   };
 
   useEffect(() => {
@@ -89,26 +103,40 @@ const Repair: React.FC<{
     }
   }, [record, reset, updateId]);
 
-  const createRepairHandler = (record: repairType) => {
-    record.id = "";
-    record.category = "repair";
+  const setPartDateAndMileage = (record: repairType) => {
     const dateArr = record.date.split("-");
     const recordYear = dateArr[0];
     const recordMonth = dateArr[1];
     const recordDay = dateArr[2];
-    const newRecords = parts.current.map((part) => {
+    const JSONParts = JSON.stringify(parts);
+    const newParts = JSON.parse(JSONParts) as partType[];
+
+    const newRecords = newParts.map((part) => {
       const endDate = `${recordYear + part.year}-${
         recordMonth + part.month
       }-${recordDay}`;
-      part.recordID = "";
+      if (!part.recordID) part.recordID = "";
       part.startDate = record.date;
       part.endDate = endDate;
       part.startMileage = record.mileage;
       part.endMileage = record.mileage + part.mileage;
       return part;
     });
-    record.records = newRecords;
-    dispatch(asyncRecordAction.addRepair(carID as string, record));
+    return newRecords;
+  };
+
+  const createRepairHandler = (record: repairType) => {
+    record.records = setPartDateAndMileage(record);
+    if (!record.id) {
+      record.id = "";
+      record.category = "repair";
+      dispatch(asyncRecordAction.addRepair(carID as string, record));
+      return;
+    }
+    const JSONParts = JSON.stringify(initParts);
+    const newParts = JSON.parse(JSONParts) as partsType;
+
+    dispatch(asyncRecordAction.updateRepair(carID as string, record, newParts));
   };
   const closeRepair = (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,7 +165,11 @@ const Repair: React.FC<{
           <Input type="number" {...register("amount", { required: true })} />
         </Detail>
       </DetailBX>
-      <RepairList onAdd={addPartHandler} records={record?.records} />
+      <RepairList
+        onAdd={addPartHandler}
+        parts={parts}
+        // part={parts}
+      />
       <NoteTitle>備註</NoteTitle>
       <NoteContent {...register("note")} />
     </RepairContainerForm>

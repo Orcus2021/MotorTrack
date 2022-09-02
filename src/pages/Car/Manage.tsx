@@ -62,34 +62,22 @@ const Manage = () => {
         <NavWrapper>
           <Nav>
             <RecordLink to="/car_manage/record">
-              <span class="icon">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="title">車輛紀錄表</span>
+              <span>車輛紀錄表</span>
             </RecordLink>
           </Nav>
           <Nav>
             <RecordLink to="#">
-              <span class="icon">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="title">費用統計圖</span>
+              <span>費用統計圖</span>
             </RecordLink>
           </Nav>
           <Nav>
             <RecordLink to="/car_manage/edit">
-              <span class="icon">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="title">車輛設定</span>
+              <span>車輛設定</span>
             </RecordLink>
           </Nav>
           <Nav>
             <RecordLink to="/car_manage/add">
-              <span class="icon">
-                <i class="fas fa-user"></i>
-              </span>
-              <span class="title">車輛新增</span>
+              <span>車輛新增</span>
             </RecordLink>
           </Nav>
           <CarsWrapper>
