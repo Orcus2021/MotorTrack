@@ -5,11 +5,17 @@ import styled from "styled-components/macro";
 import logoImg from "../assets/logo_white.png";
 
 const HeaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: var(--mainBack);
   height: 68px;
   border: solid 1px black;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 5;
 `;
 const Logo = styled.img`
   height: 48px;
@@ -48,6 +54,7 @@ const Header = () => {
     <HeaderWrapper>
       <Logo src={logoImg} onClick={goHomePage} />
       <NavRightBx>
+        <NavLink to="/test">Test</NavLink>
         <Nav onClick={goCarRecord}>車輛日誌</Nav>
         <Profile>
           <NavLink to="/login">會員</NavLink>

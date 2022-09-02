@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import asyncCarAction from "../../../store/car/asyncCarAction";
-import asyncUserAction from "../../../store/user/asyncUserAction";
+import { carType } from "../../../types/carType";
 
 const AddContainer = styled.div`
   width: 100%;
@@ -46,24 +46,12 @@ const AddCar = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ mode: "onBlur" });
+  } = useForm<carType>({ mode: "onBlur" });
 
-  const createCar = (car) => {
+  const createCar = (car: carType) => {
     car.ownerId = user.id;
     car.mileage = 0;
     car.id = "";
-
-    // const carObj = {
-    //   ownerId: userId,
-    //   id: "",
-    //   name: carName,
-    //   brand: carBrand,
-    //   mileage: 0,
-    //   plateNum: carLicensePlateNum,
-    //   insuranceDate: carInsuranceDate,
-    //   licenseDate: carLicenseDate,
-    // };
-
     dispatch(asyncCarAction.create(user.id, user.cars, car));
   };
 
@@ -79,7 +67,7 @@ const AddCar = () => {
               placeholder="車輛名稱"
               {...register("name", { required: true })}
             />
-            {errors.carName && <p>brand is required</p>}
+            {errors.name && <p>brand is required</p>}
             <Input
               type="text"
               placeholder="廠牌"

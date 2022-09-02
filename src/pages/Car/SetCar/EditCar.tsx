@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import { carAge as carAgeHandler } from "../../../store/car/asyncCarAction";
 import asyncCarAction from "../../../store/car/asyncCarAction";
+import { carType } from "../../../types/carType";
 
 const EditContainer = styled.div`
   width: 100%;
@@ -53,7 +54,6 @@ const DeleteBtn = styled.button`
 const CarInfo = styled.p`
   font-size: 16px;
 `;
-let isMounted = false;
 
 const EditCar = () => {
   const car = useAppSelector((state) => state.car.car);
@@ -62,13 +62,9 @@ const EditCar = () => {
   const [inspectionDay, setInspectionDay] = useState<string>(
     car?.inspectionDay || "0"
   );
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    reset,
-  } = useForm({ mode: "onBlur" });
+  const { register, handleSubmit, watch, reset } = useForm<carType>({
+    mode: "onBlur",
+  });
   const initCar = useMemo(() => {
     return {
       name: car?.name,
@@ -78,7 +74,7 @@ const EditCar = () => {
       insuranceDate: car?.insuranceDate,
     };
   }, [car]);
-  console.log(car);
+
   useEffect(() => {
     reset(initCar);
   }, [car, reset, initCar]);
@@ -94,10 +90,9 @@ const EditCar = () => {
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  const editCar = (editCar) => {
+  const editCar = (editCar: carType) => {
     editCar.age = carAge;
     editCar.inspectionDay = inspectionDay;
-    console.log(editCar);
 
     dispatch(asyncCarAction.updateCar(car?.id as string, editCar));
   };

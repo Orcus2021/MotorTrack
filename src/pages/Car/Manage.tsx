@@ -1,24 +1,24 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components/macro";
 import { Link, Outlet } from "react-router-dom";
-import { useAppSelector } from "../../store";
+import asyncRecordAction from "../../store/record/asyncRecordAction";
+import { useAppSelector, useAppDispatch } from "../../store";
 
 const RecordContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 68px;
   position: relative;
   width: 100%;
 `;
 const Navigation = styled.div`
-  position: fixed;
   width: 256px;
-  height: 100%;
-  background: #000;
+  height: 100vh;
+  background: var(--secondBack);
   transition: 0.5s;
   overflow: hidden;
 `;
 const NavWrapper = styled.ul`
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
 `;
 const Nav = styled.li`
@@ -35,9 +35,7 @@ const RecordLink = styled(Link)`
   color: white;
 `;
 const MainWrapper = styled.div`
-  position: absolute;
   width: calc(100% - 256px);
-  left: 256px;
   min-height: 100vh;
   /* background: #f5f5f5; */
   transition: 0.5s;
@@ -48,7 +46,16 @@ const CarInfo = styled.p`
 `;
 
 const Manage = () => {
+  const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
+  const carId = useAppSelector((state) => state.car.car?.id);
+  const record = useAppSelector((state) => state.record);
+  useEffect(() => {
+    if (carId) {
+      dispatch(asyncRecordAction.getAllRecords(carId));
+    }
+  }, [carId]);
+
   return (
     <RecordContainer>
       <Navigation>

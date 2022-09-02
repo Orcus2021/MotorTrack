@@ -7,6 +7,8 @@ import { useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
 const store = configureStore({
   reducer: { user: userReducer, car: carReducer, record: recordReducer },
 });
+// store.subscribe(() =>
+//   store.getState().record.parts);
 
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch: () => AppDispatch = useDispatch;

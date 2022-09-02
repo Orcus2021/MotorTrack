@@ -6,8 +6,9 @@ import styled from "styled-components";
 import SignUp from "./SignUp";
 
 const LoginContainer = styled.div`
+  margin-top: 68px;
   width: 100%;
-  height: calc(100vh -100px);
+  height: calc(100vh -68px);
   display: flex;
   align-items: center;
   justify-content: center;

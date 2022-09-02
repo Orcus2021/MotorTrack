@@ -1,4 +1,5 @@
 import React from "react";
+import { useAppSelector } from "./store";
 import Header from "./components/Header";
 import { Outlet } from "react-router-dom";
 import reset from "styled-reset";
@@ -15,13 +16,16 @@ const GlobalStyle = createGlobalStyle`
   }
   :root{
     --mainColor:#61dafb;
+    --mainBack:#16181d;
+    --secondBack:#20232a;
+    --thirdBack:#282c34;
   }
   body{
    color:#fff;
   }
   #root{
-    background: #2e2e2e;
-    width: 100vw;
+    background:var(--mainBack);
+    width: 100%;
     min-height: 100vh;
     position:relative;
   }

@@ -1,17 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { carType } from "../../types/carType";
-// const initCar: carType = {
-//   ownerId: "",
-//   id: "",
-//   name: "",
-//   brand: "",
-// age:"",
-// inspectDate:""
-//   mileage: 0,
-//   plateNum: "",
-//   insuranceDate: "",
-//   licenseDate: "",
-// };
+
 const initialCarState = {
   cars: [] as carType[],
   car: {} as carType | undefined,

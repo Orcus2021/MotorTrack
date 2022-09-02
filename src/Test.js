@@ -1,123 +1,94 @@
 import React, { useState } from "react";
-import asyncCarAction from "./store/car/asyncCarAction";
-import { carActions } from "./store/car/carReducer";
+import firebase from "./utils/firebase";
+import asyncRecordAction from "./store/record/asyncRecordAction";
+import styled from "styled-components/macro";
 import { useAppDispatch, useAppSelector } from "./store/index";
+import { useForm } from "react-hook-form";
+import { arrayUnion } from "firebase/firestore";
 
+const From = styled.form`
+  margin-top: 68px;
+`;
 const Test = () => {
-  const [carName, setCarName] = useState("");
-  const [carBrand, setCarBrand] = useState("");
-  const [carLicensePlateNum, setCarLicensePlateNum] = useState("");
-  const [carInsuranceDate, setCarInsuranceDate] = useState("");
-  const [carLicenseDate, setCarLicenseDate] = useState("");
-  const [carID, setCarID] = useState("");
-  const cars = useAppSelector((state) => state.car.cars);
-  const car = useAppSelector((state) => state.car.car);
-  const userId = useAppSelector((state) => state.user.user.id);
-  console.log(userId);
-  console.log(cars);
-  console.log(car);
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: "onBlur" });
+  const carID = useAppSelector((state) => state.car.car.id);
+  const repair = useAppSelector((state) => state.record.repair);
+  const part = useAppSelector((state) => state.record.parts);
+  console.log("repair", repair);
+  console.log("part", part);
   const dispatch = useAppDispatch();
 
-  const createCar = () => {
-    const carObj = {
-      ownerId: userId,
-      id: "",
-      name: carName,
-      brand: carBrand,
-      mileage: 0,
-      plateNum: carLicensePlateNum,
-      insuranceDate: carInsuranceDate,
-      licenseDate: carLicenseDate,
+  const createRecord = (record) => {
+    record.id = "";
+    record.category = "repair";
+
+    const partObj = {
+      recordID: "",
+      category: "engineOil",
+      spec: "ART999",
+      startDate: "2022-5-5",
+      endDate: "2022-7-5",
+      startMileage: 1000,
+      endMileage: 2000,
+      price: 13123,
+      qty: 1,
+      subTotal: 13123,
+      note: "dsfafd",
     };
-    dispatch(asyncCarAction.create(carObj));
-  };
-  const getCar = () => {
-    dispatch(asyncCarAction.getCars(userId));
-  };
-  const nameHandler = (e) => {
-    setCarName(e.target.value);
-  };
+    const partObj1 = {
+      recordID: "",
+      category: "airFilter",
+      spec: "GGYY200",
+      startDate: "2022-5-5",
+      endDate: "2022-7-5",
+      startMileage: 1000,
+      endMileage: 2000,
+      price: 13123,
+      qty: 1,
+      subTotal: 13123,
+      note: "dsfafd",
+    };
+    record.records = [partObj, partObj1];
 
-  const brandHandler = (e) => {
-    setCarBrand(e.target.value);
-  };
-  const plateNumHandler = (e) => {
-    setCarLicensePlateNum(e.target.value);
-  };
-  const insuranceHandler = (e) => {
-    setCarInsuranceDate(e.target.value);
-  };
-  const licenseDateHandler = (e) => {
-    setCarLicenseDate(e.target.value);
-  };
-  console.log(carID);
-  const selectCar = () => {
-    dispatch(carActions.selectCar(carID));
-  };
-  const updateCar = () => {
-    const newCar = { ...car, name: "壞透了" };
-
-    dispatch(
-      asyncCarAction.updateCar(`/carsRecords/2bS9IHW1qDdcElhJYPkU`, newCar)
-    );
-  };
-  const deleteCar = () => {
-    dispatch(asyncCarAction.deleteCar(carID));
+    dispatch(asyncRecordAction.addRepair(carID, record, part));
   };
 
   return (
     <>
-      <div>
+      <From onSubmit={handleSubmit(createRecord)}>
         <input
           type="text"
-          placeholder="nickname"
-          value={carName}
-          onChange={nameHandler}
-        />
-        <input
-          type="text"
-          placeholder="brand"
-          value={carBrand}
-          onChange={brandHandler}
-        />
-        <input
-          type="text"
-          placeholder="PlateNum"
-          value={carLicensePlateNum}
-          onChange={plateNumHandler}
+          placeholder="title"
+          {...register("title", { required: true })}
         />
         <input
           type="date"
-          placeholder="Insurance"
-          value={carInsuranceDate}
-          onChange={insuranceHandler}
+          placeholder="date"
+          {...register("date", { required: true })}
         />
         <input
-          type="date"
-          placeholder="License"
-          value={carLicenseDate}
-          onChange={licenseDateHandler}
+          type="number"
+          placeholder="mileage"
+          {...register("mileage", { required: true })}
+        />
+        <input
+          type="number"
+          placeholder="amount"
+          {...register("amount", { required: true })}
         />
         <input
           type="text"
-          placeholder="ID"
-          value={carID}
-          onChange={(e) => setCarID(e.target.value)}
+          placeholder="note"
+          {...register("note", { required: true })}
         />
-        <button onClick={createCar}>SEND</button>
-        <button onClick={getCar}>GET</button>
-        <button onClick={selectCar}>SELECT</button>
-        <button onClick={updateCar}>UPDATE</button>
 
-        {cars.length > 0 &&
-          cars.map((d) => {
-            return <p>{d.id}</p>;
-          })}
-      </div>
-      <div>
-        <button onClick={deleteCar}>DELETE</button>
-      </div>
+        <button>add</button>
+      </From>
+      <div></div>
     </>
   );
 };

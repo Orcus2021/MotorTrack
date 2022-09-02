@@ -1,4 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
+import Repair from "./Repair/Repair";
+import RecordList from "./RecordList";
 import styled from "styled-components";
 const CartBx = styled.div`
   position: relative;
@@ -10,7 +12,7 @@ const CartBx = styled.div`
 `;
 const Card = styled.div`
   position: relative;
-  background: #fff;
+  background: var(--thirdBack);
   padding: 20px;
   display: flex;
   justify-content: space-between;
@@ -23,49 +25,70 @@ const RecordDetail = styled.div`
   padding-top: 0;
   min-height: 530px;
 `;
+const ExpenseText = styled.p`
+  font-size: 16px;
+`;
+const DetailHeader = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+const DetailTitle = styled.p`
+  font-size: 16px;
+`;
+const DetailRight = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 
 const Record = () => {
+  const [recordCategory, setRecordCategory] = useState<string>("record");
+  const [updateId, setUpdate] = useState<string>("");
+  const recordCategoryHandler = () => {
+    setRecordCategory("repair");
+    setUpdate("");
+  };
+  const updateRepairHandler = (id: string, category: string) => {
+    setRecordCategory(category);
+    setUpdate(id);
+  };
   return (
     <>
-      <CartBx>
-        <Card>
-          <div>
-            <div class="number">1042</div>
-            <div class="cardName">Daily Views</div>
-          </div>
-          <div class="iconBox">
-            <i class="fas fa-eye"></i>
-          </div>
-        </Card>
-        <Card>
-          <div>
-            <div class="number">1042</div>
-            <div class="cardName">Sales</div>
-          </div>
-          <div class="iconBox">
-            <i class="fas fa-eye"></i>
-          </div>
-        </Card>
-        <Card>
-          <div>
-            <div class="number">1042</div>
-            <div class="cardName">Comments</div>
-          </div>
-          <div class="iconBox">
-            <i class="fas fa-eye"></i>
-          </div>
-        </Card>
-        <Card>
-          <div>
-            <div class="number">$1042</div>
-            <div class="cardName">Earning</div>
-          </div>
-          <div class="iconBox">
-            <i class="fas fa-eye"></i>
-          </div>
-        </Card>
-      </CartBx>
-      <RecordDetail></RecordDetail>
+      {recordCategory === "record" && (
+        <>
+          <CartBx>
+            <Card>
+              <ExpenseText>總費用</ExpenseText>
+            </Card>
+            <Card>
+              <ExpenseText onClick={recordCategoryHandler}>維修</ExpenseText>
+            </Card>
+            <Card>
+              <ExpenseText>加油</ExpenseText>
+            </Card>
+            <Card>
+              <ExpenseText>費用</ExpenseText>
+            </Card>
+          </CartBx>
+          <RecordDetail>
+            <DetailHeader>
+              <DetailTitle>紀錄</DetailTitle>
+              <DetailRight>
+                <DetailTitle>全部</DetailTitle>
+                <DetailTitle>維修</DetailTitle>
+                <DetailTitle>加油</DetailTitle>
+                <DetailTitle>費用</DetailTitle>
+              </DetailRight>
+            </DetailHeader>
+            <RecordList onUpdate={updateRepairHandler} />
+          </RecordDetail>
+        </>
+      )}
+      {recordCategory === "repair" && (
+        <Repair onClose={setRecordCategory} updateId={updateId} />
+      )}
     </>
   );
 };
