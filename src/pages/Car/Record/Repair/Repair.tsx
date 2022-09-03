@@ -1,11 +1,19 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import RepairList from "./RepairList";
 import styled from "styled-components/macro";
 import { partsType, partType, repairType } from "../../../../types/recordType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
-const RepairContainerForm = styled.form`
+
+import trashIcon from "../../../../assets/trash.png";
+const RepairContainer = styled.div`
   width: 100%;
   padding: 10px;
   position: relative;
@@ -65,22 +73,42 @@ const NoteContent = styled.textarea`
   width: 100%;
   height: 150px;
 `;
+const IconBx = styled.div`
+  position: relative;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+`;
+const Icon = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
 
 const Repair: React.FC<{
   onClose: Dispatch<SetStateAction<string>>;
   updateId: string;
 }> = (props) => {
   const { onClose, updateId } = props;
-  const dispatch = useAppDispatch();
   const carID = useAppSelector((state) => state.car.car?.id);
   const record = useAppSelector((state) =>
     state.record.repair.find((record) => record.id === updateId)
   );
-  const initParts = useAppSelector((state) => state.record.parts);
-  // const parts = useRef<partType[]>(record?.records || []);
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
-  console.log(parts);
+  const deletePart = useRef<partType[]>([]);
   const { register, handleSubmit, reset } = useForm<repairType>();
+  const dispatch = useAppDispatch();
+
+  const initParts = useAppSelector((state) => state.record.parts);
+
+  useEffect(() => {
+    if (updateId) {
+      reset(record);
+    }
+  }, [record, reset, updateId]);
 
   const addPartHandler = (newPart: partType) => {
     const partIndex = parts.findIndex(
@@ -96,12 +124,6 @@ const Repair: React.FC<{
       return newPartArr;
     });
   };
-
-  useEffect(() => {
-    if (updateId) {
-      reset(record);
-    }
-  }, [record, reset, updateId]);
 
   const setPartDateAndMileage = (record: repairType) => {
     const dateArr = record.date.split("-");
@@ -131,48 +153,91 @@ const Repair: React.FC<{
       record.id = "";
       record.category = "repair";
       dispatch(asyncRecordAction.addRepair(carID as string, record));
+      onClose("record");
       return;
     }
     const JSONParts = JSON.stringify(initParts);
     const newParts = JSON.parse(JSONParts) as partsType;
 
     dispatch(asyncRecordAction.updateRepair(carID as string, record, newParts));
+    deletePart.current.forEach((removePart) => {
+      dispatch(asyncRecordAction.deletePart(carID as string, removePart));
+    });
+
+    onClose("record");
   };
+
   const closeRepair = (e: React.FormEvent) => {
     e.preventDefault();
     onClose("record");
   };
 
+  const deleteRepairRecord = () => {
+    dispatch(
+      asyncRecordAction.deleteRepair(
+        carID as string,
+        record?.id as string,
+        record?.records as partType[]
+      )
+    );
+    onClose("record");
+  };
+  const deletePartHandler = (removePart: partType) => {
+    setParts((pre) => {
+      const newParts = [...pre];
+      return newParts.filter((part) => part.category !== removePart.category);
+    });
+    if (removePart.recordID) {
+      console.log("delete");
+      deletePart.current = [...deletePart.current, removePart];
+    }
+  };
+
   return (
-    <RepairContainerForm onSubmit={handleSubmit(createRepairHandler)}>
-      <HeaderBar>
-        <ConfirmBtn>{updateId ? "更新" : "新增"}</ConfirmBtn>
-        <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-      </HeaderBar>
-      <TitleBx>
-        <Label>標題</Label>
-        <Input type="text" {...register("title", { required: true })} />
-      </TitleBx>
-      <DetailBX>
-        <Detail>
-          <Label>日期</Label>
-          <Input type="date" {...register("date", { required: true })} />
-          <Label>里程數</Label>
-          <Input type="number" {...register("mileage", { required: true })} />
-        </Detail>
-        <Detail>
-          <Label>總金額</Label>
-          <Input type="number" {...register("amount", { required: true })} />
-        </Detail>
-      </DetailBX>
-      <RepairList
-        onAdd={addPartHandler}
-        parts={parts}
-        // part={parts}
-      />
-      <NoteTitle>備註</NoteTitle>
-      <NoteContent {...register("note")} />
-    </RepairContainerForm>
+    <>
+      <RepairContainer>
+        <form onSubmit={handleSubmit(createRepairHandler)}>
+          <HeaderBar>
+            <ConfirmBtn>{updateId ? "更新" : "新增"}</ConfirmBtn>
+            {updateId && (
+              <IconBx onClick={deleteRepairRecord}>
+                <Icon src={trashIcon} />
+              </IconBx>
+            )}
+            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
+          </HeaderBar>
+          <TitleBx>
+            <Label>標題</Label>
+            <Input type="text" {...register("title", { required: true })} />
+          </TitleBx>
+          <DetailBX>
+            <Detail>
+              <Label>日期</Label>
+              <Input type="date" {...register("date", { required: true })} />
+              <Label>里程數</Label>
+              <Input
+                type="number"
+                {...register("mileage", { required: true })}
+              />
+            </Detail>
+            <Detail>
+              <Label>總金額</Label>
+              <Input
+                type="number"
+                {...register("amount", { required: true })}
+              />
+            </Detail>
+          </DetailBX>
+        </form>
+        <RepairList
+          onAdd={addPartHandler}
+          parts={parts}
+          onDeletePart={deletePartHandler}
+        />
+        <NoteTitle>備註</NoteTitle>
+        <NoteContent {...register("note")} />
+      </RepairContainer>
+    </>
   );
 };
 

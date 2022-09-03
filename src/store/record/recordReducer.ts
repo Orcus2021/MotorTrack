@@ -49,6 +49,24 @@ const recordSlice = createSlice({
         state.parts[newPart.category][partIndex] = newPart;
       });
     },
+    deleteRepair(state, action) {
+      const oldRecord = state.repair.find(
+        (record) => record.id === action.payload
+      );
+      state.repair = state.repair.filter(
+        (record) => record.id !== action.payload
+      );
+      oldRecord?.records.forEach((oldPart: partType) => {
+        state.parts[oldPart.category] = state.parts[oldPart.category].filter(
+          (part) => part.recordID !== action.payload
+        );
+      });
+    },
+    deletePart(state, action) {
+      state.parts[action.payload.category] = state.parts[
+        action.payload.category
+      ].filter((part: partType) => part.recordID !== action.payload.recordID);
+    },
     updateParts(state, action) {},
     addExpense() {},
     updateExpense() {},

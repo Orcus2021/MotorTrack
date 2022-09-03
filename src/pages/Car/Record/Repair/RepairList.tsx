@@ -32,8 +32,9 @@ const SubTitle = styled.th`
 const RepairList: React.FC<{
   onAdd: (part: partType) => void;
   parts: partType[] | [];
+  onDeletePart: (removePart: partType) => void;
 }> = (props) => {
-  const { onAdd, parts } = props;
+  const { onAdd, parts, onDeletePart } = props;
 
   const [showPartForm, setShowPartForm] = useState<boolean>(false);
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
@@ -42,11 +43,6 @@ const RepairList: React.FC<{
     setShowPartForm(true);
     setSelectPartIndex(NaN);
   };
-
-  const addPartItem = (part: partType) => {
-    onAdd(part);
-  };
-
   const closePartForm = () => {
     setCloseEffect(true);
     setSelectPartIndex(NaN);
@@ -75,6 +71,7 @@ const RepairList: React.FC<{
             <SubTitle>數量</SubTitle>
             <SubTitle>小記</SubTitle>
             <SubTitle>備註</SubTitle>
+            <SubTitle>刪除</SubTitle>
           </tr>
         </thead>
         <tbody>
@@ -83,6 +80,7 @@ const RepairList: React.FC<{
               record={record}
               onShow={showPartHandler}
               onSelect={() => selectPartHandler(index)}
+              onDeletePart={onDeletePart}
             />
           ))}
         </tbody>
@@ -90,7 +88,7 @@ const RepairList: React.FC<{
       {showPartForm && (
         <Modal closeEffect={closeEffect} onClose={closePartForm}>
           <PartForm
-            onAddPart={addPartItem}
+            onAddPart={onAdd}
             onClose={closePartForm}
             part={parts[selectPartIndex]}
           />

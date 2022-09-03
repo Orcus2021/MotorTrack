@@ -5,14 +5,14 @@ import firebase from "../../utils/firebase";
 import { arrayUnion } from "firebase/firestore";
 
 const asyncRecordAction = {
-  addRepair(id: string, data: repairType) {
+  addRepair(carId: string, data: repairType) {
     return async (dispatch: AppDispatch) => {
       const add = async () => {
-        const url = `/carsRecords/${id}/repairRecords`;
+        const url = `/carsRecords/${carId}/repairRecords`;
         const response = await firebase.setRecordDoc(url, data);
 
         response.records.forEach(async (partObj: partType) => {
-          const url = `carsRecords/${id}/parts/${partObj.category}`;
+          const url = `carsRecords/${carId}/parts/${partObj.category}`;
           await firebase.setMergeDoc(url, { records: arrayUnion(partObj) });
         });
         return response;
@@ -25,10 +25,10 @@ const asyncRecordAction = {
       }
     };
   },
-  updateRepair(id: string, data: repairType, oldParts: partsType) {
+  updateRepair(carId: string, data: repairType, oldParts: partsType) {
     return async (dispatch: AppDispatch) => {
       const update = async () => {
-        const url = `/carsRecords/${id}/repairRecords/${data.id}`;
+        const url = `/carsRecords/${carId}/repairRecords/${data.id}`;
         const response = await firebase.setDoc(url, data);
         const parts = { ...oldParts };
         if (response) {
@@ -37,7 +37,7 @@ const asyncRecordAction = {
               (part) => part.recordID === data.id
             );
             parts[newPart.category][partIndex] = newPart;
-            const url = `/carsRecords/${id}/parts/${newPart.category}`;
+            const url = `/carsRecords/${carId}/parts/${newPart.category}`;
             await firebase.setDoc(url, { records: parts[newPart.category] });
           });
         }
@@ -45,6 +45,40 @@ const asyncRecordAction = {
       try {
         await update();
         dispatch(recordActions.updateRepair(data));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  deleteRepair(carId: string, recordID: string, oldParts: partType[]) {
+    return async (dispatch: AppDispatch) => {
+      const remove = async () => {
+        const url = `/carsRecords/${carId}/repairRecords/${recordID}`;
+        const response = await firebase.delete(url);
+        if (response) {
+          oldParts.forEach(async (part: partType) => {
+            const url = `/carsRecords/${carId}/parts/${part.category}`;
+            await firebase.deleteParts(url, part);
+          });
+        }
+      };
+      try {
+        await remove();
+        dispatch(recordActions.deleteRepair(recordID));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  deletePart(carId: string, data: partType) {
+    return async (dispatch: AppDispatch) => {
+      const remove = async () => {
+        const url = `/carsRecords/${carId}/parts/${data.category}`;
+        await firebase.deleteParts(url, data);
+      };
+      try {
+        await remove();
+        dispatch(recordActions.deletePart(data));
       } catch (e) {
         console.log(e);
       }

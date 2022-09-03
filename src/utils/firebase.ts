@@ -20,7 +20,9 @@ import {
   deleteDoc,
   updateDoc,
   DocumentData,
+  arrayRemove,
 } from "firebase/firestore";
+import { resolve } from "path/posix";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
@@ -122,6 +124,13 @@ const firebase = {
     return new Promise(async (resolve) => {
       await setDoc(doc(db, url), data, { merge: true });
       resolve("Set doc already");
+    });
+  },
+  async deleteParts(url: string, data: partType): Promise<string> {
+    return new Promise(async (resolve) => {
+      const ref = doc(db, url);
+      await updateDoc(ref, { records: arrayRemove(data) });
+      resolve("Delete it successfully");
     });
   },
   async getAllRecords(id: string): Promise<{
