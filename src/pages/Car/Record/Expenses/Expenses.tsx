@@ -1,19 +1,14 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
-import RepairList from "./RepairList";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import styled from "styled-components/macro";
-import { partsType, partType, repairType } from "../../../../types/recordType";
+import expenseCategory from "../../../../utils/expenseItem";
+import { feeType } from "../../../../types/recordType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
-import asyncRecordAction from "../../../../store/record/asyncRecordAction";
-import { formatDate } from "../../../../utils/calcFunc";
-import trashIcon from "../../../../assets/trash.png";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
+import { formatDate } from "../../../../utils/calcFunc";
+import asyncRecordAction from "../../../../store/record/asyncRecordAction";
+
+import trashIcon from "../../../../assets/trash.png";
 const RepairContainer = styled.div`
   width: 100%;
   padding: 10px;
@@ -88,24 +83,27 @@ const Icon = styled.img`
   height: 100%;
   object-fit: cover;
 `;
+const Select = styled.select``;
 
-const Repair: React.FC<{
+const Expenses: React.FC<{
   onClose: Dispatch<SetStateAction<string>>;
   updateId: string;
 }> = (props) => {
   const { onClose, updateId } = props;
+  const record = useAppSelector((state) => {
+    const newExpenses = [...state.record.fee, ...state.record.refuel];
+    return newExpenses.find((record) => record.id === updateId);
+  });
   const carID = useAppSelector((state) => state.car.car?.id);
   const carMileage = useAppSelector((state) => state.car.car?.mileage);
-
-  const record = useAppSelector((state) =>
-    state.record.repair.find((record) => record.id === updateId)
-  );
-  const [parts, setParts] = useState<partType[] | []>(record?.records || []);
-  const deletePart = useRef<partType[]>([]);
-  const { register, handleSubmit, reset, setValue } = useForm<repairType>();
+  const { register, handleSubmit, reset } = useForm<feeType>();
   const dispatch = useAppDispatch();
 
-  const initParts = useAppSelector((state) => state.record.parts);
+  const closeRepair = (e: React.FormEvent) => {
+    e.preventDefault();
+    onClose("record");
+  };
+
   useEffect(() => {
     if (updateId) {
       reset(record);
@@ -114,107 +112,35 @@ const Repair: React.FC<{
     }
   }, [record, reset, updateId, carMileage]);
 
-  useEffect(() => {
-    if (parts.length > 0) {
-      const amount: number = parts.reduce<Record<number, number>>(
-        (total: number, { subtotal }: { subtotal: number }) => total + subtotal,
-        0
-      );
-      setValue("amount", amount);
-    }
-  }, [parts, setValue]);
+  const options: JSX.Element[] = [];
+  expenseCategory.forEach((value, key) => {
+    options.push(<option value={key}>{value}</option>);
+  });
 
-  const addPartHandler = (newPart: partType) => {
-    const partIndex = parts.findIndex(
-      (part) => part.category === newPart.category
-    );
-    if (partIndex < 0) {
-      setParts((pre) => [...pre, newPart]);
-      return;
-    }
-    setParts((pre) => {
-      const newPartArr = [...pre];
-      newPartArr[partIndex] = newPart;
-      return newPartArr;
-    });
-  };
-
-  const setPartDateAndMileage = (record: repairType) => {
-    const dateArr = record.date.split("-");
-    const recordYear = dateArr[0];
-    const recordMonth = dateArr[1];
-    const recordDay = dateArr[2];
-    const JSONParts = JSON.stringify(parts);
-    const newParts = JSON.parse(JSONParts) as partType[];
-
-    const newRecords = newParts.map((part) => {
-      const endDate = `${recordYear + part.year}-${
-        recordMonth + part.month
-      }-${recordDay}`;
-      if (!part.recordID) part.recordID = "";
-      part.startDate = record.date;
-      part.endDate = endDate;
-      part.startMileage = record.mileage;
-      part.endMileage = record.mileage + part.mileage;
-      return part;
-    });
-    return newRecords;
-  };
-
-  const createRepairHandler = (record: repairType) => {
-    record.records = setPartDateAndMileage(record);
+  const createExpenseHandler = (record: feeType) => {
     if (!record.id) {
       record.id = "";
-      record.category = "repair";
-      dispatch(asyncRecordAction.addRepair(carID as string, record));
-    } else {
-      const JSONParts = JSON.stringify(initParts);
-      const newParts = JSON.parse(JSONParts) as partsType;
 
-      dispatch(
-        asyncRecordAction.updateRepair(carID as string, record, newParts)
-      );
-      deletePart.current.forEach((removePart) => {
-        dispatch(asyncRecordAction.deletePart(carID as string, removePart));
-      });
+      dispatch(asyncRecordAction.addExpense(carID as string, record));
+    } else {
+      dispatch(asyncRecordAction.updateExpense(carID as string, record));
     }
     dispatch(
       asyncCarAction.updateCar(carID as string, { mileage: record.mileage })
     );
-
     onClose("record");
   };
-
-  const closeRepair = (e: React.FormEvent) => {
-    e.preventDefault();
-    onClose("record");
-  };
-
   const deleteRepairRecord = () => {
     dispatch(
-      asyncRecordAction.deleteRepair(
-        carID as string,
-        record?.id as string,
-        record?.records as partType[]
-      )
+      asyncRecordAction.deleteExpense(carID as string, record as feeType)
     );
     onClose("record");
-  };
-  const deletePartHandler = (removePart: partType) => {
-    setParts((pre) => {
-      const newParts = [...pre];
-      return newParts.filter((part) => part.category !== removePart.category);
-    });
-    if (removePart.recordID) {
-      console.log("delete");
-      deletePart.current = [...deletePart.current, removePart];
-    }
   };
 
   return (
     <>
       <RepairContainer>
-        <form onSubmit={handleSubmit(createRepairHandler)}>
+        <form onSubmit={handleSubmit(createExpenseHandler)}>
           <HeaderBar>
             <ConfirmBtn>{updateId ? "更新" : "新增"}</ConfirmBtn>
             {updateId && (
@@ -243,16 +169,12 @@ const Repair: React.FC<{
               <Input
                 type="number"
                 {...register("amount", { required: true })}
-                readOnly
               />
             </Detail>
           </DetailBX>
         </form>
-        <RepairList
-          onAdd={addPartHandler}
-          parts={parts}
-          onDeletePart={deletePartHandler}
-        />
+        <Select {...register("category")}>{options}</Select>
+
         <NoteTitle>備註</NoteTitle>
         <NoteContent {...register("note")} />
       </RepairContainer>
@@ -260,4 +182,4 @@ const Repair: React.FC<{
   );
 };
 
-export default Repair;
+export default Expenses;

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import RecordItem from "./RecordItem";
+import uuid from "react-uuid";
 import { useAppSelector } from "../../../store";
 import { repairType, feeType } from "../../../types/recordType";
 
@@ -42,7 +43,11 @@ const RecordList: React.FC<{
       </thead>
       <tbody>
         {allRecords.map((record) => (
-          <RecordItem record={record} onUpdate={onUpdate}></RecordItem>
+          <RecordItem
+            key={uuid()}
+            record={record}
+            onUpdate={onUpdate}
+          ></RecordItem>
         ))}
       </tbody>
     </MessageTable>

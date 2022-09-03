@@ -67,10 +67,49 @@ const recordSlice = createSlice({
         action.payload.category
       ].filter((part: partType) => part.recordID !== action.payload.recordID);
     },
-    updateParts(state, action) {},
-    addExpense() {},
-    updateExpense() {},
-    deleteRecord() {},
+    addExpense(state, action) {
+      if (action.payload.category === "refuel") {
+        state.refuel.push(action.payload);
+      } else {
+        state.fee.push(action.payload);
+      }
+    },
+    updateExpense(state, action) {
+      if (action.payload.category === "refuel") {
+        const recordIndex = state.refuel.findIndex(
+          (record) => record.id === action.payload.id
+        );
+        state.refuel[recordIndex] = {
+          ...state.refuel[recordIndex],
+          ...action.payload,
+        };
+      } else {
+        const recordIndex = state.fee.findIndex(
+          (record) => record.id === action.payload.id
+        );
+        state.fee[recordIndex] = {
+          ...state.fee[recordIndex],
+          ...action.payload,
+        };
+      }
+    },
+    deleteExpense(state, action) {
+      if (action.payload.category === "refuel") {
+        state.refuel = state.refuel.filter(
+          (record) => record.id !== action.payload.id
+        );
+      } else {
+        state.fee = state.fee.filter(
+          (record) => record.id !== action.payload.id
+        );
+      }
+    },
+    clearAllRecord(state) {
+      state.fee = [] as feeType[];
+      state.repair = [] as repairType[];
+      state.refuel = [] as feeType[];
+      state.parts = {} as partsType;
+    },
   },
 });
 

@@ -136,8 +136,7 @@ const asyncUserAction = {
   updateUser(id: string, data: object) {
     return async (dispatch: AppDispatch) => {
       const update = async () => {
-        const response = await firebase.updateDoc(`/users/${id}`, data);
-        console.log(response);
+        await firebase.updateDoc(`/users/${id}`, data);
       };
 
       try {

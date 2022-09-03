@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import uuid from "react-uuid";
 import styled from "styled-components/macro";
 import { Link, Outlet } from "react-router-dom";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
 import { useAppSelector, useAppDispatch } from "../../store";
+import { carActions } from "../../store/car/carReducer";
+import asyncUserAction from "../../store/user/asyncUserAction";
 
 const RecordContainer = styled.div`
   display: flex;
@@ -43,18 +46,23 @@ const MainWrapper = styled.div`
 const CarsWrapper = styled.div``;
 const CarInfo = styled.p`
   font-size: 16px;
+  cursor: pointer;
 `;
 
 const Manage = () => {
   const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
   const carId = useAppSelector((state) => state.car.car?.id);
-  const record = useAppSelector((state) => state.record);
   useEffect(() => {
     if (carId) {
       dispatch(asyncRecordAction.getAllRecords(carId));
     }
-  }, [carId]);
+  }, [carId, dispatch]);
+
+  const selectCartHandler = (id: string, ownerId: string) => {
+    dispatch(carActions.selectCar(id));
+    dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
+  };
 
   return (
     <RecordContainer>
@@ -66,7 +74,7 @@ const Manage = () => {
             </RecordLink>
           </Nav>
           <Nav>
-            <RecordLink to="#">
+            <RecordLink to="/car_manage/chart">
               <span>費用統計圖</span>
             </RecordLink>
           </Nav>
@@ -82,7 +90,10 @@ const Manage = () => {
           </Nav>
           <CarsWrapper>
             {cars.map((car) => (
-              <CarInfo>
+              <CarInfo
+                key={uuid()}
+                onClick={() => selectCartHandler(car.id, car.ownerId)}
+              >
                 {car.brand}:{car.name}
               </CarInfo>
             ))}

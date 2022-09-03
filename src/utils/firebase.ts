@@ -120,6 +120,15 @@ const firebase = {
       resolve(data);
     });
   },
+  async setExpenseDoc(url: string, data: feeType): Promise<dataType> {
+    return new Promise(async (resolve) => {
+      const newId = doc(collection(db, url));
+      data.id = newId.id;
+      await setDoc(newId, data);
+      resolve(data);
+    });
+  },
+
   async setMergeDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {
       await setDoc(doc(db, url), data, { merge: true });
@@ -143,7 +152,8 @@ const firebase = {
       const repairRecordsUrl = `/carsRecords/${id}/repairRecords`;
       const partsUrl = `/carsRecords/${id}/parts`;
       const feeRecordsUrl = `/carsRecords/${id}/feeRecords`;
-      const refuelRecordsUrl = `/carsRecords/${id}/ refuelRecords`;
+      const refuelRecordsUrl = `/carsRecords/${id}/refuelRecords`;
+
       const recordObj = {
         fee: [] as feeType[],
         repair: [] as repairType[],
@@ -154,20 +164,22 @@ const firebase = {
         collection(db, repairRecordsUrl)
       );
       const partsSnapshot = await getDocs(collection(db, partsUrl));
-      const feeRecordsSnapshot = await getDocs(collection(db, feeRecordsUrl));
       const refuelRecordsSnapshot = await getDocs(
         collection(db, refuelRecordsUrl)
       );
+      const feeRecordsSnapshot = await getDocs(collection(db, feeRecordsUrl));
 
       repairRecordsSnapshot.forEach((doc) => {
         recordObj.repair.push(doc.data() as repairType);
       });
 
       feeRecordsSnapshot.forEach((doc) => {
+        console.log(doc.data());
         recordObj.fee.push(doc.data() as feeType);
       });
 
       refuelRecordsSnapshot.forEach((doc) => {
+        console.log(doc.data());
         recordObj.refuel.push(doc.data() as feeType);
       });
       partsSnapshot.forEach((doc) => {

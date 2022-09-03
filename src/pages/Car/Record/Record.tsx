@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Repair from "./Repair/Repair";
+import Expenses from "./Expenses/Expenses";
 import RecordList from "./RecordList";
 import styled from "styled-components";
 const CartBx = styled.div`
@@ -46,12 +47,17 @@ const DetailRight = styled.div`
 const Record = () => {
   const [recordCategory, setRecordCategory] = useState<string>("record");
   const [updateId, setUpdate] = useState<string>("");
-  const recordCategoryHandler = () => {
-    setRecordCategory("repair");
+  const recordCategoryHandler = (category: string) => {
+    setRecordCategory(category);
     setUpdate("");
   };
   const updateRepairHandler = (id: string, category: string) => {
-    setRecordCategory(category);
+    if (category === "repair") {
+      setRecordCategory(category);
+    } else {
+      setRecordCategory("fee");
+    }
+
     setUpdate(id);
   };
   return (
@@ -63,13 +69,31 @@ const Record = () => {
               <ExpenseText>總費用</ExpenseText>
             </Card>
             <Card>
-              <ExpenseText onClick={recordCategoryHandler}>維修</ExpenseText>
+              <ExpenseText
+                onClick={() => {
+                  recordCategoryHandler("repair");
+                }}
+              >
+                維修
+              </ExpenseText>
             </Card>
             <Card>
-              <ExpenseText>加油</ExpenseText>
+              <ExpenseText
+                onClick={() => {
+                  recordCategoryHandler("fee");
+                }}
+              >
+                加油
+              </ExpenseText>
             </Card>
             <Card>
-              <ExpenseText>費用</ExpenseText>
+              <ExpenseText
+                onClick={() => {
+                  recordCategoryHandler("fee");
+                }}
+              >
+                費用
+              </ExpenseText>
             </Card>
           </CartBx>
           <RecordDetail>
@@ -88,6 +112,9 @@ const Record = () => {
       )}
       {recordCategory === "repair" && (
         <Repair onClose={setRecordCategory} updateId={updateId} />
+      )}
+      {recordCategory === "fee" && (
+        <Expenses onClose={setRecordCategory} updateId={updateId} />
       )}
     </>
   );

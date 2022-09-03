@@ -9,9 +9,10 @@ import Record from "./pages/Car/Record/Record";
 import AddCar from "./pages/Car/SetCar/AddCar";
 import EditCar from "./pages/Car/SetCar/EditCar";
 import Test from "./Test";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
+import Chart from "./pages/Car/Chart/Chart";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -29,6 +30,7 @@ root.render(
             <Route path="record" element={<Record />} />
             <Route path="add" element={<AddCar />} />
             <Route path="edit" element={<EditCar />} />
+            <Route path="chart" element={<Chart />} />
           </Route>
         </Route>
       </Routes>

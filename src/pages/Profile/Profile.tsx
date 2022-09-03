@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components/macro";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { carActions } from "../../store/car/carReducer";
+import { recordActions } from "../../store/record/recordReducer";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 
 const ProfileContainer = styled.div`
@@ -77,6 +78,7 @@ const Profile = () => {
   const logoutHandler = () => {
     dispatch(asyncUserAction.logout());
     dispatch(carActions.clear());
+    dispatch(recordActions.clearAllRecord());
   };
   return (
     <ProfileContainer>

@@ -55,7 +55,6 @@ const AddCar = () => {
     dispatch(asyncCarAction.create(user.id, user.cars, car));
   };
 
-  console.log(errors);
   return (
     <AddContainer>
       <AddWrapper>

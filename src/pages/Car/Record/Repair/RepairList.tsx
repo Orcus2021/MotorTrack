@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components/macro";
+import uuid from "react-uuid";
 import RepairItem from "./RepairItem";
 import { partType } from "../../../../types/recordType";
 import Modal from "../../../../components/Modal/Modal";
@@ -69,7 +70,7 @@ const RepairList: React.FC<{
             <SubTitle>使用里程</SubTitle>
             <SubTitle>單價</SubTitle>
             <SubTitle>數量</SubTitle>
-            <SubTitle>小記</SubTitle>
+            <SubTitle>小計</SubTitle>
             <SubTitle>備註</SubTitle>
             <SubTitle>刪除</SubTitle>
           </tr>
@@ -77,6 +78,7 @@ const RepairList: React.FC<{
         <tbody>
           {parts.map((record, index) => (
             <RepairItem
+              key={uuid()}
               record={record}
               onShow={showPartHandler}
               onSelect={() => selectPartHandler(index)}

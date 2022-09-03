@@ -2,9 +2,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
-import { carAge as carAgeHandler } from "../../../store/car/asyncCarAction";
+import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
+import asyncUserAction from "../../../store/user/asyncUserAction";
 
 const EditContainer = styled.div`
   width: 100%;
@@ -57,6 +58,8 @@ const CarInfo = styled.p`
 
 const EditCar = () => {
   const car = useAppSelector((state) => state.car.car);
+  const cars = useAppSelector((state) => state.car.cars);
+  const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
   const [carAge, setCarAge] = useState<string>(car?.age || "0");
   const [inspectionDay, setInspectionDay] = useState<string>(
@@ -81,7 +84,7 @@ const EditCar = () => {
   useEffect(() => {
     const subscription = watch(({ licenseDate }) => {
       if (licenseDate) {
-        const { age, inspectionDay } = carAgeHandler(licenseDate);
+        const { age, inspectionDay } = carAgeAndInspectionDay(licenseDate);
 
         setCarAge(age);
         setInspectionDay(inspectionDay);
@@ -98,7 +101,7 @@ const EditCar = () => {
   };
   const deleteCarHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(asyncCarAction.deleteCar(car?.id as string));
+    dispatch(asyncCarAction.deleteCar(car?.id as string, user.cars, cars));
   };
   return (
     <EditContainer>

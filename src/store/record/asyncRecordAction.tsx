@@ -1,6 +1,11 @@
 import { AppDispatch } from "../index";
 import { recordActions } from "./recordReducer";
-import { repairType, partType, partsType } from "../../types/recordType";
+import {
+  repairType,
+  partType,
+  partsType,
+  feeType,
+} from "../../types/recordType";
 import firebase from "../../utils/firebase";
 import { arrayUnion } from "firebase/firestore";
 
@@ -84,6 +89,66 @@ const asyncRecordAction = {
       }
     };
   },
+  addExpense(carId: string, data: feeType) {
+    return async (dispatch: AppDispatch) => {
+      const add = async () => {
+        let url = "";
+        if (data.category === "refuel") {
+          url = `/carsRecords/${carId}/refuelRecords`;
+        } else {
+          url = `/carsRecords/${carId}/feeRecords`;
+        }
+        const response = await firebase.setExpenseDoc(url, data);
+        return response;
+      };
+      try {
+        const record = await add();
+        dispatch(recordActions.addExpense(record));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  updateExpense(carId: string, data: feeType) {
+    return async (dispatch: AppDispatch) => {
+      const update = async () => {
+        let url = "";
+        if (data.category === "refuel") {
+          url = `/carsRecords/${carId}/refuelRecords/${data.id}`;
+        } else {
+          url = `/carsRecords/${carId}/feeRecords/${data.id}`;
+        }
+        const response = await firebase.updateDoc(url, data);
+        return response;
+      };
+      try {
+        await update();
+        dispatch(recordActions.updateExpense(data));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  deleteExpense(carId: string, data: feeType) {
+    return async (dispatch: AppDispatch) => {
+      const remove = async () => {
+        let url = "";
+        if (data.category === "refuel") {
+          url = `/carsRecords/${carId}/refuelRecords/${data.id}`;
+        } else {
+          url = `/carsRecords/${carId}/feeRecords/${data.id}`;
+        }
+        await firebase.delete(url);
+      };
+      try {
+        await remove();
+        dispatch(recordActions.deleteExpense(data));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+
   getAllRecords(id: string) {
     return async (dispatch: AppDispatch) => {
       const getAll = async () => {

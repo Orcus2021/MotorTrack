@@ -18,7 +18,6 @@ const RecordItem: React.FC<{
     onUpdate(record.id, record.category);
   };
 
-  console.log(record);
   return (
     <ContentWrapper onClick={updateHandler}>
       <Content>{record.category}</Content>
