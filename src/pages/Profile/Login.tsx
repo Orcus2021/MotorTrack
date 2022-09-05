@@ -54,10 +54,12 @@ const Login = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    if (user.isAuth) {
+    if (user.isAuth && name) {
       navigate("/profile");
+    } else if (user.isAuth) {
+      navigate("/status");
     }
-  }, [user.isAuth, navigate]);
+  }, [user.isAuth, navigate, name]);
 
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.id === "name") {

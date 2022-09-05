@@ -97,7 +97,7 @@ const Repair: React.FC<{
   const { onClose, updateId } = props;
   const dispatch = useAppDispatch();
   const car = useAppSelector((state) => state.car.car);
-  const initParts = useAppSelector((state) => state.record.parts);
+  const initRecord = useAppSelector((state) => state.record);
   const record = useAppSelector((state) =>
     state.record.repair.find((record) => record.id === updateId)
   );
@@ -105,8 +105,8 @@ const Repair: React.FC<{
   const deletePart = useRef<partType[]>([]);
   const { register, handleSubmit, reset, setValue } = useForm<repairType>();
   const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
-  const test = useAppSelector((state) => state.record.expenses);
-  console.log(test);
+  const { parts: initParts } = initRecord;
+
   useEffect(() => {
     if (updateId) {
       reset(record);
@@ -148,7 +148,6 @@ const Repair: React.FC<{
     const recordDay = Number(dateArr[2]);
     const JSONParts = JSON.stringify(parts);
     const newParts = JSON.parse(JSONParts) as partType[];
-
     const newRecords = newParts.map((part) => {
       if (recordMonth + part.month >= 12) {
         recordYear += 1;
@@ -196,8 +195,7 @@ const Repair: React.FC<{
     onClose("record");
   };
 
-  const closeRepair = (e: React.FormEvent) => {
-    e.preventDefault();
+  const closeRepair = () => {
     onClose("record");
   };
 
@@ -224,40 +222,37 @@ const Repair: React.FC<{
   return (
     <>
       <RepairContainer>
-        <form onSubmit={handleSubmit(createRepairHandler)}>
-          <HeaderBar>
-            <ConfirmBtn>{updateId ? "更新" : "新增"}</ConfirmBtn>
-            {updateId && (
-              <IconBx onClick={deleteRepairRecord}>
-                <Icon src={trashIcon} />
-              </IconBx>
-            )}
-            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-          </HeaderBar>
-          <TitleBx>
-            <Label>標題</Label>
-            <Input type="text" {...register("title", { required: true })} />
-          </TitleBx>
-          <DetailBX>
-            <Detail>
-              <Label>日期</Label>
-              <Input type="date" {...register("date", { required: true })} />
-              <Label>里程數</Label>
-              <Input
-                type="number"
-                {...register("mileage", { required: true })}
-              />
-            </Detail>
-            <Detail>
-              <Label>總金額</Label>
-              <Input
-                type="number"
-                {...register("amount", { required: true })}
-                readOnly
-              />
-            </Detail>
-          </DetailBX>
-        </form>
+        <HeaderBar>
+          <ConfirmBtn onClick={handleSubmit(createRepairHandler)}>
+            {updateId ? "更新" : "新增"}
+          </ConfirmBtn>
+          {updateId && (
+            <IconBx onClick={deleteRepairRecord}>
+              <Icon src={trashIcon} />
+            </IconBx>
+          )}
+          <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
+        </HeaderBar>
+        <TitleBx>
+          <Label>標題</Label>
+          <Input type="text" {...register("title", { required: true })} />
+        </TitleBx>
+        <DetailBX>
+          <Detail>
+            <Label>日期</Label>
+            <Input type="date" {...register("date", { required: true })} />
+            <Label>里程數</Label>
+            <Input type="number" {...register("mileage", { required: true })} />
+          </Detail>
+          <Detail>
+            <Label>總金額</Label>
+            <Input
+              type="number"
+              {...register("amount", { required: true })}
+              readOnly
+            />
+          </Detail>
+        </DetailBX>
         <RepairList
           onAdd={addPartHandler}
           parts={parts}

@@ -10,13 +10,14 @@ import asyncUserAction from "../../store/user/asyncUserAction";
 const RecordContainer = styled.div`
   display: flex;
   flex-direction: row;
+  height: calc(100vh - 68px);
   margin-top: 68px;
   position: relative;
   width: 100%;
 `;
 const Navigation = styled.div`
   width: 256px;
-  height: 100vh;
+
   background: var(--secondBack);
   transition: 0.5s;
   overflow: hidden;
@@ -39,7 +40,7 @@ const RecordLink = styled(Link)`
 `;
 const MainWrapper = styled.div`
   width: calc(100% - 256px);
-  min-height: 100vh;
+
   /* background: #f5f5f5; */
   transition: 0.5s;
 `;
@@ -52,13 +53,6 @@ const CarInfo = styled.p`
 const Manage = () => {
   const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
-  const carId = useAppSelector((state) => state.car.car?.id);
-  // useEffect(() => {
-  //   if (carId) {
-
-  //   }
-  // }, [carId, dispatch]);
-
   const selectCartHandler = (id: string, ownerId: string) => {
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));

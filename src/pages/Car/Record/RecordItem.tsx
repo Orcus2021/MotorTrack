@@ -2,10 +2,15 @@ import React from "react";
 import styled from "styled-components/macro";
 import { repairType, feeType } from "../../../types/recordType";
 
-const ContentWrapper = styled.tr``;
+const ContentWrapper = styled.tr`
+  &:hover {
+    background-color: var(--mainColor);
+  }
+`;
 const Content = styled.td`
   font-size: 16px;
   text-align: center;
+  height: 25px;
   cursor: pointer;
 `;
 

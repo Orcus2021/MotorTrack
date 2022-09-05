@@ -85,6 +85,7 @@ const asyncUserAction = {
       try {
         const user = (await signIn()) as userType;
         dispatch(userActions.signIn(user));
+
         if (user.selectCar.length > 0) {
           dispatch(carActions.selectCar(user.selectCar));
           dispatch(asyncRecordAction.getAllRecords(user.selectCar));

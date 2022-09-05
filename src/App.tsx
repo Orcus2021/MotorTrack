@@ -16,9 +16,12 @@ const GlobalStyle = createGlobalStyle`
   }
   :root{
     --mainColor:#2196f3;
+
     --thirdColor:#00bcd4;
     --secColor:#61dafb;
     --borderColor:#00dfc4;
+
+    --errorColor:#ec5990;
 
     --mainBack:#16181d;
     --secondBack:#20232a;

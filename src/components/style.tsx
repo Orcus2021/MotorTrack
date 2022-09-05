@@ -38,3 +38,11 @@ export const SpanFloat = styled.span`
   text-transform: uppercase;
   transition: 0.5s;
 `;
+export const Img = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+`;

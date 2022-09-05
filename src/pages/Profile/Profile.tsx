@@ -4,6 +4,7 @@ import asyncUserAction from "../../store/user/asyncUserAction";
 import { carActions } from "../../store/car/carReducer";
 import { recordActions } from "../../store/record/recordReducer";
 import { useAppDispatch, useAppSelector } from "../../store/index";
+import { useNavigate } from "react-router-dom";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -74,11 +75,13 @@ const UserAccount = styled.p`
 
 const Profile = () => {
   const user = useAppSelector((state) => state.user.user);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const logoutHandler = () => {
     dispatch(asyncUserAction.logout());
     dispatch(carActions.clear());
     dispatch(recordActions.clearAllRecord());
+    navigate("/");
   };
   return (
     <ProfileContainer>

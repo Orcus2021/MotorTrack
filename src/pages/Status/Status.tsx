@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import brands from "../../utils/brands";
 import styled from "styled-components/macro";
 import { useAppSelector, useAppDispatch } from "../../store";
-import { partType, partsType } from "../../types/recordType";
-import uuid from "react-uuid";
+import { carActions } from "../../store/car/carReducer";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import asyncRecordAction from "../../store/record/asyncRecordAction";
+import StatusInfo from "./StatusInfo";
+import arrowImg from "../../assets/icon/arrow_down.png";
+import { Img } from "../../components/style";
 
-import MotorImg from "../../assets/bike_blue.png";
-import dashboardIcon from "../../assets/dashborad_white.png";
+import motorImg from "../../assets/bike_blue_1.png";
 
 const Container = styled.div`
   margin-top: 68px;
@@ -15,269 +19,151 @@ const Container = styled.div`
   flex-direction: row;
 `;
 const LeftWrapper = styled.div`
+  position: relative;
   flex-grow: 1;
   height: 100%;
   align-items: center;
   padding: 20px;
 `;
 const RightWrapper = styled.div`
-  width: 600px;
+  width: 500px;
   display: flex;
   padding: 0 10px 10px 0;
   flex-direction: column;
 `;
-const Img = styled.img`
-  width: 100%;
+const MotorImg = styled.img`
+  position: absolute;
+  top: 0;
+  width: 95%;
   height: calc(100% - 18px);
   object-fit: contain;
 `;
+
 const SelectBx = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-`;
-const Select = styled.select``;
-const Option = styled.option``;
-const InfoWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  margin-right: 20px;
-
-  border-radius: 8px;
-`;
-const DetailBx = styled.div`
-  display: flex;
-  flex-direction: row;
-
-  width: 100%;
-`;
-const ChartBx = styled.div`
-  height: 200px;
   width: 200px;
-  background-color: var(--mainColor);
-  border-radius: 50%;
-`;
-const Detail = styled.div`
-  flex-grow: 1;
-`;
-const MileageBx = styled.div`
+  background-color: #fff;
+  z-index: 2;
+  /* height: 28px; */
+  border-radius: 4px;
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  background-color: var(--thirdBack);
-  border-radius: 50px;
-  padding: 10px;
+  justify-content: flex-start;
+  /* overflow: hidden; */
 `;
-const MileageIconBx = styled.div`
-  width: 30px;
-  height: 30px;
-  position: relative;
-`;
-const MileageIcon = styled.img`
-  position: 100%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-const MileageMsg = styled.p`
-  font-size: 1.1rem;
-`;
-const MessageBx = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
-const Message = styled.p`
-  font-size: 0.8rem;
-`;
-const PartsWrapper = styled.div`
-  /* background-color: var(--thirdBack); */
-  padding: 10px;
-  width: 100%;
-  border-radius: 10px;
-`;
-
-const PartsBx = styled.div`
-  position: relative;
-  display: flex;
-  margin: 20px 0;
-  padding: 15px 10px;
-  /* background: linear-gradient(#49505e 0%, #20232a 10%, #222); */
-  background-color: #20232a;
-  border-radius: 8px;
-  overflow: hidden;
-  /* border: 2px solid #000; */
-  transition: 0.5s;
-  /* &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    z-index: 10;
-  } */
-`;
-
-const IconBx = styled.span`
-  position: relative;
-  width: 110px;
-  text-align: right;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase;
-`;
-const Value = styled.span`
-  position: relative;
-  width: 40px;
-  text-align: left;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase;
-`;
-const Percent = styled.div`
-  position: relative;
-  width: calc(100% - 150px);
-  height: 20px;
-  margin: 0 10px;
-  border-radius: 10px;
-  box-shadow: inset 0 0 10px #000;
-  overflow: hidden;
-`;
-const Progress = styled.div<{ $length: number }>`
+const Name = styled.div`
   position: absolute;
-  width: ${(props) => `${props.$length}%;`};
   top: 0;
   left: 0;
-  height: 100%;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: inset 0 0 2px #000;
-  animation: animate 4s ease-in-out forwards;
-  background: linear-gradient(45deg, var(--mainColor), #673ab7);
+  width: 100%;
+  border-radius: 4px;
+`;
+const DownBx = styled.div`
+  margin-top: 4px;
+  position: relative;
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+  align-self: flex-end;
+`;
+const ContentBx = styled.div<{ $isShow: boolean }>`
+  width: 100%;
+  position: relative;
+  background-color: #fff;
+  margin-top: 5px;
+  border-radius: 4px;
+  transition: 0.5s;
   overflow: hidden;
-  @keyframes animate {
-    from {
-      width: 0;
-    }
-  }
-  &::after {
-    content: "";
-    background-color: #ffffff3a;
-    box-shadow: 0px 0px 20px 4px #ffffffd1;
-    width: 1px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: run 6s ease-in-out infinite;
-  }
-  @keyframes run {
-    0% {
-      left: -5%;
-    }
-    70% {
-      left: 110%;
-    }
-    100% {
-      left: 110%;
-    }
-  }
+  height: ${(props) => (props.$isShow ? "auto" : "0")};
 `;
 
+const Content = styled.div`
+  height: 28px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 2px 5px;
+  justify-content: flex-start;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--mainColor);
+  }
+`;
+const DisplayName = styled.div`
+  height: 28px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 2px 5px;
+  justify-content: flex-start;
+`;
+const BrandBx = styled.div`
+  height: 30px;
+  width: 30px;
+  position: relative;
+`;
+
+const CarName = styled.p`
+  font-size: 14px;
+  color: black;
+`;
 const Status = () => {
   const car = useAppSelector((state) => state.car.car);
-  const parts = useAppSelector((state) => state.record.parts);
-  const expenses = useAppSelector((state) => state.record.expenses);
-  console.log(expenses);
-  const [partStatus, setPartStatus] = useState<partType[][]>([]);
-  // const dispatch = useAppDispatch();
-  // useEffect(() => {
-  //   if (car?.id) {
-  //     // dispatch(asyncRecordAction.getAllRecords(car?.id));
-  //     dispatch(recordActions.getAllExpense());
-  //   }
-  // }, [car, dispatch]);
-  useEffect(() => {
-    let arr = [];
-    const JSONParts = JSON.stringify(parts);
-    const newParts = JSON.parse(JSONParts) as partsType;
-    for (let key in newParts) {
-      if (newParts[key].length >= 2) {
-        const newArr = newParts[key].sort((a: partType, b: partType) => {
-          return b.startMileage - a.startMileage;
-        });
-        arr.push(newArr);
-      } else if (newParts[key].length === 1) {
-        arr.push(newParts[key]);
-      }
-    }
-    setPartStatus(arr);
-  }, [parts]);
+  const cars = useAppSelector((state) => state.car.cars);
+  const [showContent, setShowContent] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const selectMotorHandler = (id: string, ownerId: string) => {
+    dispatch(carActions.selectCar(id));
+    dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
+    dispatch(asyncRecordAction.getAllRecords(id));
+    setShowContent(false);
+  };
+  const showContentHandler = () => {
+    setShowContent((pre) => !pre);
+  };
 
   return (
     <Container>
       <LeftWrapper>
         <SelectBx>
-          <Select>
-            <Option>
-              {car?.brand}
-              {car?.name}
-            </Option>
-          </Select>
+          <Name>
+            <DisplayName>
+              <BrandBx>
+                {car?.brand && <Img src={brands.get(car.brand)?.img} />}
+              </BrandBx>
+              <CarName>
+                {car?.plateNum}: {car?.name}
+              </CarName>
+            </DisplayName>
+          </Name>
+          <DownBx onClick={showContentHandler}>
+            <Img src={arrowImg} />
+          </DownBx>
+          <ContentBx $isShow={showContent}>
+            {cars.map((car) => (
+              <Content
+                onClick={() => {
+                  selectMotorHandler(car.id, car.ownerId);
+                }}
+              >
+                <BrandBx>
+                  <Img src={brands.get(car.brand)?.img} />
+                </BrandBx>
+                <CarName>
+                  {car?.plateNum}: {car?.name}
+                </CarName>
+              </Content>
+            ))}
+          </ContentBx>
         </SelectBx>
-
-        <Img src={MotorImg} />
+        <MotorImg src={motorImg} />
       </LeftWrapper>
       <RightWrapper>
-        <InfoWrapper>
-          <DetailBx>
-            <ChartBx></ChartBx>
-            <Detail>
-              <MileageBx>
-                <MileageIconBx>
-                  <MileageIcon src={dashboardIcon} />
-                </MileageIconBx>
-                <MileageMsg>{car?.mileage}公里</MileageMsg>
-              </MileageBx>
-              <MessageBx>
-                <Message>車齡:</Message>
-                <Message>{car?.age}</Message>
-              </MessageBx>
-              <MessageBx>
-                <Message>驗車時間:</Message>
-                <Message>{car?.inspectionDay}</Message>
-              </MessageBx>
-              <MessageBx>
-                <Message>保險時間:</Message>
-                <Message>{car?.insuranceDate}</Message>
-              </MessageBx>
-            </Detail>
-          </DetailBx>
-          <PartsWrapper>
-            {partStatus.map((data: partType[]) => {
-              const percent = Math.floor(
-                ((Number(data[0].endMileage) - Number(car?.mileage as number)) *
-                  100) /
-                  data[0].mileage
-              );
-              return (
-                <PartsBx key={uuid()}>
-                  <IconBx>{data[0].category}</IconBx>
-                  <Percent>
-                    <Progress $length={percent}></Progress>
-                  </Percent>
-                  <Value>{percent}%</Value>
-                </PartsBx>
-              );
-            })}
-          </PartsWrapper>
-        </InfoWrapper>
+        <StatusInfo />
       </RightWrapper>
     </Container>
   );

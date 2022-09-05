@@ -17,12 +17,40 @@ const HeaderBx = styled.div`
   flex-direction: row;
   align-items: center;
 `;
-const Select = styled.select``;
+const Select = styled.select`
+  cursor: pointer;
+  padding: 10px;
+  background-color: transparent;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  color: #fff;
+`;
+const Option = styled.option`
+  background-color: var(--secondBack);
+  color: #fff;
+  &:hover {
+    background-color: var(--mainColor);
+  }
+`;
+const PartIconBx = styled.div`
+  position: relative;
+  width: 20px;
+  height: 20px;
+`;
+const Icon = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+`;
 const Input = styled.input`
   width: 100%;
   outline: none;
   height: 25px;
 `;
+
 const InputBx = styled.div`
   display: flex;
   flex-direction: row;
@@ -74,12 +102,20 @@ const PartForm: React.FC<{
 
   const options: JSX.Element[] = [];
   parts.forEach((value, key) => {
-    options.push(<option value={key}>{value.name}</option>);
+    options.push(
+      <Option value={key}>
+        <PartIconBx>
+          <Icon src={parts.get(key)?.icon} />
+        </PartIconBx>
+        {value.name}
+      </Option>
+    );
   });
   const submitPart = (part: partType) => {
     const partName = parts.get(watch("category")) as partsMapType;
     part.name = partName.name;
     part.price = Number(part.price);
+    console.log(part);
     onAddPart(part);
     onClose();
   };

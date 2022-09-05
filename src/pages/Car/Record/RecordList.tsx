@@ -10,12 +10,29 @@ const MessageTable = styled.table`
   width: 100%;
   border: 0;
   border-collapse: collapse;
+  background-color: var(--thirdBack);
 `;
 const SubTitle = styled.th`
+  background-color: var(--mainColor);
   font-weight: 500;
   font-size: 16px;
-  line-height: 24px;
+  height: 25px;
   text-align: center;
+  &:nth-child(1) {
+    width: 50px;
+  }
+  &:nth-child(2) {
+    width: 100px;
+  }
+  &:nth-child(3) {
+    width: 120px;
+  }
+  &:nth-child(5) {
+    width: 50px;
+  }
+  &:nth-child(6) {
+    width: 150px;
+  }
 `;
 
 const RecordList: React.FC<{
