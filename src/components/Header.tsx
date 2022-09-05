@@ -11,7 +11,7 @@ const HeaderWrapper = styled.div`
   width: 100vw;
   background-color: var(--mainBack);
   height: 68px;
-  border: solid 1px black;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,7 +45,7 @@ const Header = () => {
   const user = useAppSelector((state) => state.user);
 
   const goHomePage = () => {
-    navigate("/");
+    navigate("/status");
   };
   const goCarRecord = () => {
     navigate(`/car_manage/record`);

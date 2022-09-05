@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
@@ -61,6 +62,7 @@ const EditCar = () => {
   const cars = useAppSelector((state) => state.car.cars);
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [carAge, setCarAge] = useState<string>(car?.age || "0");
   const [inspectionDay, setInspectionDay] = useState<string>(
     car?.inspectionDay || "0"
@@ -77,7 +79,6 @@ const EditCar = () => {
       insuranceDate: car?.insuranceDate,
     };
   }, [car]);
-
   useEffect(() => {
     reset(initCar);
   }, [car, reset, initCar]);
@@ -98,10 +99,13 @@ const EditCar = () => {
     editCar.inspectionDay = inspectionDay;
 
     dispatch(asyncCarAction.updateCar(car?.id as string, editCar));
+    navigate("/car_manage/record");
   };
+
   const deleteCarHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(asyncCarAction.deleteCar(car?.id as string, user.cars, cars));
+    dispatch(asyncCarAction.deleteCar(car?.id as string, user, cars));
+    navigate("/car_manage/record");
   };
   return (
     <EditContainer>

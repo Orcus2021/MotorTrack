@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import styled from "styled-components/macro";
 import expenseCategory from "../../../../utils/expenseItem";
+import { carType } from "../../../../types/carType";
 import { feeType } from "../../../../types/recordType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
@@ -94,8 +95,8 @@ const Expenses: React.FC<{
     const newExpenses = [...state.record.fee, ...state.record.refuel];
     return newExpenses.find((record) => record.id === updateId);
   });
-  const carID = useAppSelector((state) => state.car.car?.id);
-  const carMileage = useAppSelector((state) => state.car.car?.mileage);
+  const car = useAppSelector((state) => state.car.car);
+  const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
   const { register, handleSubmit, reset } = useForm<feeType>();
   const dispatch = useAppDispatch();
 
@@ -118,10 +119,14 @@ const Expenses: React.FC<{
   });
 
   const createExpenseHandler = (record: feeType) => {
+    record.amount = Number(record.amount);
+    record.mileage = Number(record.mileage);
     if (!record.id) {
       record.id = "";
 
-      dispatch(asyncRecordAction.addExpense(carID as string, record));
+      dispatch(
+        asyncRecordAction.addExpense(carID as string, record, recordAnnual)
+      );
     } else {
       dispatch(asyncRecordAction.updateExpense(carID as string, record));
     }
@@ -132,7 +137,11 @@ const Expenses: React.FC<{
   };
   const deleteRepairRecord = () => {
     dispatch(
-      asyncRecordAction.deleteExpense(carID as string, record as feeType)
+      asyncRecordAction.deleteExpense(
+        carID as string,
+        record as feeType,
+        recordAnnual
+      )
     );
     onClose("record");
   };

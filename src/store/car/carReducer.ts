@@ -21,6 +21,7 @@ const carSlice = createSlice({
       state.car = state.cars.find((car) => car.id === action.payload);
     },
     update(state, action) {
+      console.log(action.payload);
       const carIndex = state.cars.findIndex(
         (car) => car.id === action.payload.id
       );

@@ -50,7 +50,6 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [updateData, setUpdateData] = useState("");
   const user = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -89,13 +88,6 @@ const Login = () => {
     };
     dispatch(asyncUserAction.signIn(user));
   };
-  // const updateUser = () => {
-  //   const newUser = {
-  //     selectCar: updateData,
-  //     cars: 2,
-  //   };
-  //   dispatch(asyncUserAction.updateUser(user.id, newUser));
-  // };
 
   return (
     <>

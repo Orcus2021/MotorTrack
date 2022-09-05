@@ -20,14 +20,25 @@ const SubTitle = styled.th`
 
 const RecordList: React.FC<{
   onUpdate: (id: string, category: string) => void;
+  selectCategory: string;
 }> = (props) => {
-  const { onUpdate } = props;
+  const { onUpdate, selectCategory } = props;
   const record = useAppSelector((state) => state.record);
   const allRecords: (repairType | feeType)[] = [
     ...record.fee,
     ...record.refuel,
     ...record.repair,
   ];
+  let records;
+  if (selectCategory === "repair") {
+    records = record.repair;
+  } else if (selectCategory === "fee") {
+    records = record.fee;
+  } else if (selectCategory === "refuel") {
+    records = record.refuel;
+  } else {
+    records = allRecords;
+  }
 
   return (
     <MessageTable>
@@ -42,7 +53,7 @@ const RecordList: React.FC<{
         </tr>
       </thead>
       <tbody>
-        {allRecords.map((record) => (
+        {records.map((record) => (
           <RecordItem
             key={uuid()}
             record={record}

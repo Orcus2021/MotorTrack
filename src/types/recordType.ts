@@ -37,3 +37,10 @@ export type feeType = {
   category: string;
   note: string;
 };
+export type expensesType = {
+  allExpenses: number;
+  feeExpenses: number;
+  repairExpenses: number;
+  refuelExpenses: number;
+  selectYear: string;
+};

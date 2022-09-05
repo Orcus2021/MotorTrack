@@ -51,9 +51,8 @@ const firebase = {
           resolve(userID);
         })
         .catch((error) => {
-          // const errorCode = error.code;
           const errorMessage = error.message;
-          // console.log(errorCode, errorMessage);
+
           reject(errorMessage);
         });
     });
@@ -174,12 +173,10 @@ const firebase = {
       });
 
       feeRecordsSnapshot.forEach((doc) => {
-        console.log(doc.data());
         recordObj.fee.push(doc.data() as feeType);
       });
 
       refuelRecordsSnapshot.forEach((doc) => {
-        console.log(doc.data());
         recordObj.refuel.push(doc.data() as feeType);
       });
       partsSnapshot.forEach((doc) => {

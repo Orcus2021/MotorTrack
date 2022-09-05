@@ -1,3 +1,7 @@
+export type recordAnnualType = {
+  [index: string]: number;
+};
+
 export type carType = {
   ownerId: string;
   id: string;
@@ -9,4 +13,5 @@ export type carType = {
   licenseDate: string;
   age: string;
   inspectionDay: string;
+  recordAnnual: recordAnnualType;
 };

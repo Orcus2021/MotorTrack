@@ -38,6 +38,7 @@ const DetailHeader = styled.div`
 `;
 const DetailTitle = styled.p`
   font-size: 16px;
+  cursor: pointer;
 `;
 const DetailRight = styled.div`
   display: flex;
@@ -46,6 +47,7 @@ const DetailRight = styled.div`
 
 const Record = () => {
   const [recordCategory, setRecordCategory] = useState<string>("record");
+  const [selectCategory, setSelectCategory] = useState<string>("all");
   const [updateId, setUpdate] = useState<string>("");
   const recordCategoryHandler = (category: string) => {
     setRecordCategory(category);
@@ -59,6 +61,10 @@ const Record = () => {
     }
 
     setUpdate(id);
+  };
+
+  const selectCategoryHandler = (category: string) => {
+    setSelectCategory(category);
   };
   return (
     <>
@@ -100,13 +106,24 @@ const Record = () => {
             <DetailHeader>
               <DetailTitle>紀錄</DetailTitle>
               <DetailRight>
-                <DetailTitle>全部</DetailTitle>
-                <DetailTitle>維修</DetailTitle>
-                <DetailTitle>加油</DetailTitle>
-                <DetailTitle>費用</DetailTitle>
+                <DetailTitle onClick={() => selectCategoryHandler("all")}>
+                  全部
+                </DetailTitle>
+                <DetailTitle onClick={() => selectCategoryHandler("repair")}>
+                  維修
+                </DetailTitle>
+                <DetailTitle onClick={() => selectCategoryHandler("refuel")}>
+                  加油
+                </DetailTitle>
+                <DetailTitle onClick={() => selectCategoryHandler("fee")}>
+                  費用
+                </DetailTitle>
               </DetailRight>
             </DetailHeader>
-            <RecordList onUpdate={updateRepairHandler} />
+            <RecordList
+              onUpdate={updateRepairHandler}
+              selectCategory={selectCategory}
+            />
           </RecordDetail>
         </>
       )}

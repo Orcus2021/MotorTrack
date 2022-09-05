@@ -8,11 +8,12 @@ import Manage from "./pages/Car/Manage";
 import Record from "./pages/Car/Record/Record";
 import AddCar from "./pages/Car/SetCar/AddCar";
 import EditCar from "./pages/Car/SetCar/EditCar";
+import Status from "./pages/Status/Status";
 import Test from "./Test";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
-import Chart from "./pages/Car/Chart/Chart";
+import Chart from "./pages/Chart/Chart";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -25,6 +26,7 @@ root.render(
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="status" element={<Status />} />
           <Route path="test" element={<Test />} />
           <Route path="car_manage" element={<Manage />}>
             <Route path="record" element={<Record />} />

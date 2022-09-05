@@ -2,8 +2,11 @@ import { carActions } from "./carReducer";
 import asyncUserAction from "../user/asyncUserAction";
 import { AppDispatch } from "../index";
 import { carType } from "../../types/carType";
+import { userType } from "../../types/userType";
 import { carAgeAndInspectionDay } from "../../utils/calcFunc";
 import firebase from "../../utils/firebase";
+import { recordActions } from "../record/recordReducer";
+import asyncRecordAction from "../record/asyncRecordAction";
 
 const asyncCarAction = {
   create(id: string, carNum: number, data: carType) {
@@ -16,6 +19,7 @@ const asyncCarAction = {
         const response = await firebase.setCarDoc(data);
         if (response) {
           dispatch(carActions.create(response));
+          dispatch(asyncRecordAction.getAllRecords(response.id));
           dispatch(
             asyncUserAction.updateUser(id, {
               cars: carNum + 1,
@@ -61,19 +65,25 @@ const asyncCarAction = {
       }
     };
   },
-  deleteCar(id: string, carNum: number, cars: carType[]) {
+  deleteCar(id: string, user: userType, cars: carType[]) {
     return async (dispatch: AppDispatch) => {
+      const carNum = user.cars;
       const url = `/carsRecords/${id}`;
       const deleteCar = async () => {
         const response = await firebase.delete(url);
         const carArr = cars.filter((car) => car.id !== id);
         if (response) {
           dispatch(
-            asyncUserAction.updateUser(id, {
+            asyncUserAction.updateUser(user.id, {
               cars: carNum - 1,
-              selectCar: carArr[0].id,
+              selectCar: carArr[0]?.id || "",
             })
           );
+          if (carArr[0]?.id) {
+            dispatch(asyncRecordAction.getAllRecords(carArr[0]?.id));
+          } else {
+            dispatch(recordActions.clearAllRecord());
+          }
         }
       };
       try {

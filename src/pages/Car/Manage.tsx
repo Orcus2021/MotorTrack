@@ -53,15 +53,16 @@ const Manage = () => {
   const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
   const carId = useAppSelector((state) => state.car.car?.id);
-  useEffect(() => {
-    if (carId) {
-      dispatch(asyncRecordAction.getAllRecords(carId));
-    }
-  }, [carId, dispatch]);
+  // useEffect(() => {
+  //   if (carId) {
+
+  //   }
+  // }, [carId, dispatch]);
 
   const selectCartHandler = (id: string, ownerId: string) => {
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
+    dispatch(asyncRecordAction.getAllRecords(id));
   };
 
   return (

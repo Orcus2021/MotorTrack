@@ -5,90 +5,102 @@ import styled from "styled-components/macro";
 import { useAppDispatch, useAppSelector } from "./store/index";
 import { useForm } from "react-hook-form";
 import { arrayUnion } from "firebase/firestore";
+import ReactECharts from "echarts-for-react";
 
 const From = styled.form`
   margin-top: 68px;
 `;
+const option = {
+  tooltip: {
+    trigger: "axis",
+    axisPointer: {
+      type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
+    },
+  },
+  legend: {
+    orient: "horizontal",
+    left: "center",
+    bottom: 0,
+    textStyle: {
+      color: "#fff",
+    },
+  },
+  grid: {
+    left: "3%",
+    right: "4%",
+    bottom: "10%",
+    containLabel: true,
+  },
+  xAxis: {
+    type: "value",
+  },
+  yAxis: {
+    type: "category",
+    data: [
+      "1月",
+      "2月",
+      "3月",
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月",
+      "10月",
+      "11月",
+      "12月",
+    ],
+  },
+  series: [
+    {
+      name: "維修",
+      type: "bar",
+      stack: "total",
+      label: {
+        show: true,
+      },
+      emphasis: {
+        focus: "series",
+      },
+      data: [320, 302, 301, 334, 390, 330, 320],
+    },
+    {
+      name: "充電/加油",
+      type: "bar",
+      stack: "total",
+      label: {
+        show: true,
+      },
+      emphasis: {
+        focus: "series",
+      },
+      data: [120, 132, 101, 134, 90, 230, 210],
+    },
+    {
+      name: "費用",
+      type: "bar",
+      stack: "total",
+      label: {
+        show: true,
+      },
+      emphasis: {
+        focus: "series",
+      },
+      data: [220, 182, 191, 234, 290, 330, 310],
+    },
+  ],
+};
+
 const Test = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ mode: "onBlur" });
-  const carID = useAppSelector((state) => state.car.car.id);
-  const repair = useAppSelector((state) => state.record.repair);
-  const part = useAppSelector((state) => state.record.parts);
-  console.log("repair", repair);
-  console.log("part", part);
-  const dispatch = useAppDispatch();
-
-  const createRecord = (record) => {
-    record.id = "";
-    record.category = "repair";
-
-    const partObj = {
-      recordID: "",
-      category: "engineOil",
-      spec: "ART999",
-      startDate: "2022-5-5",
-      endDate: "2022-7-5",
-      startMileage: 1000,
-      endMileage: 2000,
-      price: 13123,
-      qty: 1,
-      subTotal: 13123,
-      note: "dsfafd",
-    };
-    const partObj1 = {
-      recordID: "",
-      category: "airFilter",
-      spec: "GGYY200",
-      startDate: "2022-5-5",
-      endDate: "2022-7-5",
-      startMileage: 1000,
-      endMileage: 2000,
-      price: 13123,
-      qty: 1,
-      subTotal: 13123,
-      note: "dsfafd",
-    };
-    record.records = [partObj, partObj1];
-
-    dispatch(asyncRecordAction.addRepair(carID, record, part));
-  };
-
   return (
     <>
-      <From onSubmit={handleSubmit(createRecord)}>
-        <input
-          type="text"
-          placeholder="title"
-          {...register("title", { required: true })}
+      <From>
+        <ReactECharts
+          option={option}
+          style={{ height: 400 }}
+          theme={"macarons"}
         />
-        <input
-          type="date"
-          placeholder="date"
-          {...register("date", { required: true })}
-        />
-        <input
-          type="number"
-          placeholder="mileage"
-          {...register("mileage", { required: true })}
-        />
-        <input
-          type="number"
-          placeholder="amount"
-          {...register("amount", { required: true })}
-        />
-        <input
-          type="text"
-          placeholder="note"
-          {...register("note", { required: true })}
-        />
-
-        <button>add</button>
       </From>
-      <div></div>
     </>
   );
 };

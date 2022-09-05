@@ -1,5 +1,7 @@
 import { AppDispatch } from "../index";
 import { recordActions } from "./recordReducer";
+import { recordAnnualType } from "../../types/carType";
+import { carActions } from "../car/carReducer";
 import {
   repairType,
   partType,
@@ -10,11 +12,20 @@ import firebase from "../../utils/firebase";
 import { arrayUnion } from "firebase/firestore";
 
 const asyncRecordAction = {
-  addRepair(carId: string, data: repairType) {
+  addRepair(carId: string, data: repairType, recordAnnual: recordAnnualType) {
     return async (dispatch: AppDispatch) => {
       const add = async () => {
         const url = `/carsRecords/${carId}/repairRecords`;
         const response = await firebase.setRecordDoc(url, data);
+
+        const dateArr = data.date.split("-");
+        const newRecordAnnual = { ...recordAnnual };
+        newRecordAnnual[dateArr[0]] = (newRecordAnnual[dateArr[0]] || 0) + 1;
+        const annualUrl = `/carsRecords/${carId}`;
+        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        dispatch(
+          carActions.update({ id: carId, recordAnnual: newRecordAnnual })
+        );
 
         response.records.forEach(async (partObj: partType) => {
           const url = `carsRecords/${carId}/parts/${partObj.category}`;
@@ -55,11 +66,27 @@ const asyncRecordAction = {
       }
     };
   },
-  deleteRepair(carId: string, recordID: string, oldParts: partType[]) {
+  deleteRepair(
+    carId: string,
+    record: repairType,
+    recordAnnual: recordAnnualType
+  ) {
     return async (dispatch: AppDispatch) => {
+      const recordID = record.id;
+      const oldParts = record.records;
       const remove = async () => {
         const url = `/carsRecords/${carId}/repairRecords/${recordID}`;
         const response = await firebase.delete(url);
+
+        const dateArr = record.date.split("-");
+        const newRecordAnnual = { ...recordAnnual };
+        newRecordAnnual[dateArr[0]] = newRecordAnnual[dateArr[0]] - 1;
+        const annualUrl = `/carsRecords/${carId}`;
+        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        dispatch(
+          carActions.update({ id: carId, recordAnnual: newRecordAnnual })
+        );
+
         if (response) {
           oldParts.forEach(async (part: partType) => {
             const url = `/carsRecords/${carId}/parts/${part.category}`;
@@ -89,7 +116,7 @@ const asyncRecordAction = {
       }
     };
   },
-  addExpense(carId: string, data: feeType) {
+  addExpense(carId: string, data: feeType, recordAnnual: recordAnnualType) {
     return async (dispatch: AppDispatch) => {
       const add = async () => {
         let url = "";
@@ -99,6 +126,16 @@ const asyncRecordAction = {
           url = `/carsRecords/${carId}/feeRecords`;
         }
         const response = await firebase.setExpenseDoc(url, data);
+
+        const dateArr = data.date.split("-");
+        const newRecordAnnual = { ...recordAnnual };
+        newRecordAnnual[dateArr[0]] = (newRecordAnnual[dateArr[0]] || 0) + 1;
+        const annualUrl = `/carsRecords/${carId}`;
+        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        dispatch(
+          carActions.update({ id: carId, recordAnnual: newRecordAnnual })
+        );
+
         return response;
       };
       try {
@@ -129,7 +166,7 @@ const asyncRecordAction = {
       }
     };
   },
-  deleteExpense(carId: string, data: feeType) {
+  deleteExpense(carId: string, data: feeType, recordAnnual: recordAnnualType) {
     return async (dispatch: AppDispatch) => {
       const remove = async () => {
         let url = "";
@@ -139,6 +176,15 @@ const asyncRecordAction = {
           url = `/carsRecords/${carId}/feeRecords/${data.id}`;
         }
         await firebase.delete(url);
+
+        const dateArr = data.date.split("-");
+        const newRecordAnnual = { ...recordAnnual };
+        newRecordAnnual[dateArr[0]] = newRecordAnnual[dateArr[0]] - 1;
+        const annualUrl = `/carsRecords/${carId}`;
+        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        dispatch(
+          carActions.update({ id: carId, recordAnnual: newRecordAnnual })
+        );
       };
       try {
         await remove();

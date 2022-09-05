@@ -1,5 +1,7 @@
 import { userActions } from "./userReducer";
 import asyncCarAction from "../car/asyncCarAction";
+import asyncRecordAction from "../record/asyncRecordAction";
+import { recordActions } from "../record/recordReducer";
 import { carActions } from "../car/carReducer";
 import { AppDispatch } from "../index";
 import firebase from "../../utils/firebase";
@@ -85,6 +87,8 @@ const asyncUserAction = {
         dispatch(userActions.signIn(user));
         if (user.selectCar.length > 0) {
           dispatch(carActions.selectCar(user.selectCar));
+          dispatch(asyncRecordAction.getAllRecords(user.selectCar));
+          dispatch(recordActions.getAllExpense());
         }
         dispatch(
           userActions.showNotification({

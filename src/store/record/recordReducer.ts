@@ -1,15 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { selectAnnualExpenses } from "../../utils/calcFunc";
 import {
   partsType,
   partType,
   repairType,
   feeType,
+  expensesType,
 } from "../../types/recordType";
 const initialRecord = {
   fee: [] as feeType[],
   repair: [] as repairType[],
   refuel: [] as feeType[],
   parts: {} as partsType,
+  expenses: {
+    allExpenses: 0,
+    feeExpenses: 0,
+    repairExpenses: 0,
+    refuelExpenses: 0,
+    selectYear: "",
+  },
 };
 
 const recordSlice = createSlice({
@@ -74,6 +83,28 @@ const recordSlice = createSlice({
         state.fee.push(action.payload);
       }
     },
+    getYearExpense(state, action) {
+      const feeExpenses = selectAnnualExpenses(state.fee, action.payload);
+      const refuelExpenses = selectAnnualExpenses(state.refuel, action.payload);
+      const repairExpenses = selectAnnualExpenses(state.repair, action.payload);
+      state.expenses.repairExpenses = repairExpenses;
+      state.expenses.refuelExpenses = refuelExpenses;
+      state.expenses.feeExpenses = feeExpenses;
+      state.expenses.allExpenses =
+        feeExpenses + refuelExpenses + repairExpenses;
+      state.expenses.selectYear = action.payload;
+    },
+    getAllExpense(state) {
+      const feeExpenses = selectAnnualExpenses(state.fee, undefined);
+      const refuelExpenses = selectAnnualExpenses(state.refuel, undefined);
+      const repairExpenses = selectAnnualExpenses(state.repair, undefined);
+      state.expenses.repairExpenses = repairExpenses;
+      state.expenses.refuelExpenses = refuelExpenses;
+      state.expenses.feeExpenses = feeExpenses;
+      state.expenses.allExpenses =
+        feeExpenses + refuelExpenses + repairExpenses;
+      state.expenses.selectYear = "all";
+    },
     updateExpense(state, action) {
       if (action.payload.category === "refuel") {
         const recordIndex = state.refuel.findIndex(
@@ -109,6 +140,13 @@ const recordSlice = createSlice({
       state.repair = [] as repairType[];
       state.refuel = [] as feeType[];
       state.parts = {} as partsType;
+      state.expenses = {
+        allExpenses: 0,
+        feeExpenses: 0,
+        repairExpenses: 0,
+        refuelExpenses: 0,
+        selectYear: "",
+      };
     },
   },
 });

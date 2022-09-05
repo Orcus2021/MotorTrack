@@ -8,6 +8,7 @@ import React, {
 import RepairList from "./RepairList";
 import styled from "styled-components/macro";
 import { partsType, partType, repairType } from "../../../../types/recordType";
+import { carType } from "../../../../types/carType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
@@ -94,18 +95,18 @@ const Repair: React.FC<{
   updateId: string;
 }> = (props) => {
   const { onClose, updateId } = props;
-  const carID = useAppSelector((state) => state.car.car?.id);
-  const carMileage = useAppSelector((state) => state.car.car?.mileage);
-
+  const dispatch = useAppDispatch();
+  const car = useAppSelector((state) => state.car.car);
+  const initParts = useAppSelector((state) => state.record.parts);
   const record = useAppSelector((state) =>
     state.record.repair.find((record) => record.id === updateId)
   );
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
   const deletePart = useRef<partType[]>([]);
   const { register, handleSubmit, reset, setValue } = useForm<repairType>();
-  const dispatch = useAppDispatch();
-
-  const initParts = useAppSelector((state) => state.record.parts);
+  const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
+  const test = useAppSelector((state) => state.record.expenses);
+  console.log(test);
   useEffect(() => {
     if (updateId) {
       reset(record);
@@ -116,7 +117,8 @@ const Repair: React.FC<{
 
   useEffect(() => {
     if (parts.length > 0) {
-      const amount: number = parts.reduce<Record<number, number>>(
+      const partsArr = parts as partType[];
+      const amount: number = partsArr.reduce(
         (total: number, { subtotal }: { subtotal: number }) => total + subtotal,
         0
       );
@@ -141,13 +143,17 @@ const Repair: React.FC<{
 
   const setPartDateAndMileage = (record: repairType) => {
     const dateArr = record.date.split("-");
-    const recordYear = dateArr[0];
-    const recordMonth = dateArr[1];
-    const recordDay = dateArr[2];
+    let recordYear = Number(dateArr[0]);
+    let recordMonth = Number(dateArr[1]);
+    const recordDay = Number(dateArr[2]);
     const JSONParts = JSON.stringify(parts);
     const newParts = JSON.parse(JSONParts) as partType[];
 
     const newRecords = newParts.map((part) => {
+      if (recordMonth + part.month >= 12) {
+        recordYear += 1;
+        recordMonth = (recordMonth + part.month) % 12;
+      }
       const endDate = `${recordYear + part.year}-${
         recordMonth + part.month
       }-${recordDay}`;
@@ -162,11 +168,16 @@ const Repair: React.FC<{
   };
 
   const createRepairHandler = (record: repairType) => {
+    record.amount = Number(record.amount);
+    record.mileage = Number(record.mileage);
     record.records = setPartDateAndMileage(record);
+
     if (!record.id) {
       record.id = "";
       record.category = "repair";
-      dispatch(asyncRecordAction.addRepair(carID as string, record));
+      dispatch(
+        asyncRecordAction.addRepair(carID as string, record, recordAnnual)
+      );
     } else {
       const JSONParts = JSON.stringify(initParts);
       const newParts = JSON.parse(JSONParts) as partsType;
@@ -194,8 +205,8 @@ const Repair: React.FC<{
     dispatch(
       asyncRecordAction.deleteRepair(
         carID as string,
-        record?.id as string,
-        record?.records as partType[]
+        record as repairType,
+        recordAnnual
       )
     );
     onClose("record");
@@ -206,7 +217,6 @@ const Repair: React.FC<{
       return newParts.filter((part) => part.category !== removePart.category);
     });
     if (removePart.recordID) {
-      console.log("delete");
       deletePart.current = [...deletePart.current, removePart];
     }
   };

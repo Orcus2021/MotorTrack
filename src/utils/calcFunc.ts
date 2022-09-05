@@ -1,3 +1,4 @@
+import { repairType, feeType } from "../types/recordType";
 export const formatDate = (date: Date) => {
   const padTo2Digits = (num: number) => {
     return num.toString().padStart(2, "0");
@@ -50,4 +51,26 @@ export const carAgeAndInspectionDay = (date: string) => {
     inspectionDay = `${nowYear + 1}-${month}-${day}`;
   }
   return { age, inspectionDay };
+};
+
+export const selectAnnualExpenses = (
+  records: (repairType | feeType)[],
+  year: string | undefined
+) => {
+  let expenses: number;
+  if (year) {
+    expenses = records
+      .filter((record) => {
+        const dateArr = record.date.split("-");
+        return dateArr[0] === year;
+      })
+      .reduce((total, { amount }: { amount: number }) => total + amount, 0);
+  } else {
+    expenses = records.reduce(
+      (total, { amount }: { amount: number }) => total + amount,
+      0
+    );
+  }
+
+  return expenses;
 };
