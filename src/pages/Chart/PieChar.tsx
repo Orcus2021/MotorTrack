@@ -6,6 +6,8 @@ import { recordActions } from "../../store/record/recordReducer";
 const PieChar = () => {
   const expense = useAppSelector((state) => state.record.expenses);
   const dispatch = useAppDispatch();
+  const car = useAppSelector((state) => state.car.car);
+  console.log(car);
 
   const {
     allExpenses,
@@ -14,13 +16,14 @@ const PieChar = () => {
     feeExpenses,
     selectYear,
   } = expense;
-  useEffect(() => {
-    if (selectYear === "all") {
-      dispatch(recordActions.getAllExpense());
-    } else {
-      dispatch(recordActions.getYearExpense(selectYear));
-    }
-  }, [dispatch, selectYear]);
+
+  // useEffect(() => {
+  //   if (selectYear === "all") {
+  //     dispatch(recordActions.getAllExpense());
+  //   } else {
+  //     dispatch(recordActions.getYearExpense(selectYear));
+  //   }
+  // }, [dispatch, selectYear]);
   let finalData = [
     { value: repairExpenses, name: "維修" },
     { value: refuelExpenses, name: "加油/充電" },

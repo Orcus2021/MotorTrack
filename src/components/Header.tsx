@@ -18,6 +18,7 @@ const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   z-index: 5;
+  padding: 0 20px;
 `;
 const Logo = styled.img`
   height: 48px;

@@ -44,3 +44,8 @@ export type expensesType = {
   refuelExpenses: number;
   selectYear: string;
 };
+export type resultType = ({
+  plateNum: string;
+  insurance: boolean;
+  inspection: boolean;
+} | null)[];

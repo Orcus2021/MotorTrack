@@ -1,4 +1,8 @@
-import { repairType, feeType } from "../types/recordType";
+import { repairType, feeType, partType } from "../types/recordType";
+import { carType } from "../types/carType";
+import { userActions } from "../store/user/userReducer";
+import { AppDispatch } from "../store";
+
 export const formatDate = (date: Date) => {
   const padTo2Digits = (num: number) => {
     return num.toString().padStart(2, "0");
@@ -73,4 +77,78 @@ export const selectAnnualExpenses = (
   }
 
   return expenses;
+};
+
+export const mileagePercent = (part: partType, car: carType) => {
+  let message = "";
+  const diffMileage = Number(part.endMileage) - Number(car?.mileage as number);
+  let percent = Math.floor((diffMileage * 100) / part.mileage);
+  if (diffMileage <= 0) {
+    message = `超過${diffMileage}公里`;
+  } else {
+    message = `可用${diffMileage}公里`;
+  }
+  if (percent < 0) percent = 0;
+
+  return { percent, message };
+};
+
+export const datePercent = (part: partType) => {
+  if (part.month === 0 && part.year === 0) return null;
+  let message = "";
+  const startMillisecond = new Date(part.startDate).getTime();
+  const endMillisecond = new Date(part.endDate).getTime();
+  const nowMillisecond = new Date().getTime();
+  const diffMillisecond = endMillisecond - startMillisecond;
+
+  let percent = Math.floor(
+    ((endMillisecond - nowMillisecond) * 100) / diffMillisecond
+  );
+  const months = Math.ceil(
+    ((endMillisecond - nowMillisecond) / 1000) * 60 * 60 * 24 * 30
+  );
+  if (endMillisecond - nowMillisecond <= 0) {
+    message = "使用期限已到";
+  } else if (months >= 12) {
+    message = `可用${Math.floor(months / 12)}年${months % 12}個月`;
+  } else {
+    message = `可用${months}個月`;
+  }
+  if (percent <= 0) percent = 0;
+
+  return { percent, message };
+};
+
+export const getTodayMs = () => {
+  const nowDate = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate()
+  ).getTime();
+  return nowDate;
+};
+
+export const createMessage = (
+  type: string,
+  dispatch: AppDispatch,
+  message: string
+) => {
+  const timerID = window.setTimeout(() => {
+    dispatch(
+      userActions.showNotification({
+        status: false,
+        type: "",
+        message: "",
+        timerId: "",
+      })
+    );
+  }, 3000);
+  dispatch(
+    userActions.showNotification({
+      status: true,
+      type: type,
+      message: message,
+      timerId: timerID,
+    })
+  );
 };

@@ -1,23 +1,24 @@
-import React, { useEffect } from "react";
+import React from "react";
 import uuid from "react-uuid";
 import styled from "styled-components/macro";
 import { Link, Outlet } from "react-router-dom";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
 import { useAppSelector, useAppDispatch } from "../../store";
 import { carActions } from "../../store/car/carReducer";
+import { userActions } from "../../store/user/userReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 
 const RecordContainer = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 68px);
-  margin-top: 68px;
   position: relative;
   width: 100%;
 `;
 const Navigation = styled.div`
   width: 256px;
-
+  min-height: calc(100vh - 68px);
+  /* position: fixed; */
+  /* top: 68px; */
   background: var(--secondBack);
   transition: 0.5s;
   overflow: hidden;
@@ -53,10 +54,15 @@ const CarInfo = styled.p`
 const Manage = () => {
   const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
-  const selectCartHandler = (id: string, ownerId: string) => {
+
+  const selectCartHandler = async (id: string, ownerId: string) => {
+    dispatch(userActions.loading(true));
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
-    dispatch(asyncRecordAction.getAllRecords(id));
+    await dispatch(asyncRecordAction.getAllRecords(id));
+    setTimeout(() => {
+      dispatch(userActions.loading(false));
+    }, 500);
   };
 
   return (

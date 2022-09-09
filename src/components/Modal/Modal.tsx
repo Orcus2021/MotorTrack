@@ -11,9 +11,9 @@ const Back = styled.div`
   z-index: 100;
   background-color: rgba(0, 0, 0, 0.7);
 `;
-const ModalBx = styled.div<{ $isClose: boolean }>`
-  top: 30vh;
-  left: calc(50% - 250px);
+const ModalBx = styled.div<{ $isClose: boolean; $width: number }>`
+  top: 20%;
+  left: calc((100% - ${(props) => props.$width}px) / 2);
   z-index: 101;
   animation: ${(props) =>
     props.$isClose
@@ -53,11 +53,12 @@ const ModalContent = styled.div`
 const ModalOverlay: React.FC<{
   closeEffect: boolean;
   children?: React.ReactNode;
+  containerWidth: number;
 }> = (props) => {
-  const { closeEffect } = props;
+  const { closeEffect, containerWidth } = props;
 
   return (
-    <ModalBx $isClose={closeEffect}>
+    <ModalBx $isClose={closeEffect} $width={containerWidth}>
       <ModalContent>{props.children}</ModalContent>
     </ModalBx>
   );
@@ -72,10 +73,11 @@ type Props = {
   closeEffect: boolean;
   onClose: () => void;
   children?: React.ReactNode;
+  containerWidth: number;
 };
 
 const Modal: React.FC<Props> = (props: Props) => {
-  const { onClose, closeEffect } = props;
+  const { onClose, closeEffect, containerWidth } = props;
 
   return (
     <>
@@ -84,7 +86,9 @@ const Modal: React.FC<Props> = (props: Props) => {
         document.getElementById("overlay") as HTMLElement
       )}
       {ReactDOM.createPortal(
-        <ModalOverlay closeEffect={closeEffect}>{props.children}</ModalOverlay>,
+        <ModalOverlay closeEffect={closeEffect} containerWidth={containerWidth}>
+          {props.children}
+        </ModalOverlay>,
         document.getElementById("overlay") as HTMLElement
       )}
     </>

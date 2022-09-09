@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import LogoIcon from "../../../assets/logo_white.png";
-import { InputFloat, SpanFloat, Img } from "../../../components/style";
+import { Img } from "../../../components/style";
 import brands, { brandsMapType } from "../../../utils/brands";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
+import { userActions } from "../../../store/user/userReducer";
+import { createMessage } from "../../../utils/calcFunc";
 
 const AddContainer = styled.div`
   width: 100%;
@@ -47,7 +48,6 @@ const Input = styled.input<{ $isError: undefined | object }>`
   font-size: 1rem;
   border: 1px solid
     ${(props) => (props.$isError ? "var(--errorColor)" : "#fff")};
-  /* border: 1px solid #fff; */
   outline: none;
   color: #fff;
 `;
@@ -132,7 +132,6 @@ const AddCar = () => {
     key: "",
   });
   const allBrands = useRef<[string, brandsMapType][]>(Array.from(brands));
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const {
@@ -141,17 +140,21 @@ const AddCar = () => {
     setValue,
     formState: { errors },
   } = useForm<carType>();
+
   useEffect(() => {
     setValue("brand", brandName.name);
   }, [brandName, setValue]);
 
-  const createCar = (car: carType) => {
+  const createCar = async (car: carType) => {
     car.brand = brandName.key;
     car.ownerId = user.id;
     car.mileage = 0;
     car.id = "";
     car.recordAnnual = {};
-    dispatch(asyncCarAction.create(user.id, user.cars, car));
+
+    await dispatch(asyncCarAction.create(user.id, user.cars, car));
+
+    createMessage("remind", dispatch, "已新增車輛");
     navigate("/car_manage/record");
   };
 

@@ -7,17 +7,19 @@ import { AppDispatch } from "../index";
 import firebase from "../../utils/firebase";
 import { userLogin } from "../../types/userType";
 import { userType } from "../../types/userType";
+import { createMessage } from "../../utils/calcFunc";
 
 const asyncUserAction = {
   signUp(data: userLogin) {
     return async (dispatch: AppDispatch) => {
-      dispatch(
-        userActions.showNotification({
-          status: "pending",
-          title: "Sending...",
-          message: "Sending user data!",
-        })
-      );
+      dispatch(userActions.loading(true));
+      // dispatch(
+      //   userActions.showNotification({
+      //     status: "pending",
+      //     title: "Sending...",
+      //     message: "Sending user data!",
+      //   })
+      // );
       const signUp = async () => {
         const userID = await firebase.signUp(data).catch((e) => {
           throw new Error(e);
@@ -32,6 +34,9 @@ const asyncUserAction = {
             cars: 0,
             bannerImg: "",
             selectCar: "",
+            insuranceRemind: false,
+            inspectionRemind: false,
+            continueRemind: true,
           };
           await firebase.setDoc(`/users/${userID}`, initUser);
 
@@ -43,34 +48,36 @@ const asyncUserAction = {
         const user = await signUp();
 
         dispatch(userActions.signUp(user));
-        dispatch(
-          userActions.showNotification({
-            status: "success",
-            title: "Success",
-            message: "Sign up successfully!",
-          })
-        );
+        dispatch(userActions.loading(false));
+        // dispatch(
+        //   userActions.showNotification({
+        //     status: "success",
+        //     title: "Success",
+        //     message: "Sign up successfully!",
+        //   })
+        // );
       } catch (e) {
         console.log(e);
-        dispatch(
-          userActions.showNotification({
-            status: "error",
-            title: "Error",
-            message: "Sign up is failed!",
-          })
-        );
+        // dispatch(
+        //   userActions.showNotification({
+        //     status: "error",
+        //     title: "Error",
+        //     message: "Sign up is failed!",
+        //   })
+        // );
       }
     };
   },
   signIn(data: userLogin) {
     return async (dispatch: AppDispatch) => {
-      dispatch(
-        userActions.showNotification({
-          status: "pending",
-          title: "Sending...",
-          message: "Sending user data!",
-        })
-      );
+      dispatch(userActions.loading(true));
+      // dispatch(
+      //   userActions.showNotification({
+      //     status: "pending",
+      //     title: "Sending...",
+      //     message: "Sending user data!",
+      //   })
+      // );
       const signIn = async () => {
         const userID = await firebase.signIn(data).catch((e) => {
           throw new Error(e);
@@ -88,51 +95,45 @@ const asyncUserAction = {
 
         if (user.selectCar.length > 0) {
           dispatch(carActions.selectCar(user.selectCar));
-          dispatch(asyncRecordAction.getAllRecords(user.selectCar));
-          dispatch(recordActions.getAllExpense());
+          await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
-        dispatch(
-          userActions.showNotification({
-            status: "success",
-            title: "Success",
-            message: "Sign in successfully!",
-          })
-        );
+        dispatch(userActions.loading(false));
+        // dispatch(
+        //   userActions.showNotification({
+        //     status: "success",
+        //     title: "Success",
+        //     message: "Sign in successfully!",
+        //   })
+        // );
       } catch (e) {
         console.log(e);
-        dispatch(
-          userActions.showNotification({
-            status: "error",
-            title: "Error",
-            message: "Sign in is failed!",
-          })
-        );
+        // dispatch(
+        //   userActions.showNotification({
+        //     status: "error",
+        //     title: "Error",
+        //     message: "Sign in is failed!",
+        //   })
+        // );
       }
     };
   },
   logout() {
-    return async (dispatch: AppDispatch) => {
-      dispatch(
-        userActions.showNotification({
-          status: "pending",
-          title: "Sending...",
-          message: "Logging out",
-        })
-      );
-      const logout = async () => {
-        await firebase.logout();
+    return (dispatch: AppDispatch) => {
+      // dispatch(
+      //   userActions.showNotification({
+      //     status: "pending",
+      //     title: "Sending...",
+      //     message: "Logging out",
+      //   })
+      // );
+      const logout = () => {
+        firebase.logout();
       };
 
       try {
-        await logout();
+        logout();
         dispatch(userActions.logout());
-        dispatch(
-          userActions.showNotification({
-            status: "success",
-            title: "Success",
-            message: "Log out successfully!",
-          })
-        );
+        createMessage("success", dispatch, "已成功登出");
       } catch (e) {
         console.log(e);
       }
@@ -140,13 +141,43 @@ const asyncUserAction = {
   },
   updateUser(id: string, data: object) {
     return async (dispatch: AppDispatch) => {
-      const update = async () => {
-        await firebase.updateDoc(`/users/${id}`, data);
+      const update = () => {
+        firebase.updateDoc(`/users/${id}`, data);
       };
 
       try {
-        await update();
+        update();
         dispatch(userActions.update(data));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  uploadImage(id: string, type: string, file: File) {
+    return async (dispatch: AppDispatch) => {
+      let data = {};
+      const upload = async () => {
+        let url = `/${id}/user/${file.name}`;
+        if (type === "banner") url = `/${id}/banner/${file.name}`;
+
+        const response = await firebase.uploadImage(url, file);
+        if (response) {
+          const url = `/users/${id}`;
+
+          if (type === "banner") {
+            data = { bannerImg: response };
+          } else {
+            data = { userImg: response };
+          }
+          await firebase.updateDoc(url, data);
+        }
+      };
+
+      try {
+        dispatch(userActions.loading(true));
+        await upload();
+        dispatch(userActions.update(data));
+        dispatch(userActions.loading(false));
       } catch (e) {
         console.log(e);
       }

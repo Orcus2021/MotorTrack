@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import asyncUserAction from "../../store/user/asyncUserAction";
+import { Img } from "../../components/style";
 import { carActions } from "../../store/car/carReducer";
 import { recordActions } from "../../store/record/recordReducer";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 import { useNavigate } from "react-router-dom";
+import Modal from "../../components/Modal/Modal";
+import Upload from "./Upload";
+
+import banner from "../../assets/img/banner.JPG";
+import camera from "../../assets/icon/camera.png";
+import userImg from "../../assets/img/dog.jpg";
+import logout from "../../assets/icon/logout.png";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -21,88 +29,252 @@ const ProfileWrapper = styled.div`
 
 const Banner = styled.div`
   width: 100%;
-  height: 250px;
+  height: 350px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: relative;
   background-color: var(--mainColor);
 `;
 const UserWrapper = styled.div`
-  height: 100px;
+  height: 80px;
   width: 100%;
-  border: 1px solid #fff;
+  padding: 0 30px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* align-items: center; */
   justify-content: space-between;
 `;
 const UserBx = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: center;
+
   height: 100%;
 `;
 const UserImgBx = styled.div`
   position: relative;
+  border: 4px solid var(--mainBack);
   width: 120px;
   height: 120px;
-  top: -30px;
+  top: -40px;
   border-radius: 50%;
   background-color: #fff;
+  background-color: var(--mainBack);
 `;
-const Img = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+
+const NameWrapper = styled.div`
+  margin-top: 10px;
+  padding-left: 10px;
 `;
-const NameWrapper = styled.div``;
 const NameText = styled.p`
-  font-size: 16px;
+  font-size: 20px;
 `;
 const CarText = styled.p`
-  font-size: 12px;
+  font-size: 10px;
 `;
 const Logout = styled.p`
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+  cursor: pointer;
 `;
-const UserInfoWrapper = styled.div`
+const UserInfo = styled.div`
+  margin-top: 10px;
   width: 100%;
+  display: flex;
+  align-items: center;
 `;
 const UserAccount = styled.p`
   font-size: 16px;
+  margin-right: 10px;
+`;
+const BannerEdit = styled.p`
+  position: relative;
+  color: var(--mainBack);
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  margin: 10px;
+  align-items: center;
+  flex-direction: row;
+  font-size: 12px;
+  background-color: #fff;
+  cursor: pointer;
+`;
+
+const CameraIcon = styled.img`
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  right: 3px;
+  bottom: 0;
+  padding: 5px;
+  object-fit: cover;
+  background-color: var(--mainColor);
+  cursor: pointer;
+`;
+const EditCameraBx = styled.span`
+  position: relative;
+  width: 16px;
+  height: 16px;
+`;
+
+const UserPic = styled.img`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  border-radius: 50%;
+`;
+const LogoutBx = styled.span`
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+`;
+const Title = styled.p`
+  font-size: 16px;
+  width: 80px;
+  color: var(--mainColor);
+`;
+const Dot = styled.div`
+  margin-left: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+`;
+const InfoWrapper = styled.div`
+  width: 100%;
+  padding: 0 30px;
+`;
+
+const CheckBox = styled.input.attrs({ type: "checkbox" })`
+  width: 12px;
+  height: 12px;
 `;
 
 const Profile = () => {
   const user = useAppSelector((state) => state.user.user);
+  const [uploadImg, setUploadImg] = useState<string>("");
+  const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   const logoutHandler = () => {
     dispatch(asyncUserAction.logout());
     dispatch(carActions.clear());
     dispatch(recordActions.clearAllRecord());
     navigate("/");
   };
+  const uploadImgHandler = (type: string) => {
+    setUploadImg(type);
+  };
+
+  const closeUploadHandler = () => {
+    setCloseEffect(true);
+    setTimeout(() => {
+      setUploadImg("");
+      setCloseEffect(false);
+    }, 600);
+  };
+
+  const remindHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let update;
+    if (e.target.id === "inspection") {
+      update = { inspectionRemind: e.target.checked };
+    } else {
+      update = { insuranceRemind: e.target.checked };
+    }
+
+    dispatch(asyncUserAction.updateUser(user.id, update));
+  };
   return (
-    <ProfileContainer>
-      <ProfileWrapper>
-        <Banner></Banner>
-        <UserWrapper>
-          <UserBx>
-            <UserImgBx></UserImgBx>
-            <NameWrapper>
-              <NameText>{user.name}</NameText>
-              <CarText>車輛數:{user.cars}</CarText>
-            </NameWrapper>
-          </UserBx>
-          <Logout onClick={logoutHandler}>登出</Logout>
-        </UserWrapper>
-        <UserInfoWrapper>
-          <UserAccount>帳號:{user.email}</UserAccount>
-          <UserAccount>密碼:</UserAccount>
-        </UserInfoWrapper>
-      </ProfileWrapper>
-    </ProfileContainer>
+    <>
+      <ProfileContainer>
+        <ProfileWrapper>
+          <Banner>
+            <Img src={user.bannerImg || banner} />
+            <BannerEdit
+              onClick={() => {
+                uploadImgHandler("banner");
+              }}
+            >
+              <EditCameraBx>
+                <Img src={camera} />
+              </EditCameraBx>
+              編輯封面照片
+            </BannerEdit>
+          </Banner>
+          <UserWrapper>
+            <UserBx>
+              <UserImgBx>
+                <UserPic src={user.userImg || userImg} />
+                <CameraIcon
+                  src={camera}
+                  onClick={() => {
+                    uploadImgHandler("user");
+                  }}
+                />
+              </UserImgBx>
+              <NameWrapper>
+                <NameText>{user.name}</NameText>
+                <CarText>車輛數:{user.cars}</CarText>
+              </NameWrapper>
+            </UserBx>
+            <Logout onClick={logoutHandler}>
+              登出
+              <LogoutBx>
+                <Img src={logout} />
+              </LogoutBx>
+            </Logout>
+          </UserWrapper>
+          <InfoWrapper>
+            <UserInfo>
+              <Title>帳號</Title>
+              <UserAccount>{user.email}</UserAccount>
+            </UserInfo>
+            <UserInfo>
+              <Title>密碼</Title>
+              {Array(6)
+                .fill(null)
+                .map((_, index) => (
+                  <Dot key={index}></Dot>
+                ))}
+            </UserInfo>
+            <UserInfo>
+              <Title>開啟提醒</Title>
+              <CheckBox
+                id="inspection"
+                onChange={remindHandler}
+                checked={user.inspectionRemind}
+              />
+              <UserAccount>驗車到期</UserAccount>
+              <CheckBox
+                id="insurance"
+                onChange={remindHandler}
+                checked={user.insuranceRemind}
+              />
+              <UserAccount>保險到期</UserAccount>
+            </UserInfo>
+          </InfoWrapper>
+        </ProfileWrapper>
+      </ProfileContainer>
+      {uploadImg && (
+        <Modal
+          closeEffect={closeEffect}
+          onClose={closeUploadHandler}
+          containerWidth={400}
+        >
+          <Upload imageType={uploadImg} onClose={closeUploadHandler} />
+        </Modal>
+      )}
+    </>
   );
 };
 

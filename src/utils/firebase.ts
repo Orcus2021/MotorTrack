@@ -9,6 +9,12 @@ import {
   signOut,
 } from "firebase/auth";
 import {
+  getStorage,
+  uploadBytesResumable,
+  ref,
+  getDownloadURL,
+} from "firebase/storage";
+import {
   getFirestore,
   doc,
   getDocs,
@@ -22,7 +28,6 @@ import {
   DocumentData,
   arrayRemove,
 } from "firebase/firestore";
-import { resolve } from "path/posix";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
@@ -37,6 +42,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 type dataType = {
   id: string;
   [index: string]: any;
@@ -159,29 +165,38 @@ const firebase = {
         refuel: [] as feeType[],
         parts: {} as partsType,
       };
-      const repairRecordsSnapshot = await getDocs(
-        collection(db, repairRecordsUrl)
-      );
-      const partsSnapshot = await getDocs(collection(db, partsUrl));
-      const refuelRecordsSnapshot = await getDocs(
-        collection(db, refuelRecordsUrl)
-      );
-      const feeRecordsSnapshot = await getDocs(collection(db, feeRecordsUrl));
 
-      repairRecordsSnapshot.forEach((doc) => {
-        recordObj.repair.push(doc.data() as repairType);
-      });
+      const repairRecordsSnapshot = getDocs(collection(db, repairRecordsUrl));
+      const partsSnapshot = getDocs(collection(db, partsUrl));
+      const refuelRecordsSnapshot = getDocs(collection(db, refuelRecordsUrl));
+      const feeRecordsSnapshot = getDocs(collection(db, feeRecordsUrl));
 
-      feeRecordsSnapshot.forEach((doc) => {
-        recordObj.fee.push(doc.data() as feeType);
-      });
-
-      refuelRecordsSnapshot.forEach((doc) => {
-        recordObj.refuel.push(doc.data() as feeType);
-      });
-      partsSnapshot.forEach((doc) => {
-        const partObj = doc.data();
-        recordObj.parts[doc.id] = partObj.records;
+      const promises = await Promise.all([
+        repairRecordsSnapshot,
+        partsSnapshot,
+        refuelRecordsSnapshot,
+        feeRecordsSnapshot,
+      ]);
+      promises.forEach((promise, index) => {
+        if (promise.empty) return;
+        if (index === 0) {
+          promise.forEach((doc) => {
+            recordObj.repair.push(doc.data() as repairType);
+          });
+        } else if (index === 1) {
+          promise.forEach((doc) => {
+            const partObj = doc.data();
+            recordObj.parts[doc.id] = partObj.records;
+          });
+        } else if (index === 2) {
+          promise.forEach((doc) => {
+            recordObj.refuel.push(doc.data() as feeType);
+          });
+        } else if (index === 3) {
+          promise.forEach((doc) => {
+            recordObj.fee.push(doc.data() as feeType);
+          });
+        }
       });
 
       resolve(recordObj);
@@ -209,6 +224,27 @@ const firebase = {
         carArr.push(doc.data() as carType);
       });
       resolve(carArr);
+    });
+  },
+  async uploadImage(url: string, file: File) {
+    return new Promise((resolve) => {
+      console.log(url, file);
+      const storageRef = ref(storage, url);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log("upload");
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
     });
   },
 };

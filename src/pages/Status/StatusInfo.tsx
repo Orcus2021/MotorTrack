@@ -1,40 +1,58 @@
 import React, { useState, useEffect } from "react";
-import uuid from "react-uuid";
-import styled from "styled-components";
-import { useAppSelector, useAppDispatch } from "../../store";
+import PartDetail from "./PartDetail";
+import PartStatus from "./PartStatus";
+import { Img } from "../../components/style";
+import userIcon from "../../assets/img/dog.jpg";
+import styled from "styled-components/macro";
+import { useAppSelector } from "../../store";
 import { partType, partsType } from "../../types/recordType";
 
-import dashboardIcon from "../../assets/dashborad_white.png";
+import dashboardIcon from "../../assets/icon/dashborad_white.png";
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  margin-right: 30px;
+
+  border-radius: 8px;
+`;
 
 const InfoWrapper = styled.div`
   width: 100%;
   height: 100%;
   margin-right: 20px;
-
   border-radius: 8px;
 `;
 const DetailBx = styled.div`
   display: flex;
   flex-direction: row;
-
+  padding: 10px;
+  background-color: var(--thirdBack);
   width: 100%;
+  border-radius: 8px;
 `;
 const ChartBx = styled.div`
-  height: 200px;
-  width: 200px;
+  position: relative;
+  height: 100px;
+  width: 100px;
+  margin-left: 10px;
   background-color: var(--mainColor);
+  border-radius: 50%;
+  overflow: hidden;
   border-radius: 50%;
 `;
 const Detail = styled.div`
   flex-grow: 1;
+  padding: 0 20px;
 `;
 const MileageBx = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background-color: var(--thirdBack);
+  background-color: var(--mainColor);
   border-radius: 50px;
-  padding: 10px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
 `;
 const MileageIconBx = styled.div`
   width: 30px;
@@ -63,104 +81,32 @@ const Message = styled.p`
 `;
 const PartsWrapper = styled.div`
   /* background-color: var(--thirdBack); */
-  padding: 10px;
+  background-color: var(--thirdBack);
+  padding: 0 10px;
   width: 100%;
+  margin-top: 10px;
   border-radius: 10px;
-`;
-
-const PartsBx = styled.div`
-  position: relative;
-  display: flex;
-  margin: 20px 0;
-  padding: 15px 10px;
-  /* background: linear-gradient(#49505e 0%, #20232a 10%, #222); */
-  background-color: #20232a;
-  border-radius: 8px;
-  overflow: hidden;
-  /* border: 2px solid #000; */
-  transition: 0.5s;
-  /* &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    z-index: 10;
-  } */
-`;
-
-const IconBx = styled.span`
-  position: relative;
-  width: 110px;
-  text-align: right;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase;
-`;
-const Value = styled.span`
-  position: relative;
-  width: 40px;
-  text-align: left;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase;
-`;
-const Percent = styled.div`
-  position: relative;
-  width: calc(100% - 150px);
-  height: 20px;
-  margin: 0 10px;
-  border-radius: 10px;
-  box-shadow: inset 0 0 10px #000;
-  overflow: hidden;
-`;
-const Progress = styled.div<{ $length: number }>`
-  position: absolute;
-  width: ${(props) => `${props.$length}%;`};
-  top: 0;
-  left: 0;
-  height: 100%;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: inset 0 0 2px #000;
-  animation: animate 4s ease-in-out forwards;
-  background: linear-gradient(45deg, var(--mainColor), #673ab7);
-  overflow: hidden;
-  @keyframes animate {
-    from {
-      width: 0;
-    }
+  height: 350px;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 7px;
   }
-  &::after {
-    content: "";
-    background-color: #ffffff3a;
-    box-shadow: 0px 0px 20px 4px #ffffffd1;
-    width: 1px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: run 6s ease-in-out infinite;
+  &::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    background-color: rgba(68, 68, 68, 0.3);
   }
-  @keyframes run {
-    0% {
-      left: -5%;
-    }
-    70% {
-      left: 110%;
-    }
-    100% {
-      left: 110%;
-    }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mainColor);
   }
 `;
 
 const StatusInfo = () => {
   const car = useAppSelector((state) => state.car.car);
+  const userImg = useAppSelector((state) => state.user.user.userImg);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
+  const [showDetail, setShowDetail] = useState<boolean>(false);
   const parts = useAppSelector((state) => state.record.parts);
+  const [partsIndex, setPartsIndex] = useState<number>(NaN);
 
   useEffect(() => {
     let arr = [];
@@ -178,50 +124,58 @@ const StatusInfo = () => {
     }
     setPartStatus(arr);
   }, [parts]);
+  const showDetailHandler = () => {
+    setShowDetail((pre) => !pre);
+  };
+  const selectPartHandler = (index: number) => {
+    setPartsIndex(index);
+  };
   return (
-    <InfoWrapper>
-      <DetailBx>
-        <ChartBx></ChartBx>
-        <Detail>
-          <MileageBx>
-            <MileageIconBx>
-              <MileageIcon src={dashboardIcon} />
-            </MileageIconBx>
-            <MileageMsg>{car?.mileage}公里</MileageMsg>
-          </MileageBx>
-          <MessageBx>
-            <Message>車齡:</Message>
-            <Message>{car?.age}</Message>
-          </MessageBx>
-          <MessageBx>
-            <Message>驗車時間:</Message>
-            <Message>{car?.inspectionDay}</Message>
-          </MessageBx>
-          <MessageBx>
-            <Message>保險時間:</Message>
-            <Message>{car?.insuranceDate}</Message>
-          </MessageBx>
-        </Detail>
-      </DetailBx>
-      <PartsWrapper>
-        {partStatus.map((data: partType[]) => {
-          const percent = Math.floor(
-            ((Number(data[0].endMileage) - Number(car?.mileage as number)) *
-              100) /
-              data[0].mileage
-          );
-          return (
-            <PartsBx key={uuid()}>
-              <IconBx>{data[0].category}</IconBx>
-              <Percent>
-                <Progress $length={percent}></Progress>
-              </Percent>
-              <Value>{percent}%</Value>
-            </PartsBx>
-          );
-        })}
-      </PartsWrapper>
-    </InfoWrapper>
+    <Container>
+      {showDetail ? (
+        <PartDetail onShow={showDetailHandler} part={partStatus[partsIndex]} />
+      ) : (
+        <InfoWrapper>
+          <DetailBx>
+            <ChartBx>
+              <Img src={userImg || userIcon} />
+            </ChartBx>
+            <Detail>
+              <MileageBx>
+                <MileageIconBx>
+                  <MileageIcon src={dashboardIcon} />
+                </MileageIconBx>
+                <MileageMsg>{car?.mileage}公里</MileageMsg>
+              </MileageBx>
+              <MessageBx>
+                <Message>車齡:</Message>
+                <Message>{car?.age}</Message>
+              </MessageBx>
+              <MessageBx>
+                <Message>驗車時間:</Message>
+                <Message>{car?.inspectionDay}</Message>
+              </MessageBx>
+              <MessageBx>
+                <Message>保險時間:</Message>
+                <Message>{car?.insuranceDate}</Message>
+              </MessageBx>
+            </Detail>
+          </DetailBx>
+          <PartsWrapper>
+            {partStatus.map((part: partType[], index) => (
+              <PartStatus
+                onSelect={() => {
+                  selectPartHandler(index);
+                }}
+                onShow={showDetailHandler}
+                key={part[0].name}
+                part={part}
+              />
+            ))}
+          </PartsWrapper>
+        </InfoWrapper>
+      )}
+    </Container>
   );
 };
 

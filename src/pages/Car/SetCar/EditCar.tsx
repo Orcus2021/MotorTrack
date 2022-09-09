@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import styled from "styled-components";
 import brands, { brandsMapType } from "../../../utils/brands";
-
+import Brands from "./Brands";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,8 @@ import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
 import { Img } from "../../../components/style";
+import Modal from "../../../components/Modal/Modal";
+import Confirm from "./Confirm";
 
 const EditContainer = styled.div`
   width: 100%;
@@ -16,24 +18,14 @@ const EditContainer = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const EditWrapper = styled.form`
+const EditWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 10px 10px 0 10px;
 `;
-const LogoBx = styled.div`
-  width: 50%;
-  background-color: var(--mainColor);
-  height: 200px;
-`;
-const LeftBx = styled.div`
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+
 const RightBx = styled.div`
   width: 50%;
   display: flex;
@@ -60,7 +52,6 @@ const CarInfo = styled.p`
 `;
 const BrandWrapper = styled.div`
   width: 50%;
-  /* background-color: var(--mainColor); */
   height: 400px;
 `;
 const InputBx = styled.div`
@@ -80,72 +71,55 @@ const BrandInput = styled.input<{ $isError: undefined | object }>`
   color: #fff;
   text-align: center;
 `;
-const BrandBx = styled.div`
-  border: 1px solid #fff;
-  width: 100%;
-  height: 400px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  flex-wrap: wrap;
 
-  overflow-y: auto;
-`;
-const BrandCard = styled.div<{ $isSelected: boolean }>`
-  width: 90px;
-  height: 115px;
-  border-radius: 10px;
-  margin: 5px;
-  background-color: ${(props) =>
-    props.$isSelected ? "var(--mainColor)" : "var(--thirdBack)"};
+const BtnBx = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding-top: 5px;
-  cursor: pointer;
+  justify-content: center;
 `;
-const ImgBx = styled.div`
-  width: 80px;
-  height: 80px;
+const LogoBx = styled.div`
+  height: 200px;
+  width: 200px;
+  position: relative;
   background-color: #ffffff8b;
   border-radius: 50%;
   overflow: hidden;
-  position: relative;
-  margin-bottom: 5px;
 `;
-const BrandImg = styled(Img)`
-  width: 90%;
-  height: 90%;
-  top: 5%;
-  left: 5%;
-  object-fit: contain;
+const ConFirmWrapper = styled.div`
+  width: 400px;
+  height: 400px;
+  background: var(--secondBack);
 `;
-const Name = styled.p`
-  font-size: 10px;
-`;
+type brandType = { name: string; key: string };
 const EditCar = () => {
   const car = useAppSelector((state) => state.car.car);
   const cars = useAppSelector((state) => state.car.cars);
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const allBrands = useRef<[string, brandsMapType][]>(Array.from(brands));
-  const [brandName, setBrandName] = useState<{ name: string; key: string }>({
-    name: "",
-    key: "",
-  });
+
+  const initBrandName = car
+    ? { name: brands.get(car.brand)?.name, key: car.brand }
+    : { name: "", key: "" };
+  const [closeEffect, setCloseEffect] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [brandName, setBrandName] = useState<brandType>(
+    initBrandName as brandType
+  );
   const [carAge, setCarAge] = useState<string>(car?.age || "0");
   const [inspectionDay, setInspectionDay] = useState<string>(
     car?.inspectionDay || "0"
   );
+
   const {
     register,
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<carType>();
+
   const initCar = useMemo(() => {
     return {
       name: car?.name,
@@ -155,9 +129,11 @@ const EditCar = () => {
       insuranceDate: car?.insuranceDate,
     };
   }, [car]);
+
   useEffect(() => {
     reset(initCar);
   }, [car, reset, initCar]);
+
   useEffect(() => {
     const subscription = watch(({ licenseDate }) => {
       if (licenseDate) {
@@ -170,80 +146,98 @@ const EditCar = () => {
     return () => subscription.unsubscribe();
   }, [watch]);
 
+  useEffect(() => {
+    setValue("brand", brandName.name);
+  }, [brandName, setValue]);
+
   const editCar = (editCar: carType) => {
+    editCar.brand = brandName.key;
     editCar.age = carAge;
     editCar.inspectionDay = inspectionDay;
 
     dispatch(asyncCarAction.updateCar(car?.id as string, editCar));
     navigate("/car_manage/record");
   };
+  const callConfirm = () => {
+    setShowConfirm(true);
+  };
 
-  const deleteCarHandler = (e: React.FormEvent) => {
-    e.preventDefault();
+  const deleteCarHandler = () => {
     dispatch(asyncCarAction.deleteCar(car?.id as string, user, cars));
     navigate("/car_manage/record");
   };
   const brandNameHandler = (name: string, key: string) => {
     setBrandName({ name, key });
   };
+
+  const closePartForm = () => {
+    setCloseEffect(true);
+
+    setTimeout(() => {
+      setShowConfirm(false);
+      setCloseEffect(false);
+    }, 600);
+  };
+
   return (
-    <EditContainer>
-      <EditWrapper onSubmit={handleSubmit(editCar)}>
-        <BrandWrapper>
-          <InputBx>
-            <BrandInput
+    <>
+      <EditContainer>
+        <EditWrapper>
+          <BrandWrapper>
+            <InputBx>
+              <BrandInput
+                type="text"
+                placeholder="廠牌(請選擇)"
+                $isError={errors?.brand}
+                readOnly
+                {...register("brand", { required: true })}
+              />
+            </InputBx>
+            <Brands onBrand={brandNameHandler} brandName={brandName} />
+          </BrandWrapper>
+          <RightBx>
+            <LogoBx>
+              <Img src={brands.get(brandName.key)?.img} />
+            </LogoBx>
+            <CarInfo>暱稱</CarInfo>
+            <Input
               type="text"
-              placeholder="廠牌(請選擇)"
-              $isError={errors?.brand}
-              readOnly
-              {...register("brand", { required: true })}
+              placeholder="暱稱"
+              {...register("name", { required: true })}
             />
-          </InputBx>
-          <BrandBx>
-            {allBrands.current.map((brand) => {
-              return (
-                <BrandCard
-                  key={brand[1].name}
-                  $isSelected={brand[1].name === brandName.name}
-                  onClick={() => {
-                    brandNameHandler(brand[1].name, brand[0]);
-                  }}
-                >
-                  <ImgBx>
-                    <BrandImg src={brand[1].img} />
-                  </ImgBx>
-                  <Name>{brand[1].name}</Name>
-                </BrandCard>
-              );
-            })}
-          </BrandBx>
-        </BrandWrapper>
-        <RightBx>
-          <Input type="text" placeholder="車牌" {...register("plateNum")} />
-          <Input
-            type="text"
-            placeholder="車輛名稱"
-            {...register("name", { required: true })}
-          />
-          <CarInfo>驗車時間設定</CarInfo>
-          <Input
-            type="date"
-            placeholder="行照發照日"
-            {...register("licenseDate")}
-          />
-          <CarInfo>車齡:{carAge}</CarInfo>
-          <CarInfo>驗車日期:{inspectionDay}</CarInfo>
-          <CarInfo>保險到期設定</CarInfo>
-          <Input
-            type="date"
-            placeholder="保險到期日"
-            {...register("insuranceDate")}
-          />
-          <EditBtn>編輯</EditBtn>
-          <DeleteBtn onClick={deleteCarHandler}>刪除</DeleteBtn>
-        </RightBx>
-      </EditWrapper>
-    </EditContainer>
+            <CarInfo>車牌</CarInfo>
+            <Input type="text" placeholder="車牌" {...register("plateNum")} />
+            <CarInfo>驗車時間設定</CarInfo>
+            <Input
+              type="date"
+              placeholder="行照發照日"
+              {...register("licenseDate")}
+            />
+            <CarInfo>車齡:{carAge}</CarInfo>
+            <CarInfo>驗車日期:{inspectionDay}</CarInfo>
+            <CarInfo>保險到期設定</CarInfo>
+            <Input
+              type="date"
+              placeholder="保險到期日"
+              {...register("insuranceDate")}
+            />
+            <BtnBx>
+              <EditBtn onClick={handleSubmit(editCar)}>確定</EditBtn>
+              <DeleteBtn onClick={callConfirm}>刪除</DeleteBtn>
+            </BtnBx>
+          </RightBx>
+        </EditWrapper>
+      </EditContainer>
+      {showConfirm && (
+        <Modal
+          closeEffect={closeEffect}
+          onClose={closePartForm}
+          containerWidth={400}
+        >
+          <Confirm onClose={closePartForm} onDelete={deleteCarHandler} />
+        </Modal>
+      )}
+    </>
   );
 };
 

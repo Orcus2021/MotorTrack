@@ -8,12 +8,16 @@ const initUser: userType = {
   cars: 0,
   bannerImg: "",
   selectCar: "",
+  insuranceRemind: false,
+  inspectionRemind: false,
+  continueRemind: false,
 };
 
 const initialUserState = {
   user: initUser,
   notification: null as notificationType | null,
   isAuth: false,
+  isLoading: false,
 };
 
 const userSlice = createSlice({
@@ -38,9 +42,13 @@ const userSlice = createSlice({
     showNotification(state, action) {
       state.notification = {
         status: action.payload.status,
-        title: action.payload.title,
+        type: action.payload.type,
         message: action.payload.message,
+        timerId: action.payload.timerId,
       };
+    },
+    loading(state, action) {
+      state.isLoading = action.payload;
     },
   },
 });

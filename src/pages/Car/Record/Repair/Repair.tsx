@@ -12,9 +12,12 @@ import { carType } from "../../../../types/carType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
-import { formatDate } from "../../../../utils/calcFunc";
-import trashIcon from "../../../../assets/trash.png";
+import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
+import { userActions } from "../../../../store/user/userReducer";
+
+import trashIcon from "../../../../assets/trash.png";
+
 const RepairContainer = styled.div`
   width: 100%;
   padding: 10px;
@@ -93,8 +96,9 @@ const Icon = styled.img`
 const Repair: React.FC<{
   onClose: Dispatch<SetStateAction<string>>;
   updateId: string;
+  onClear: () => void;
 }> = (props) => {
-  const { onClose, updateId } = props;
+  const { onClose, updateId, onClear } = props;
   const dispatch = useAppDispatch();
   const car = useAppSelector((state) => state.car.car);
   const initRecord = useAppSelector((state) => state.record);
@@ -166,32 +170,36 @@ const Repair: React.FC<{
     return newRecords;
   };
 
+  const createRemind = (type: string) => {
+    let message = updateId ? "已更新紀錄" : "已新增紀錄";
+    if (type === "error") message = "已刪除紀錄";
+    createMessage(type, dispatch, message);
+  };
+
   const createRepairHandler = (record: repairType) => {
     record.amount = Number(record.amount);
     record.mileage = Number(record.mileage);
     record.records = setPartDateAndMileage(record);
 
-    if (!record.id) {
+    if (record.records.length === 0) return;
+
+    if (!record.id && carID) {
       record.id = "";
       record.category = "repair";
-      dispatch(
-        asyncRecordAction.addRepair(carID as string, record, recordAnnual)
-      );
-    } else {
+      dispatch(asyncRecordAction.addRepair(carID, record, recordAnnual));
+    } else if (carID) {
       const JSONParts = JSON.stringify(initParts);
       const newParts = JSON.parse(JSONParts) as partsType;
 
-      dispatch(
-        asyncRecordAction.updateRepair(carID as string, record, newParts)
-      );
+      dispatch(asyncRecordAction.updateRepair(carID, record, newParts));
       deletePart.current.forEach((removePart) => {
-        dispatch(asyncRecordAction.deletePart(carID as string, removePart));
+        dispatch(asyncRecordAction.deletePart(carID, removePart));
       });
     }
-    dispatch(
-      asyncCarAction.updateCar(carID as string, { mileage: record.mileage })
-    );
-
+    if (car && record.mileage > car.mileage)
+      dispatch(asyncCarAction.updateCar(carID, { mileage: record.mileage }));
+    createRemind("remind");
+    onClear();
     onClose("record");
   };
 
@@ -207,6 +215,7 @@ const Repair: React.FC<{
         recordAnnual
       )
     );
+    createRemind("error");
     onClose("record");
   };
   const deletePartHandler = (removePart: partType) => {
@@ -242,7 +251,13 @@ const Repair: React.FC<{
             <Label>日期</Label>
             <Input type="date" {...register("date", { required: true })} />
             <Label>里程數</Label>
-            <Input type="number" {...register("mileage", { required: true })} />
+            <Input
+              type="number"
+              {...register("mileage", {
+                required: true,
+                min: updateId ? record?.mileage : carMileage,
+              })}
+            />
           </Detail>
           <Detail>
             <Label>總金額</Label>

@@ -4,6 +4,7 @@ import asyncUserAction from "../../store/user/asyncUserAction";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 import styled from "styled-components";
 import SignUp from "./SignUp";
+import Loading from "../../components/Loading/Loading";
 
 const LoginContainer = styled.div`
   margin-top: 68px;
@@ -43,23 +44,19 @@ const SignUpSpan = styled.span`
   cursor: pointer;
 `;
 
-// Initialize Firebase
-
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const user = useAppSelector((state) => state.user);
+  const isLoading = useAppSelector((state) => state.user.isLoading);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (user.isAuth && name) {
-      navigate("/profile");
-    } else if (user.isAuth) {
-      navigate("/status");
-    }
-  }, [user.isAuth, navigate, name]);
+  // useEffect(() => {
+  //   if (user.isAuth && !name) {
+  //     navigate("/status");
+  //   }
+  // }, [user.isAuth, navigate, name]);
 
   const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.id === "name") {
@@ -81,18 +78,21 @@ const Login = () => {
       password,
       name,
     };
-    dispatch(asyncUserAction.signUp(user));
+    await dispatch(asyncUserAction.signUp(user));
+    navigate("/profile");
   };
   const signIn = async () => {
     const user = {
       email,
       password,
     };
-    dispatch(asyncUserAction.signIn(user));
+    await dispatch(asyncUserAction.signIn(user));
+    navigate("/status");
   };
 
   return (
     <>
+      {isLoading && <Loading />}
       {!isSignUp && (
         <LoginContainer>
           <LoginWrapper>

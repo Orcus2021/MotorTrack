@@ -1,9 +1,9 @@
 import React from "react";
-import { useAppSelector } from "./store";
 import Header from "./components/Header";
 import { Outlet } from "react-router-dom";
 import reset from "styled-reset";
-import styled, { createGlobalStyle } from "styled-components/macro";
+import { createGlobalStyle } from "styled-components/macro";
+import SlideMessage from "./components/SlideMessage";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Poppins&display=swap');
@@ -15,17 +15,22 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Noto Sans TC',  'Poppins', "sans-serif";
   }
   :root{
-    --mainColor:#2196f3;
+/*    
+    --mainColor:#2196f3; */
+    --deepColor:#02697f;
+    --lightColor:#93f1f9;
+     --mainColor:#0ac3cf;
 
     --thirdColor:#00bcd4;
     --secColor:#61dafb;
-    --borderColor:#00dfc4;
+    --secondColor:#00dfc4;
 
     --errorColor:#ec5990;
 
     --mainBack:#16181d;
-    --secondBack:#20232a;
-    --thirdBack:#282c34;
+    --secondBack:#282c34;
+    --thirdBack:#353a46;
+    --lightBack:#ffffff8b;
   }
   body{
    color:#fff;
@@ -33,11 +38,11 @@ const GlobalStyle = createGlobalStyle`
   #root{
     background:var(--mainBack);
     width: 100%;
-    min-height: calc(100vh - 68px);
+    min-height:100vh;
+    padding-top:68px ;
     position:relative;
-    margin-top: 68px;
+    
   }
-
 `;
 
 const App = () => {
@@ -46,6 +51,7 @@ const App = () => {
       <GlobalStyle />
       <Header />
       <Outlet />
+      <SlideMessage />
     </>
   );
 };

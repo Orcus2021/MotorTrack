@@ -22,14 +22,14 @@ const asyncRecordAction = {
         const newRecordAnnual = { ...recordAnnual };
         newRecordAnnual[dateArr[0]] = (newRecordAnnual[dateArr[0]] || 0) + 1;
         const annualUrl = `/carsRecords/${carId}`;
-        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
         dispatch(
           carActions.update({ id: carId, recordAnnual: newRecordAnnual })
         );
 
         response.records.forEach(async (partObj: partType) => {
           const url = `carsRecords/${carId}/parts/${partObj.category}`;
-          await firebase.setMergeDoc(url, { records: arrayUnion(partObj) });
+          firebase.setMergeDoc(url, { records: arrayUnion(partObj) });
         });
         return response;
       };
@@ -48,13 +48,13 @@ const asyncRecordAction = {
         const response = await firebase.setDoc(url, data);
         const parts = { ...oldParts };
         if (response) {
-          data.records.forEach(async (newPart: partType) => {
+          data.records.forEach((newPart: partType) => {
             const partIndex = parts[newPart.category].findIndex(
               (part) => part.recordID === data.id
             );
             parts[newPart.category][partIndex] = newPart;
             const url = `/carsRecords/${carId}/parts/${newPart.category}`;
-            await firebase.setDoc(url, { records: parts[newPart.category] });
+            firebase.setDoc(url, { records: parts[newPart.category] });
           });
         }
       };
@@ -82,15 +82,15 @@ const asyncRecordAction = {
         const newRecordAnnual = { ...recordAnnual };
         newRecordAnnual[dateArr[0]] = newRecordAnnual[dateArr[0]] - 1;
         const annualUrl = `/carsRecords/${carId}`;
-        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
         dispatch(
           carActions.update({ id: carId, recordAnnual: newRecordAnnual })
         );
 
         if (response) {
-          oldParts.forEach(async (part: partType) => {
+          oldParts.forEach((part: partType) => {
             const url = `/carsRecords/${carId}/parts/${part.category}`;
-            await firebase.deleteParts(url, part);
+            firebase.deleteParts(url, part);
           });
         }
       };
@@ -103,13 +103,13 @@ const asyncRecordAction = {
     };
   },
   deletePart(carId: string, data: partType) {
-    return async (dispatch: AppDispatch) => {
-      const remove = async () => {
+    return (dispatch: AppDispatch) => {
+      const remove = () => {
         const url = `/carsRecords/${carId}/parts/${data.category}`;
-        await firebase.deleteParts(url, data);
+        firebase.deleteParts(url, data);
       };
       try {
-        await remove();
+        remove();
         dispatch(recordActions.deletePart(data));
       } catch (e) {
         console.log(e);
@@ -131,7 +131,9 @@ const asyncRecordAction = {
         const newRecordAnnual = { ...recordAnnual };
         newRecordAnnual[dateArr[0]] = (newRecordAnnual[dateArr[0]] || 0) + 1;
         const annualUrl = `/carsRecords/${carId}`;
-        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+
+        firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+
         dispatch(
           carActions.update({ id: carId, recordAnnual: newRecordAnnual })
         );
@@ -147,7 +149,7 @@ const asyncRecordAction = {
     };
   },
   updateExpense(carId: string, data: feeType) {
-    return async (dispatch: AppDispatch) => {
+    return (dispatch: AppDispatch) => {
       const update = async () => {
         let url = "";
         if (data.category === "refuel") {
@@ -155,11 +157,10 @@ const asyncRecordAction = {
         } else {
           url = `/carsRecords/${carId}/feeRecords/${data.id}`;
         }
-        const response = await firebase.updateDoc(url, data);
-        return response;
+        firebase.updateDoc(url, data);
       };
       try {
-        await update();
+        update();
         dispatch(recordActions.updateExpense(data));
       } catch (e) {
         console.log(e);
@@ -168,26 +169,26 @@ const asyncRecordAction = {
   },
   deleteExpense(carId: string, data: feeType, recordAnnual: recordAnnualType) {
     return async (dispatch: AppDispatch) => {
-      const remove = async () => {
+      const remove = () => {
         let url = "";
         if (data.category === "refuel") {
           url = `/carsRecords/${carId}/refuelRecords/${data.id}`;
         } else {
           url = `/carsRecords/${carId}/feeRecords/${data.id}`;
         }
-        await firebase.delete(url);
+        firebase.delete(url);
 
         const dateArr = data.date.split("-");
         const newRecordAnnual = { ...recordAnnual };
         newRecordAnnual[dateArr[0]] = newRecordAnnual[dateArr[0]] - 1;
         const annualUrl = `/carsRecords/${carId}`;
-        await firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
+        firebase.updateDoc(annualUrl, { recordAnnual: newRecordAnnual });
         dispatch(
           carActions.update({ id: carId, recordAnnual: newRecordAnnual })
         );
       };
       try {
-        await remove();
+        remove();
         dispatch(recordActions.deleteExpense(data));
       } catch (e) {
         console.log(e);
@@ -204,6 +205,7 @@ const asyncRecordAction = {
       try {
         const records = await getAll();
         dispatch(recordActions.setAllRecords(records));
+        dispatch(recordActions.getAllExpense());
       } catch (e) {
         console.log(e);
       }

@@ -6,7 +6,7 @@ import { feeType } from "../../../../types/recordType";
 import { useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
-import { formatDate } from "../../../../utils/calcFunc";
+import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 
 import trashIcon from "../../../../assets/trash.png";
@@ -118,6 +118,12 @@ const Expenses: React.FC<{
     options.push(<option value={key}>{value}</option>);
   });
 
+  const addMessage = (type: string) => {
+    let message = updateId ? "已更新紀錄" : "已新增紀錄";
+    if (type === "error") message = "已刪除紀錄";
+    createMessage(type, dispatch, message);
+  };
+
   const createExpenseHandler = (record: feeType) => {
     record.amount = Number(record.amount);
     record.mileage = Number(record.mileage);
@@ -130,9 +136,11 @@ const Expenses: React.FC<{
     } else {
       dispatch(asyncRecordAction.updateExpense(carID as string, record));
     }
+    addMessage("remind");
     dispatch(
       asyncCarAction.updateCar(carID as string, { mileage: record.mileage })
     );
+
     onClose("record");
   };
   const deleteRepairRecord = () => {
@@ -143,45 +151,47 @@ const Expenses: React.FC<{
         recordAnnual
       )
     );
+    addMessage("error");
     onClose("record");
   };
 
   return (
     <>
       <RepairContainer>
-        <form onSubmit={handleSubmit(createExpenseHandler)}>
-          <HeaderBar>
-            <ConfirmBtn>{updateId ? "更新" : "新增"}</ConfirmBtn>
-            {updateId && (
-              <IconBx onClick={deleteRepairRecord}>
-                <Icon src={trashIcon} />
-              </IconBx>
-            )}
-            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-          </HeaderBar>
-          <TitleBx>
-            <Label>標題</Label>
-            <Input type="text" {...register("title", { required: true })} />
-          </TitleBx>
-          <DetailBX>
-            <Detail>
-              <Label>日期</Label>
-              <Input type="date" {...register("date", { required: true })} />
-              <Label>里程數</Label>
-              <Input
-                type="number"
-                {...register("mileage", { required: true })}
-              />
-            </Detail>
-            <Detail>
-              <Label>總金額</Label>
-              <Input
-                type="number"
-                {...register("amount", { required: true })}
-              />
-            </Detail>
-          </DetailBX>
-        </form>
+        <HeaderBar>
+          <ConfirmBtn onClick={handleSubmit(createExpenseHandler)}>
+            {updateId ? "更新" : "新增"}
+          </ConfirmBtn>
+          {updateId && (
+            <IconBx onClick={deleteRepairRecord}>
+              <Icon src={trashIcon} />
+            </IconBx>
+          )}
+          <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
+        </HeaderBar>
+        <TitleBx>
+          <Label>標題</Label>
+          <Input type="text" {...register("title", { required: true })} />
+        </TitleBx>
+        <DetailBX>
+          <Detail>
+            <Label>日期</Label>
+            <Input type="date" {...register("date", { required: true })} />
+            <Label>里程數</Label>
+            <Input
+              type="number"
+              {...register("mileage", {
+                required: true,
+                min: updateId ? record?.mileage : car?.mileage,
+              })}
+            />
+          </Detail>
+          <Detail>
+            <Label>總金額</Label>
+            <Input type="number" {...register("amount", { required: true })} />
+          </Detail>
+        </DetailBX>
+
         <Select {...register("category")}>{options}</Select>
 
         <NoteTitle>備註</NoteTitle>

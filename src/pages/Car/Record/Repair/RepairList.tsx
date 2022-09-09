@@ -55,6 +55,7 @@ const RepairList: React.FC<{
   const selectPartHandler = (index: number) => {
     setSelectPartIndex(index);
   };
+
   return (
     <>
       <HeaderBx>
@@ -88,7 +89,11 @@ const RepairList: React.FC<{
         </tbody>
       </MessageTable>
       {showPartForm && (
-        <Modal closeEffect={closeEffect} onClose={closePartForm}>
+        <Modal
+          closeEffect={closeEffect}
+          onClose={closePartForm}
+          containerWidth={400}
+        >
           <PartForm
             onAddPart={onAdd}
             onClose={closePartForm}

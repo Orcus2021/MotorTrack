@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 const PartContainer = styled.form`
   width: 400px;
   padding: 10px;
-  background-color: var(--secondBack);
+  background-color: var(--thirdBack);
   display: flex;
   flex-direction: column;
   align-items: center;
