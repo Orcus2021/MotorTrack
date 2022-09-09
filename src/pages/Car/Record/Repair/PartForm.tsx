@@ -115,7 +115,7 @@ const PartForm: React.FC<{
     const partName = parts.get(watch("category")) as partsMapType;
     part.name = partName.name;
     part.price = Number(part.price);
-    console.log(part);
+
     onAddPart(part);
     onClose();
   };

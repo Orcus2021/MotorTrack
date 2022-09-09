@@ -1,16 +1,18 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
-import styled from "styled-components";
-import brands, { brandsMapType } from "../../../utils/brands";
+import React, { useEffect, useState, useMemo } from "react";
+import styled from "styled-components/macro";
+import brands from "../../../utils/brands";
 import Brands from "./Brands";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
 import asyncCarAction from "../../../store/car/asyncCarAction";
+import Input from "../../../components/Input";
 import { carType } from "../../../types/carType";
-import { Img } from "../../../components/style";
 import Modal from "../../../components/Modal/Modal";
 import Confirm from "./Confirm";
+
+import logoIcon from "../../../assets/logo_white.png";
 
 const EditContainer = styled.div`
   width: 100%;
@@ -32,9 +34,9 @@ const RightBx = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const Input = styled.input`
-  width: 100%;
-`;
+// const Input = styled.input`
+//   width: 100%;
+// `;
 const EditBtn = styled.button`
   border: none;
   padding: 5px 10px;
@@ -48,7 +50,8 @@ const DeleteBtn = styled.button`
   cursor: pointer;
 `;
 const CarInfo = styled.p`
-  font-size: 16px;
+  font-size: 12px;
+  margin-right: 10px;
 `;
 const BrandWrapper = styled.div`
   width: 50%;
@@ -60,7 +63,6 @@ const InputBx = styled.div`
   width: 250px;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 10px;
 `;
 const BrandInput = styled.input<{ $isError: undefined | object }>`
   background-color: transparent;
@@ -78,18 +80,49 @@ const BtnBx = styled.div`
   justify-content: center;
 `;
 const LogoBx = styled.div`
-  height: 200px;
-  width: 200px;
+  width: 100%;
+  height: 100%;
   position: relative;
-  background-color: #ffffff8b;
-  border-radius: 50%;
   overflow: hidden;
 `;
-const ConFirmWrapper = styled.div`
-  width: 400px;
-  height: 400px;
-  background: var(--secondBack);
+const ErrorMsg = styled.p`
+  text-align: left;
+  height: 10px;
+  font-size: 10px;
+  margin-bottom: 15px;
+  &:nth-child(7) {
+    margin-bottom: 0;
+  }
 `;
+const LogoWrapper = styled.div`
+  width: 250px;
+  height: 100px;
+
+  border-radius: 4px;
+  /* background-color: #ffffff8b; */
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+`;
+const LogoImg = styled.img`
+  position: absolute;
+  object-fit: contain;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+`;
+const CarInfoBx = styled.div`
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+`;
+const SubTitle = styled.span`
+  font-size: 12px;
+  color: var(--mainColor);
+`;
+
 type brandType = { name: string; key: string };
 const EditCar = () => {
   const car = useAppSelector((state) => state.car.car);
@@ -196,31 +229,75 @@ const EditCar = () => {
             <Brands onBrand={brandNameHandler} brandName={brandName} />
           </BrandWrapper>
           <RightBx>
-            <LogoBx>
-              <Img src={brands.get(brandName.key)?.img} />
-            </LogoBx>
-            <CarInfo>暱稱</CarInfo>
-            <Input
-              type="text"
-              placeholder="暱稱"
-              {...register("name", { required: true })}
-            />
-            <CarInfo>車牌</CarInfo>
-            <Input type="text" placeholder="車牌" {...register("plateNum")} />
-            <CarInfo>驗車時間設定</CarInfo>
-            <Input
-              type="date"
-              placeholder="行照發照日"
-              {...register("licenseDate")}
-            />
-            <CarInfo>車齡:{carAge}</CarInfo>
-            <CarInfo>驗車日期:{inspectionDay}</CarInfo>
-            <CarInfo>保險到期設定</CarInfo>
-            <Input
-              type="date"
-              placeholder="保險到期日"
-              {...register("insuranceDate")}
-            />
+            <LogoWrapper>
+              <LogoBx>
+                <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
+              </LogoBx>
+            </LogoWrapper>
+
+            <InputBx>
+              <Input
+                register={register}
+                name="name"
+                content="暱稱"
+                error={errors?.name}
+                require={{ required: true }}
+                type="text"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
+
+            <InputBx>
+              <Input
+                register={register}
+                name="plateNum"
+                content="車牌"
+                error={errors?.plateNum}
+                require={{
+                  required: true,
+                  pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                }}
+                type="text"
+              />
+            </InputBx>
+            <ErrorMsg>
+              {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
+              {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
+            </ErrorMsg>
+
+            <InputBx>
+              <Input
+                register={register}
+                setValue={setValue}
+                watch={watch}
+                name="licenseDate"
+                content="行照發照日"
+                error={errors?.licenseDate}
+                require={{ required: true }}
+                type="date"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
+            <CarInfoBx>
+              <SubTitle>車齡:</SubTitle>
+              <CarInfo>{carAge}</CarInfo>
+              <SubTitle>驗車日期:</SubTitle>
+              <CarInfo>{inspectionDay}</CarInfo>
+            </CarInfoBx>
+
+            <InputBx>
+              <Input
+                register={register}
+                setValue={setValue}
+                watch={watch}
+                name="insuranceDate"
+                content="保險到期日"
+                error={errors?.insuranceDate}
+                require={{ required: true }}
+                type="date"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
             <BtnBx>
               <EditBtn onClick={handleSubmit(editCar)}>確定</EditBtn>
               <DeleteBtn onClick={callConfirm}>刪除</DeleteBtn>

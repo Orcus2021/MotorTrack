@@ -37,6 +37,7 @@ const GlobalStyle = createGlobalStyle`
   }
   #root{
     background:var(--mainBack);
+  
     width: 100%;
     min-height:100vh;
     padding-top:68px ;

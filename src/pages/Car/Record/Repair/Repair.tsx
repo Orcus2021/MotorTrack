@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
-import { userActions } from "../../../../store/user/userReducer";
+import Input from "../../../../components/Input";
 
 import trashIcon from "../../../../assets/trash.png";
 
@@ -42,32 +42,28 @@ const ConfirmBtn = styled.button`
 const TitleBx = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
 `;
-const Input = styled.input`
-  flex-grow: 1;
-  height: 25px;
-  outline: none;
-  border: solid 2px #fff;
-  font-size: 16px;
-`;
-const Label = styled.label`
-  font-size: 16px;
-  min-width: 50px;
-`;
+
 const DetailBX = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 `;
 const Detail = styled.div`
   width: 50%;
   display: flex;
   flex-direction: row;
+`;
+const AmountDetail = styled.div`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 const NoteTitle = styled.p`
   width: 100%;
@@ -77,6 +73,8 @@ const NoteContent = styled.textarea`
   resize: none;
   width: 100%;
   height: 150px;
+  background-color: transparent;
+  color: #fff;
 `;
 const IconBx = styled.div`
   position: relative;
@@ -92,6 +90,16 @@ const Icon = styled.img`
   height: 100%;
   object-fit: cover;
 `;
+const ErrorMsg = styled.p`
+  text-align: left;
+  height: 10px;
+  font-size: 10px;
+  padding-left: 10px;
+`;
+
+const InputBx = styled.div`
+  margin-right: 10px;
+`;
 
 const Repair: React.FC<{
   onClose: Dispatch<SetStateAction<string>>;
@@ -106,8 +114,16 @@ const Repair: React.FC<{
     state.record.repair.find((record) => record.id === updateId)
   );
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
+  const [amountValue, setAmountValue] = useState<number>();
   const deletePart = useRef<partType[]>([]);
-  const { register, handleSubmit, reset, setValue } = useForm<repairType>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<repairType>();
   const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
   const { parts: initParts } = initRecord;
 
@@ -126,9 +142,14 @@ const Repair: React.FC<{
         (total: number, { subtotal }: { subtotal: number }) => total + subtotal,
         0
       );
-      setValue("amount", amount);
+      setAmountValue(amount);
+      // setValue("amount", amount);
+    } else {
+      console.log("test");
+      setAmountValue(0);
+      // setValue("amount", NaN);
     }
-  }, [parts, setValue]);
+  }, [parts]);
 
   const addPartHandler = (newPart: partType) => {
     const partIndex = parts.findIndex(
@@ -243,30 +264,63 @@ const Repair: React.FC<{
           <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
         </HeaderBar>
         <TitleBx>
-          <Label>標題</Label>
-          <Input type="text" {...register("title", { required: true })} />
+          <Input
+            register={register}
+            name="title"
+            content="標題"
+            error={errors?.title}
+            require={{ required: true }}
+            type="text"
+          />
+          <ErrorMsg>{errors.title && "標題尚未填寫"}</ErrorMsg>
         </TitleBx>
         <DetailBX>
           <Detail>
-            <Label>日期</Label>
-            <Input type="date" {...register("date", { required: true })} />
-            <Label>里程數</Label>
-            <Input
-              type="number"
-              {...register("mileage", {
-                required: true,
-                min: updateId ? record?.mileage : carMileage,
-              })}
-            />
+            <InputBx>
+              <Input
+                register={register}
+                setValue={setValue}
+                watch={watch}
+                name="date"
+                content="日期"
+                error={errors?.date}
+                require={{ required: true }}
+                type="date"
+              />
+              <ErrorMsg>{errors.date && "日期尚未填寫"}</ErrorMsg>
+            </InputBx>
+            <InputBx>
+              <Input
+                register={register}
+                name="mileage"
+                content="里程數"
+                error={errors?.mileage}
+                require={{
+                  required: true,
+                  min: updateId ? record?.mileage : carMileage,
+                }}
+                type="number"
+              />
+              <ErrorMsg>
+                {errors.mileage?.type === "min" && "里程數勿低於目前里程數"}
+              </ErrorMsg>
+            </InputBx>
           </Detail>
-          <Detail>
-            <Label>總金額</Label>
+          <AmountDetail>
             <Input
+              register={register}
+              name="amount"
+              content="總金額"
+              setValue={setValue}
+              watch={watch}
+              error={errors?.amount}
+              require={{ required: true }}
               type="number"
-              {...register("amount", { required: true })}
-              readOnly
+              readOnly={true}
+              value={amountValue}
             />
-          </Detail>
+            <ErrorMsg>{errors.amount && "尚未新增零件資料"}</ErrorMsg>
+          </AmountDetail>
         </DetailBX>
         <RepairList
           onAdd={addPartHandler}

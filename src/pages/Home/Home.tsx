@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { userActions } from "../../store/user/userReducer";
 import { useAppDispatch, useAppSelector } from "../../store";
 import Loading from "../../components/Loading/Loading";
-import SlideMessage from "../../components/SlideMessage";
+
+import Input from "../../components/Input";
+import { useForm } from "react-hook-form";
 
 const Home = () => {
   const isLoading = useAppSelector((state) => state.user.isLoading);
-  const [showMessage, setShowMessage] = useState(false);
-  const TimerId = useRef<number>(NaN);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(userActions.loading(true));
@@ -16,31 +16,36 @@ const Home = () => {
     }, 1000);
   }, [dispatch]);
 
-  const showHandler = () => {
-    TimerId.current = window.setTimeout(() => {
-      dispatch(
-        userActions.showNotification({
-          status: false,
-          type: "",
-          message: "",
-          timerId: "",
-        })
-      );
-    }, 3000);
-    dispatch(
-      userActions.showNotification({
-        status: true,
-        type: "error",
-        message: "開心",
-        timerId: TimerId.current,
-      })
-    );
+  // -----------------------------
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm();
+
+  const createFrom = () => {
+    // console.log(data);
   };
 
   return (
     <>
       {isLoading && <Loading />}
-      <div onClick={showHandler}>Home</div>
+      <div>Home</div>
+      <div>
+        <Input
+          register={register}
+          setValue={setValue}
+          watch={watch}
+          name="insuranceDate"
+          content="保險到期日"
+          error={{ key: "kkk" }}
+          require={{ required: true }}
+          type="text"
+        />
+        <button onClick={handleSubmit(createFrom)}>典籍</button>
+      </div>
     </>
   );
 };

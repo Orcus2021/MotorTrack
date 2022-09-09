@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
+import Input from "../../../components/Input";
 import { Img } from "../../../components/style";
 import brands, { brandsMapType } from "../../../utils/brands";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +8,9 @@ import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { useForm } from "react-hook-form";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
-import { userActions } from "../../../store/user/userReducer";
 import { createMessage } from "../../../utils/calcFunc";
+
+import logoIcon from "../../../assets/logo_white.png";
 
 const AddContainer = styled.div`
   width: 100%;
@@ -40,21 +42,8 @@ const InputBx = styled.div`
   width: 250px;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 10px;
 `;
 
-const Input = styled.input<{ $isError: undefined | object }>`
-  background-color: transparent;
-  font-size: 1rem;
-  border: 1px solid
-    ${(props) => (props.$isError ? "var(--errorColor)" : "#fff")};
-  outline: none;
-  color: #fff;
-`;
-
-const Label = styled.label`
-  font-size: 16px;
-`;
 const AddBtn = styled.button`
   border: none;
   padding: 5px 10px;
@@ -70,7 +59,6 @@ const BrandBx = styled.div`
   flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
-
   overflow-y: auto;
 `;
 
@@ -116,13 +104,36 @@ const BrandInput = styled.input<{ $isError: undefined | object }>`
   text-align: center;
 `;
 
+const LogoWrapper = styled.div`
+  width: 250px;
+  height: 100px;
+
+  border-radius: 4px;
+  /* background-color: #ffffff8b; */
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+`;
+
 const LogoBx = styled.div`
-  height: 200px;
-  width: 200px;
+  width: 100%;
+
+  height: 100%;
   position: relative;
-  background-color: #ffffff8b;
-  border-radius: 50%;
   overflow: hidden;
+`;
+const LogoImg = styled.img`
+  position: absolute;
+  object-fit: contain;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+`;
+const ErrorMsg = styled.p`
+  text-align: left;
+  height: 10px;
+  font-size: 10px;
+  margin-bottom: 15px;
 `;
 
 const AddCar = () => {
@@ -138,6 +149,7 @@ const AddCar = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<carType>();
 
@@ -195,52 +207,67 @@ const AddCar = () => {
           </BrandBx>
         </BrandWrapper>
         <RightBx>
-          <LogoBx>
-            <Img src={brands.get(brandName.key)?.img} />
-          </LogoBx>
+          <LogoWrapper>
+            <LogoBx>
+              <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
+            </LogoBx>
+          </LogoWrapper>
+
           <InputBx>
-            <Label>名稱</Label>
             <Input
+              register={register}
+              name="name"
+              content="暱稱"
+              error={errors?.name}
+              require={{ required: true }}
               type="text"
-              required
-              $isError={errors?.name}
-              {...register("name", { required: true })}
             />
           </InputBx>
+          <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
 
-          {errors.name && <p>車輛名稱尚未填寫</p>}
           <InputBx>
-            <Label>車牌</Label>
             <Input
-              type="text"
-              placeholder="車牌"
-              $isError={errors?.plateNum}
-              {...register("plateNum", {
+              register={register}
+              name="plateNum"
+              content="車牌"
+              error={errors?.plateNum}
+              require={{
                 required: true,
                 pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
-              })}
+              }}
+              type="text"
             />
           </InputBx>
-          {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
-          {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
+          <ErrorMsg>
+            {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
+            {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
+          </ErrorMsg>
           <InputBx>
-            <Label>行照發照日</Label>
             <Input
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              name="licenseDate"
+              content="行照發照日"
+              error={errors?.licenseDate}
+              require={{ required: true }}
               type="date"
-              placeholder="行照發照日"
-              $isError={errors?.licenseDate}
-              {...register("licenseDate", { required: true })}
             />
           </InputBx>
+          <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
           <InputBx>
-            <Label>保險到期日</Label>
             <Input
+              register={register}
+              setValue={setValue}
+              watch={watch}
+              name="insuranceDate"
+              content="保險到期日"
+              error={errors?.insuranceDate}
+              require={{ required: true }}
               type="date"
-              placeholder="行照發照日"
-              $isError={errors?.insuranceDate}
-              {...register("insuranceDate", { required: true })}
             />
           </InputBx>
+          <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
           <AddBtn onClick={handleSubmit(createCar)}>新增</AddBtn>
         </RightBx>
       </AddWrapper>
