@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components/macro";
 import uuid from "react-uuid";
 import RepairItem from "./RepairItem";
+import MessageBox from "../../../../components/Modal/MessageBox";
+
 import { partType } from "../../../../types/recordType";
 import Modal from "../../../../components/Modal/Modal";
 import PartForm from "./PartForm";
@@ -94,11 +96,13 @@ const RepairList: React.FC<{
           onClose={closePartForm}
           containerWidth={400}
         >
-          <PartForm
-            onAddPart={onAdd}
-            onClose={closePartForm}
-            part={parts[selectPartIndex]}
-          />
+          <MessageBox setStyle={{ height: "auto", width: 400 }}>
+            <PartForm
+              onAddPart={onAdd}
+              onClose={closePartForm}
+              part={parts[selectPartIndex]}
+            />
+          </MessageBox>
         </Modal>
       )}
     </>

@@ -45,7 +45,7 @@ const IconBx = styled.span`
 const Percent = styled.div<{ $isAlert: boolean }>`
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 15px;
 
   border-radius: 10px;
   box-shadow: inset 0 0 10px #000;
@@ -81,8 +81,8 @@ const Progress = styled.div<{ $length: number }>`
   }
   &::after {
     content: "";
-    background-color: #ffffff3a;
-    box-shadow: 0px 0px 20px 4px #ffffffd1;
+    background-color: #ffffff86;
+    box-shadow: 0px 0px 12px 4px #ffffff;
     width: 1px;
     height: 100%;
     position: absolute;
@@ -135,46 +135,11 @@ const PartStatus: React.FC<{
   });
   const { part, onShow, onSelect } = props;
 
-  // const mileagePercent = useCallback(() => {
-  //   let message = "";
-  //   const diffMileage =
-  //     Number(part[0].endMileage) - Number(car?.mileage as number);
-  //   const percent = Math.floor((diffMileage * 100) / part[0].mileage);
-  //   if (diffMileage <= 0) {
-  //     message = `超過${diffMileage}公里`;
-  //   } else {
-  //     message = `可用${diffMileage}公里`;
-  //   }
-
-  //   return { percent, message };
-  // }, [car, part]);
-
-  // const datePercent = useCallback(() => {
-  //   if (part[0].month === 0 && part[0].year) return null;
-  //   let message = "";
-  //   const startMillisecond = new Date(part[0].startDate).getTime();
-  //   const endMillisecond = new Date(part[0].endDate).getTime();
-  //   const nowMillisecond = new Date().getTime();
-  //   const diffMillisecond = endMillisecond - startMillisecond;
-  //   let percent = Math.floor(
-  //     ((endMillisecond - nowMillisecond) * 100) / diffMillisecond
-  //   );
-  //   const months = Math.ceil((diffMillisecond / 1000) * 60 * 60 * 24 * 30);
-  //   if (diffMillisecond <= 0) {
-  //     message = "使用期限已到";
-  //   } else if (months >= 12) {
-  //     message = `可用${Math.floor(months / 12)}年${months % 12}個月`;
-  //   } else {
-  //     message = `可用${months}個月`;
-  //   }
-
-  //   return { percent, message };
-  // }, [part]);
-
   useEffect(() => {
     const compareDateAndMileage = () => {
       const mileage = mileagePercent(part[0], car as carType);
       const date = datePercent(part[0]);
+
       if (!date) {
         setPartDetail(mileage);
       } else if (date.percent < mileage.percent) {

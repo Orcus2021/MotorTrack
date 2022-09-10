@@ -87,7 +87,7 @@ const Login = () => {
       password,
     };
     await dispatch(asyncUserAction.signIn(user));
-    navigate("/status");
+    navigate("/status", { state: "first" });
   };
 
   return (

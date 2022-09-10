@@ -1,10 +1,12 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/macro";
-import parts, { partsMapType } from "../../../../utils/parts";
+import parts from "../../../../utils/parts";
 import { partType } from "../../../../types/recordType";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
+import Input from "../../../../components/Input";
+import SelectCategory from "./SelectCategory";
 
-const PartContainer = styled.form`
+const PartContainer = styled.div`
   width: 400px;
   padding: 10px;
   background-color: var(--thirdBack);
@@ -13,54 +15,24 @@ const PartContainer = styled.form`
   align-items: center;
 `;
 const HeaderBx = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-`;
-const Select = styled.select`
-  cursor: pointer;
-  padding: 10px;
-  background-color: transparent;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  color: #fff;
-`;
-const Option = styled.option`
-  background-color: var(--secondBack);
-  color: #fff;
-  &:hover {
-    background-color: var(--mainColor);
-  }
-`;
-const PartIconBx = styled.div`
-  position: relative;
-  width: 20px;
-  height: 20px;
-`;
-const Icon = styled.img`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  top: 0;
-  left: 0;
-`;
-const Input = styled.input`
-  width: 100%;
-  outline: none;
-  height: 25px;
+  margin-bottom: 15px;
 `;
 
-const InputBx = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 100%;
+  margin-bottom: 15px;
 `;
 const Note = styled.textarea`
   resize: none;
   width: 100%;
-  height: 150px;
+  height: 80px;
 `;
 const Btn = styled.button`
   border: 2px solid var(--mainColor);
@@ -69,13 +41,39 @@ const Btn = styled.button`
   cursor: pointer;
 `;
 
+const InputBx = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 10px;
+  &:nth-child(3) {
+    margin-right: 0;
+  }
+`;
+
+const ErrorMsg = styled.p`
+  text-align: left;
+  height: 10px;
+  font-size: 10px;
+  padding-left: 10px;
+`;
+const SpecBx = styled.div`
+  width: 50%;
+  margin-right: 10px;
+`;
+const ButtonBx = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
 const PartForm: React.FC<{
   onAddPart: (part: partType) => void;
   onClose: () => void;
   part: partType;
 }> = (props) => {
   const { onAddPart, onClose, part } = props;
-
+  const methods = useForm<partType>({ mode: "onBlur" });
   const {
     register,
     handleSubmit,
@@ -83,7 +81,8 @@ const PartForm: React.FC<{
     watch,
     setValue,
     formState: { errors },
-  } = useForm<partType>({ mode: "onBlur" });
+  } = methods;
+
   useEffect(() => {
     if (part) {
       reset(part);
@@ -100,115 +99,117 @@ const PartForm: React.FC<{
     }
   }, [part, reset]);
 
-  const options: JSX.Element[] = [];
-  parts.forEach((value, key) => {
-    options.push(
-      <Option value={key}>
-        <PartIconBx>
-          <Icon src={parts.get(key)?.icon} />
-        </PartIconBx>
-        {value.name}
-      </Option>
-    );
-  });
   const submitPart = (part: partType) => {
-    const partName = parts.get(watch("category")) as partsMapType;
+    const partName = parts.get(watch("category"));
+    if (!partName) return;
     part.name = partName.name;
     part.price = Number(part.price);
 
     onAddPart(part);
     onClose();
   };
-  const closeFormHandler = (e: React.FormEvent) => {
-    e.preventDefault();
+  const closeFormHandler = () => {
     onClose();
   };
 
   return (
-    <PartContainer onSubmit={handleSubmit(submitPart)}>
-      <HeaderBx>
-        <Input
-          type="text"
-          placeholder="零件項目"
-          value={watch("category")}
-          readOnly
-        />
-        <Select
-          {...register("category", {
-            required: true,
-            onChange: (e) => {
-              setValue("mileage", parts.get(e.target.value)?.mileage as number);
-              setValue(
-                "month",
-                parts.get(e.target.value)?.expirationMonth as number
-              );
-              setValue(
-                "year",
-                parts.get(e.target.value)?.expirationYear as number
-              );
-            },
-          })}
-        >
-          {options}
-        </Select>
-      </HeaderBx>
-      <Input
-        type="text"
-        placeholder="規格"
-        {...register("spec", { required: true })}
-      />
-      <InputBx>
-        <Input
-          type="number"
-          placeholder="單價"
-          {...register("price", {
-            required: true,
-            onBlur: (e) => {
-              setValue("subtotal", e.target.value * watch("qty"));
-            },
-          })}
-        />
-        <Input
-          type="number"
-          placeholder="數量"
-          {...register("qty", {
-            required: true,
-            onBlur: (e) => {
-              setValue("subtotal", e.target.value * watch("price"));
-            },
-          })}
-        />
-        <Input
-          type="number"
-          placeholder="總額"
-          {...register("subtotal", {
-            required: true,
-            onBlur: (e) => {
-              setValue("price", e.target.value / watch("qty"));
-            },
-          })}
-        />
-      </InputBx>
-      <InputBx>
-        <Input
-          type="text"
-          placeholder="使用里程"
-          {...register("mileage", { required: true })}
-        />
-        <Input
-          type="number"
-          placeholder="年"
-          {...register("year", { required: true })}
-        />
-        <Input
-          type="number"
-          placeholder="月"
-          {...register("month", { required: true })}
-        />
-      </InputBx>
-      <Note placeholder="備註" {...register("note")} />
-      <Btn>新增</Btn>
-      <Btn onClick={closeFormHandler}>取消</Btn>
+    <PartContainer>
+      <FormProvider {...methods}>
+        <HeaderBx>
+          <SpecBx>
+            <Input
+              name="spec"
+              content="規格"
+              error={errors?.spec}
+              type="text"
+            />
+          </SpecBx>
+          <SelectCategory />
+        </HeaderBx>
+        <InputWrapper>
+          <InputBx>
+            <Input
+              name="price"
+              content="單價"
+              error={errors?.price}
+              type="number"
+              require={{
+                required: true,
+                onBlur: (e: { target: { value: number } }) => {
+                  setValue("subtotal", e.target.value * watch("qty"));
+                },
+              }}
+            />
+            <ErrorMsg>{errors.price && "單價錯誤"}</ErrorMsg>
+          </InputBx>
+          <InputBx>
+            <Input
+              name="qty"
+              content="數量"
+              error={errors?.qty}
+              type="number"
+              require={{
+                required: true,
+                onBlur: (e: { target: { value: number } }) => {
+                  setValue("subtotal", e.target.value * watch("price"));
+                },
+              }}
+            />
+            <ErrorMsg>{errors.qty && "數量錯誤"}</ErrorMsg>
+          </InputBx>
+          <InputBx>
+            <Input
+              name="subtotal"
+              content="總額"
+              error={errors?.subtotal}
+              type="number"
+              require={{
+                required: true,
+                onBlur: (e: { target: { value: number } }) => {
+                  setValue("price", e.target.value / watch("qty"));
+                },
+              }}
+            />
+            <ErrorMsg>{errors.subtotal && "總額錯誤"}</ErrorMsg>
+          </InputBx>
+        </InputWrapper>
+        <InputWrapper>
+          <InputBx>
+            <Input
+              name="mileage"
+              content="使用里程"
+              error={errors?.mileage}
+              require={{ required: true }}
+              type="text"
+            />
+          </InputBx>
+
+          <InputBx>
+            <Input
+              name="year"
+              content="年"
+              error={errors?.year}
+              require={{ required: true }}
+              type="number"
+            />
+          </InputBx>
+
+          <InputBx>
+            <Input
+              name="month"
+              content="月"
+              error={errors?.month}
+              require={{ required: true }}
+              type="number"
+            />
+          </InputBx>
+        </InputWrapper>
+        <Note placeholder="備註" {...register("note")} />
+        <ButtonBx>
+          <Btn onClick={closeFormHandler}>取消</Btn>
+          <Btn onClick={handleSubmit(submitPart)}>新增</Btn>
+        </ButtonBx>
+      </FormProvider>
     </PartContainer>
   );
 };

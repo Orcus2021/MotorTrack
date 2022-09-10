@@ -228,7 +228,6 @@ const firebase = {
   },
   async uploadImage(url: string, file: File) {
     return new Promise((resolve) => {
-      console.log(url, file);
       const storageRef = ref(storage, url);
       const uploadTask = uploadBytesResumable(storageRef, file);
       uploadTask.on(

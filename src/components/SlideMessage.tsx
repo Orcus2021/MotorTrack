@@ -42,7 +42,7 @@ const Icon = styled(Img)``;
 const SlideMessage = () => {
   const notification = useAppSelector((state) => state.user.notification);
   const dispatch = useAppDispatch();
-  console.log(notification?.type);
+
   const closeHandler = () => {
     clearTimeout(notification?.timerId);
     dispatch(

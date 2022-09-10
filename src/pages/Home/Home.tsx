@@ -21,7 +21,6 @@ const Home = () => {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm();
 
@@ -33,11 +32,8 @@ const Home = () => {
     <>
       {isLoading && <Loading />}
       <div>Home</div>
-      <div>
+      {/* <div>
         <Input
-          register={register}
-          setValue={setValue}
-          watch={watch}
           name="insuranceDate"
           content="保險到期日"
           error={{ key: "kkk" }}
@@ -45,7 +41,7 @@ const Home = () => {
           type="text"
         />
         <button onClick={handleSubmit(createFrom)}>典籍</button>
-      </div>
+      </div> */}
     </>
   );
 };

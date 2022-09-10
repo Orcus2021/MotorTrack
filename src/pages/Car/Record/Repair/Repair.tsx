@@ -9,12 +9,13 @@ import RepairList from "./RepairList";
 import styled from "styled-components/macro";
 import { partsType, partType, repairType } from "../../../../types/recordType";
 import { carType } from "../../../../types/carType";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
 import Input from "../../../../components/Input";
+import moment from "moment";
 
 import trashIcon from "../../../../assets/trash.png";
 
@@ -116,16 +117,22 @@ const Repair: React.FC<{
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
   const [amountValue, setAmountValue] = useState<number>();
   const deletePart = useRef<partType[]>([]);
+  const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
+  const { parts: initParts } = initRecord;
+
+  const methods = useForm<repairType>({
+    defaultValues: record || {
+      mileage: carMileage,
+      date: formatDate(new Date()),
+    },
+  });
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<repairType>();
-  const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
-  const { parts: initParts } = initRecord;
+  } = methods;
 
   useEffect(() => {
     if (updateId) {
@@ -142,14 +149,13 @@ const Repair: React.FC<{
         (total: number, { subtotal }: { subtotal: number }) => total + subtotal,
         0
       );
+      setValue("amount", amount);
       setAmountValue(amount);
-      // setValue("amount", amount);
     } else {
-      console.log("test");
+      setValue("amount", NaN);
       setAmountValue(0);
-      // setValue("amount", NaN);
     }
-  }, [parts]);
+  }, [parts, setValue]);
 
   const addPartHandler = (newPart: partType) => {
     const partIndex = parts.findIndex(
@@ -167,20 +173,16 @@ const Repair: React.FC<{
   };
 
   const setPartDateAndMileage = (record: repairType) => {
-    const dateArr = record.date.split("-");
-    let recordYear = Number(dateArr[0]);
-    let recordMonth = Number(dateArr[1]);
-    const recordDay = Number(dateArr[2]);
     const JSONParts = JSON.stringify(parts);
     const newParts = JSON.parse(JSONParts) as partType[];
+
     const newRecords = newParts.map((part) => {
-      if (recordMonth + part.month >= 12) {
-        recordYear += 1;
-        recordMonth = (recordMonth + part.month) % 12;
-      }
-      const endDate = `${recordYear + part.year}-${
-        recordMonth + part.month
-      }-${recordDay}`;
+      const endDate = moment()
+        .add(part.month, "months")
+        .add(part.year, "years")
+        .subtract(1, "days")
+        .format("YYYY-MM-DD");
+
       if (!part.recordID) part.recordID = "";
       part.startDate = record.date;
       part.endDate = endDate;
@@ -248,88 +250,85 @@ const Repair: React.FC<{
       deletePart.current = [...deletePart.current, removePart];
     }
   };
+  const remindHandler = () => {
+    createMessage("remind", dispatch, "請新增維修／保養項目");
+  };
 
   return (
     <>
-      <RepairContainer>
-        <HeaderBar>
-          <ConfirmBtn onClick={handleSubmit(createRepairHandler)}>
-            {updateId ? "更新" : "新增"}
-          </ConfirmBtn>
-          {updateId && (
-            <IconBx onClick={deleteRepairRecord}>
-              <Icon src={trashIcon} />
-            </IconBx>
-          )}
-          <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-        </HeaderBar>
-        <TitleBx>
-          <Input
-            register={register}
-            name="title"
-            content="標題"
-            error={errors?.title}
-            require={{ required: true }}
-            type="text"
-          />
-          <ErrorMsg>{errors.title && "標題尚未填寫"}</ErrorMsg>
-        </TitleBx>
-        <DetailBX>
-          <Detail>
-            <InputBx>
-              <Input
-                register={register}
-                setValue={setValue}
-                watch={watch}
-                name="date"
-                content="日期"
-                error={errors?.date}
-                require={{ required: true }}
-                type="date"
-              />
-              <ErrorMsg>{errors.date && "日期尚未填寫"}</ErrorMsg>
-            </InputBx>
-            <InputBx>
-              <Input
-                register={register}
-                name="mileage"
-                content="里程數"
-                error={errors?.mileage}
-                require={{
-                  required: true,
-                  min: updateId ? record?.mileage : carMileage,
-                }}
-                type="number"
-              />
-              <ErrorMsg>
-                {errors.mileage?.type === "min" && "里程數勿低於目前里程數"}
-              </ErrorMsg>
-            </InputBx>
-          </Detail>
-          <AmountDetail>
+      <FormProvider {...methods}>
+        <RepairContainer>
+          <HeaderBar>
+            <ConfirmBtn onClick={handleSubmit(createRepairHandler)}>
+              {updateId ? "更新" : "新增"}
+            </ConfirmBtn>
+            {updateId && (
+              <IconBx onClick={deleteRepairRecord}>
+                <Icon src={trashIcon} />
+              </IconBx>
+            )}
+            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
+          </HeaderBar>
+          <TitleBx>
             <Input
-              register={register}
-              name="amount"
-              content="總金額"
-              setValue={setValue}
-              watch={watch}
-              error={errors?.amount}
+              name="title"
+              content="標題"
+              error={errors?.title}
               require={{ required: true }}
-              type="number"
-              readOnly={true}
-              value={amountValue}
+              type="text"
             />
-            <ErrorMsg>{errors.amount && "尚未新增零件資料"}</ErrorMsg>
-          </AmountDetail>
-        </DetailBX>
-        <RepairList
-          onAdd={addPartHandler}
-          parts={parts}
-          onDeletePart={deletePartHandler}
-        />
-        <NoteTitle>備註</NoteTitle>
-        <NoteContent {...register("note")} />
-      </RepairContainer>
+            <ErrorMsg>{errors.title && "標題尚未填寫"}</ErrorMsg>
+          </TitleBx>
+          <DetailBX>
+            <Detail>
+              <InputBx>
+                <Input
+                  name="date"
+                  content="日期"
+                  error={errors?.date}
+                  require={{ required: true }}
+                  type="date"
+                />
+                <ErrorMsg>{errors.date && "日期尚未填寫"}</ErrorMsg>
+              </InputBx>
+              <InputBx>
+                <Input
+                  name="mileage"
+                  content="里程數"
+                  error={errors?.mileage}
+                  require={{
+                    required: true,
+                    min: updateId ? record?.mileage : carMileage,
+                  }}
+                  type="number"
+                />
+                <ErrorMsg>
+                  {errors.mileage?.type === "min" && "勿低於目前里程數"}
+                </ErrorMsg>
+              </InputBx>
+            </Detail>
+            <AmountDetail onClick={remindHandler}>
+              <Input
+                name="amount"
+                content="總金額"
+                error={errors?.amount}
+                require={{ required: true }}
+                type="number"
+                readOnly={true}
+                value={amountValue}
+              />
+              <ErrorMsg>{errors.amount && "尚未新增零件資料"}</ErrorMsg>
+            </AmountDetail>
+          </DetailBX>
+          <RepairList
+            onAdd={addPartHandler}
+            parts={parts}
+            onDeletePart={deletePartHandler}
+          />
+          <NoteTitle>備註</NoteTitle>
+          <NoteContent {...register("note")} />
+        </RepairContainer>
+      </FormProvider>
     </>
   );
 };

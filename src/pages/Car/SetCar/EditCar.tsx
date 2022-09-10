@@ -4,7 +4,8 @@ import brands from "../../../utils/brands";
 import Brands from "./Brands";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
-import { useForm } from "react-hook-form";
+import { createMessage } from "../../../utils/calcFunc";
+import { useForm, FormProvider } from "react-hook-form";
 import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import Input from "../../../components/Input";
@@ -143,16 +144,6 @@ const EditCar = () => {
   const [inspectionDay, setInspectionDay] = useState<string>(
     car?.inspectionDay || "0"
   );
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<carType>();
-
   const initCar = useMemo(() => {
     return {
       name: car?.name,
@@ -162,6 +153,16 @@ const EditCar = () => {
       insuranceDate: car?.insuranceDate,
     };
   }, [car]);
+
+  const methods = useForm<carType>({ defaultValues: initCar });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    setValue,
+    formState: { errors },
+  } = methods;
 
   useEffect(() => {
     reset(initCar);
@@ -183,7 +184,7 @@ const EditCar = () => {
     setValue("brand", brandName.name);
   }, [brandName, setValue]);
 
-  const editCar = (editCar: carType) => {
+  const editCarHandler = (editCar: carType) => {
     editCar.brand = brandName.key;
     editCar.age = carAge;
     editCar.inspectionDay = inspectionDay;
@@ -198,6 +199,7 @@ const EditCar = () => {
   const deleteCarHandler = () => {
     dispatch(asyncCarAction.deleteCar(car?.id as string, user, cars));
     navigate("/car_manage/record");
+    createMessage("remind", dispatch, "已刪除車輛");
   };
   const brandNameHandler = (name: string, key: string) => {
     setBrandName({ name, key });
@@ -214,97 +216,92 @@ const EditCar = () => {
 
   return (
     <>
-      <EditContainer>
-        <EditWrapper>
-          <BrandWrapper>
-            <InputBx>
-              <BrandInput
-                type="text"
-                placeholder="廠牌(請選擇)"
-                $isError={errors?.brand}
-                readOnly
-                {...register("brand", { required: true })}
-              />
-            </InputBx>
-            <Brands onBrand={brandNameHandler} brandName={brandName} />
-          </BrandWrapper>
-          <RightBx>
-            <LogoWrapper>
-              <LogoBx>
-                <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
-              </LogoBx>
-            </LogoWrapper>
+      <FormProvider {...methods}>
+        <EditContainer>
+          <EditWrapper>
+            <BrandWrapper>
+              <InputBx>
+                <BrandInput
+                  type="text"
+                  placeholder="廠牌(請選擇)"
+                  $isError={errors?.brand}
+                  readOnly
+                  {...register("brand", { required: true })}
+                />
+              </InputBx>
+              <Brands onBrand={brandNameHandler} brandName={brandName} />
+            </BrandWrapper>
+            <RightBx>
+              <LogoWrapper>
+                <LogoBx>
+                  <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
+                </LogoBx>
+              </LogoWrapper>
 
-            <InputBx>
-              <Input
-                register={register}
-                name="name"
-                content="暱稱"
-                error={errors?.name}
-                require={{ required: true }}
-                type="text"
-              />
-            </InputBx>
-            <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
+              <InputBx>
+                <Input
+                  name="name"
+                  content="暱稱"
+                  error={errors?.name}
+                  require={{ required: true }}
+                  type="text"
+                />
+              </InputBx>
+              <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
 
-            <InputBx>
-              <Input
-                register={register}
-                name="plateNum"
-                content="車牌"
-                error={errors?.plateNum}
-                require={{
-                  required: true,
-                  pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
-                }}
-                type="text"
-              />
-            </InputBx>
-            <ErrorMsg>
-              {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
-              {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
-            </ErrorMsg>
+              <InputBx>
+                <Input
+                  name="plateNum"
+                  content="車牌"
+                  error={errors?.plateNum}
+                  require={{
+                    required: true,
+                    pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                  }}
+                  type="text"
+                />
+              </InputBx>
+              <ErrorMsg>
+                {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
+                {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
+              </ErrorMsg>
 
-            <InputBx>
-              <Input
-                register={register}
-                setValue={setValue}
-                watch={watch}
-                name="licenseDate"
-                content="行照發照日"
-                error={errors?.licenseDate}
-                require={{ required: true }}
-                type="date"
-              />
-            </InputBx>
-            <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
-            <CarInfoBx>
-              <SubTitle>車齡:</SubTitle>
-              <CarInfo>{carAge}</CarInfo>
-              <SubTitle>驗車日期:</SubTitle>
-              <CarInfo>{inspectionDay}</CarInfo>
-            </CarInfoBx>
+              <InputBx>
+                <Input
+                  name="licenseDate"
+                  content="行照發照日"
+                  error={errors?.licenseDate}
+                  require={{ required: true }}
+                  type="date"
+                />
+              </InputBx>
+              <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
+              <CarInfoBx>
+                <SubTitle>車齡:</SubTitle>
+                <CarInfo>{carAge}</CarInfo>
+                <SubTitle>驗車日期:</SubTitle>
+                <CarInfo>{inspectionDay}</CarInfo>
+              </CarInfoBx>
 
-            <InputBx>
-              <Input
-                register={register}
-                setValue={setValue}
-                watch={watch}
-                name="insuranceDate"
-                content="保險到期日"
-                error={errors?.insuranceDate}
-                require={{ required: true }}
-                type="date"
-              />
-            </InputBx>
-            <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
-            <BtnBx>
-              <EditBtn onClick={handleSubmit(editCar)}>確定</EditBtn>
-              <DeleteBtn onClick={callConfirm}>刪除</DeleteBtn>
-            </BtnBx>
-          </RightBx>
-        </EditWrapper>
-      </EditContainer>
+              <InputBx>
+                <Input
+                  name="insuranceDate"
+                  content="保險到期日"
+                  error={errors?.insuranceDate}
+                  require={{ required: true }}
+                  type="date"
+                  setStyle={{ position: "top" }}
+                />
+              </InputBx>
+              <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
+              <BtnBx>
+                <EditBtn onClick={handleSubmit(editCarHandler)}>確定</EditBtn>
+                <DeleteBtn onClick={callConfirm}>刪除</DeleteBtn>
+              </BtnBx>
+            </RightBx>
+          </EditWrapper>
+        </EditContainer>
+      </FormProvider>
       {showConfirm && (
         <Modal
           closeEffect={closeEffect}

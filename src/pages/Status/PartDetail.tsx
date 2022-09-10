@@ -54,7 +54,7 @@ const IconBx = styled.span`
 const Percent = styled.div<{ $isAlert: boolean }>`
   position: relative;
   width: 100%;
-  height: 20px;
+  height: 15px;
 
   border-radius: 10px;
   box-shadow: inset 0 0 10px #000;
@@ -91,8 +91,8 @@ const Progress = styled.div<{ $length: number }>`
   }
   &::after {
     content: "";
-    background-color: #ffffff3a;
-    box-shadow: 0px 0px 20px 4px #ffffffd1;
+    background-color: #ffffff86;
+    box-shadow: 0px 0px 12px 4px #ffffff;
     width: 1px;
     height: 100%;
     position: absolute;

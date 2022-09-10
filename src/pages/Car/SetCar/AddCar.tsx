@@ -5,7 +5,7 @@ import { Img } from "../../../components/style";
 import brands, { brandsMapType } from "../../../utils/brands";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
 import { createMessage } from "../../../utils/calcFunc";
@@ -115,19 +115,10 @@ const LogoWrapper = styled.div`
   justify-content: center;
 `;
 
-const LogoBx = styled.div`
-  width: 100%;
-
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-`;
 const LogoImg = styled.img`
-  position: absolute;
   object-fit: contain;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 100%;
+  width: 250px;
+  height: auto;
 `;
 const ErrorMsg = styled.p`
   text-align: left;
@@ -145,13 +136,14 @@ const AddCar = () => {
   const allBrands = useRef<[string, brandsMapType][]>(Array.from(brands));
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const methods = useForm<carType>();
+
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
-  } = useForm<carType>();
+  } = methods;
 
   useEffect(() => {
     setValue("brand", brandName.name);
@@ -175,103 +167,96 @@ const AddCar = () => {
   };
 
   return (
-    <AddContainer>
-      <AddWrapper>
-        <BrandWrapper>
-          <InputBx>
-            <BrandInput
-              type="text"
-              placeholder="廠牌(請選擇)"
-              $isError={errors?.brand}
-              readOnly
-              {...register("brand", { required: true })}
-            />
-          </InputBx>
-          <BrandBx>
-            {allBrands.current.map((brand) => {
-              return (
-                <BrandCard
-                  key={brand[1].name}
-                  $isSelected={brand[1].name === brandName.name}
-                  onClick={() => {
-                    brandNameHandler(brand[1].name, brand[0]);
-                  }}
-                >
-                  <ImgBx>
-                    <BrandImg src={brand[1].img} />
-                  </ImgBx>
-                  <Name>{brand[1].name}</Name>
-                </BrandCard>
-              );
-            })}
-          </BrandBx>
-        </BrandWrapper>
-        <RightBx>
-          <LogoWrapper>
-            <LogoBx>
+    <FormProvider {...methods}>
+      <AddContainer>
+        <AddWrapper>
+          <BrandWrapper>
+            <InputBx>
+              <BrandInput
+                type="text"
+                placeholder="廠牌(請選擇)"
+                $isError={errors?.brand}
+                readOnly
+                {...register("brand", { required: true })}
+              />
+            </InputBx>
+            <BrandBx>
+              {allBrands.current.map((brand) => {
+                return (
+                  <BrandCard
+                    key={brand[1].name}
+                    $isSelected={brand[1].name === brandName.name}
+                    onClick={() => {
+                      brandNameHandler(brand[1].name, brand[0]);
+                    }}
+                  >
+                    <ImgBx>
+                      <BrandImg src={brand[1].img} />
+                    </ImgBx>
+                    <Name>{brand[1].name}</Name>
+                  </BrandCard>
+                );
+              })}
+            </BrandBx>
+          </BrandWrapper>
+          <RightBx>
+            <LogoWrapper>
               <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
-            </LogoBx>
-          </LogoWrapper>
+            </LogoWrapper>
 
-          <InputBx>
-            <Input
-              register={register}
-              name="name"
-              content="暱稱"
-              error={errors?.name}
-              require={{ required: true }}
-              type="text"
-            />
-          </InputBx>
-          <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
+            <InputBx>
+              <Input
+                name="name"
+                content="暱稱"
+                error={errors?.name}
+                require={{ required: true }}
+                type="text"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
 
-          <InputBx>
-            <Input
-              register={register}
-              name="plateNum"
-              content="車牌"
-              error={errors?.plateNum}
-              require={{
-                required: true,
-                pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
-              }}
-              type="text"
-            />
-          </InputBx>
-          <ErrorMsg>
-            {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
-            {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
-          </ErrorMsg>
-          <InputBx>
-            <Input
-              register={register}
-              setValue={setValue}
-              watch={watch}
-              name="licenseDate"
-              content="行照發照日"
-              error={errors?.licenseDate}
-              require={{ required: true }}
-              type="date"
-            />
-          </InputBx>
-          <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
-          <InputBx>
-            <Input
-              register={register}
-              setValue={setValue}
-              watch={watch}
-              name="insuranceDate"
-              content="保險到期日"
-              error={errors?.insuranceDate}
-              require={{ required: true }}
-              type="date"
-            />
-          </InputBx>
-          <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
-          <AddBtn onClick={handleSubmit(createCar)}>新增</AddBtn>
-        </RightBx>
-      </AddWrapper>
-    </AddContainer>
+            <InputBx>
+              <Input
+                name="plateNum"
+                content="車牌"
+                error={errors?.plateNum}
+                require={{
+                  required: true,
+                  pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                }}
+                type="text"
+              />
+            </InputBx>
+            <ErrorMsg>
+              {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
+              {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
+            </ErrorMsg>
+            <InputBx>
+              <Input
+                name="licenseDate"
+                content="行照發照日"
+                error={errors?.licenseDate}
+                require={{ required: true }}
+                type="date"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
+            <InputBx>
+              <Input
+                name="insuranceDate"
+                content="保險到期日"
+                error={errors?.insuranceDate}
+                require={{ required: true }}
+                setStyle={{ position: "top" }}
+                type="date"
+              />
+            </InputBx>
+            <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
+            <AddBtn onClick={handleSubmit(createCar)}>新增</AddBtn>
+          </RightBx>
+        </AddWrapper>
+      </AddContainer>
+    </FormProvider>
   );
 };
 

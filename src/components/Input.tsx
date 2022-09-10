@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/macro";
 import Calendar from "react-calendar";
 import moment from "moment";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import calendarIcon from "../assets/icon/calendar.png";
+import reset from "styled-reset";
 
 const Container = styled.div`
   position: relative;
@@ -13,16 +14,29 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const InputFloat = styled.input<{ $isError: undefined | object }>`
+const InputFloat = styled.input<{
+  $isError: undefined | object;
+  $height: number | undefined;
+  $isWatch: boolean;
+}>`
   width: 100%;
+  ${(props) => props.$height && `height:${props.$height}px;`}
   padding: 8px 10px;
+
   border: 1px solid
-    ${(props) =>
-      props.$isError ? "var(--errorColor)" : "rgba(255, 255, 255, 0.25)"};
+    ${(props) => {
+      if (props.$isWatch) {
+        return "var(--mainColor)";
+      } else if (props.$isError) {
+        return "var(--errorColor)";
+      } else {
+        return "rgba(255, 255, 255, 0.25)";
+      }
+    }};
 
   border-left: ${(props) =>
     props.$isError ? "10px solid var(--errorColor)" : ""};
-  border-radius: 5px;
+  border-radius: 4px;
   outline: none;
   color: #fff;
   font-size: 14px;
@@ -50,8 +64,8 @@ const InputFloat = styled.input<{ $isError: undefined | object }>`
 `;
 
 const SpanFloat = styled.span<{
+  $isError: object | undefined;
   $isWatch: boolean;
-  $isError: undefined | object;
 }>`
   position: absolute;
   left: 0;
@@ -61,15 +75,16 @@ const SpanFloat = styled.span<{
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
   transition: 0.5s;
-  /* ${(props) => props.$isWatch && "color: var(--mainBack);"}
-  ${(props) => props.$isWatch && "transform: translate(14px, -20px);"}
-${(props) => props.$isWatch && "font-size: 0.8rem;"}
-${(props) => props.$isWatch && "padding: 0 10px;"}
-${(props) => props.$isWatch && "letter-spacing: 0.3rem;"}
-${(props) => props.$isWatch && "border-radius: 2px;"}
-${(props) => props.$isWatch && "background-color:var(--mainColor);"}
-background-color: ${(props) =>
-    props.$isError && props.$isWatch ? "var(--errorColor)" : ""}; */
+
+  ${(props) => props.$isWatch && "color: var(--mainBack)"};
+  ${(props) => props.$isWatch && "transform: translate(14px, -20px);"};
+  ${(props) => props.$isWatch && "font-size: 0.8rem;"};
+  ${(props) => props.$isWatch && "padding: 0 10px;"};
+  ${(props) => props.$isWatch && " letter-spacing: 0.3rem;"};
+  ${(props) => props.$isWatch && " border-radius: 2px;"};
+  background-color: ${(props) =>
+    props.$isError && props.$isWatch ? "var(--errorColor)" : ""};
+  background-color: ${(props) => (props.$isWatch ? "var(--mainColor)" : "")};
 `;
 const Icon = styled.img`
   pointer-events: none;
@@ -80,13 +95,13 @@ const Icon = styled.img`
   right: 10px;
 `;
 
-const CalendarWrapper = styled.div`
+const CalendarWrapper = styled.div<{ $position: boolean }>`
   /* ~~~ container styles ~~~ */
   position: absolute;
-  top: 20px;
+  ${(props) => (props.$position ? "bottom: 50px" : " top: 20px")};
+  z-index: 5;
   left: 0px;
-
-  width: 300px;
+  width: 250px;
   margin: auto;
   margin-top: 20px;
   backdrop-filter: blur(5px);
@@ -94,7 +109,7 @@ const CalendarWrapper = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.5);
   border-left: 1px solid rgba(255, 255, 255, 0.5);
 
-  padding: 10px;
+  padding: 5px;
   border-radius: 3px;
   /* ~~~ navigation styles ~~~ */
   .react-calendar__navigation {
@@ -113,6 +128,7 @@ const CalendarWrapper = styled.div`
   .react-calendar__month-view__weekdays abbr {
     text-decoration: none;
     color: #fff;
+    font-size: 12px;
     /* background-color: var(--deepColor);
     border-radius: 4px; */
   }
@@ -126,6 +142,7 @@ const CalendarWrapper = styled.div`
     border-radius: 3px;
     color: white;
     padding: 5px 0;
+    font-size: 12px;
     &:hover {
       background-color: var(--lightColor);
       color: var(--mainBack);
@@ -172,69 +189,51 @@ const CalendarWrapper = styled.div`
 // FIXME
 type Prop = {
   type: string;
-  register: any;
-  setValue?: any;
-  watch?: any;
   name: string;
   content: string;
   error: undefined | object;
   require?: object;
   readOnly?: boolean;
   value?: any;
-  setFocus?: any;
+  setStyle?: { height?: number; position?: string };
 };
 
 const Input: React.FC<Prop> = ({
   type,
-  register,
-  setValue,
-  watch,
   name,
   content,
   require,
   error,
   readOnly,
   value,
-  setFocus,
+  setStyle,
 }) => {
+  const methods = useFormContext();
+  const { register, setValue, watch, reset, getValues } = methods;
   const [date, setDate] = useState<Date>(new Date());
   const [showDate, setShowDate] = useState<boolean>(false);
   const [isValue, setIsValue] = useState<boolean>(false);
-  const { setFocus } = useForm();
 
-  const isMounted = useRef(false);
   useEffect(() => {
-    if (readOnly && value) {
-      setValue(name, value);
-      setFocus(name);
-    } else if (readOnly) {
-      setValue(name, "");
+    if (watch(name)) {
+      setIsValue(true);
+    } else {
       setIsValue(false);
     }
-  }, [watch, name, setValue, value, readOnly, setFocus]);
-
-  useEffect(() => {
-    if (isMounted.current && type === "date") {
-      const newDate = moment(date).format("YYYY-MM-DD");
-      setValue(name, newDate);
-      setFocus(name);
-    }
-    isMounted.current = true;
-  }, [date, setValue, name, isMounted, type, setFocus]);
+  }, [watch, name, value]);
 
   let newType = type;
-  let newReadOnly = readOnly;
-  let newWatch = (str: string) => {
-    return false;
-  };
+
   if (type === "date") {
     newType = "text";
-    newReadOnly = true;
-    newWatch = watch;
+    readOnly = true;
   }
   const dateHandler = (date: Date) => {
     if (type === "date") {
+      const newDate = moment(date).format("YYYY-MM-DD");
       setDate(date);
+      setValue(name, newDate);
+      setIsValue(true);
     }
   };
   const showCalendarHandler = () => {
@@ -242,27 +241,37 @@ const Input: React.FC<Prop> = ({
       setShowDate((pre) => !pre);
     }
   };
+  const closeCalendarHandler = () => {
+    if (type === "date") {
+      setShowDate(false);
+    }
+  };
+  const clearValueHandler = () => {
+    if (type === "number" && getValues(name) === 0) {
+      setValue(name, "");
+    }
+  };
 
   return (
     <>
-      <Container onClick={showCalendarHandler}>
+      <Container onClick={showCalendarHandler} onBlur={closeCalendarHandler}>
         <InputFloat
+          $isWatch={isValue}
+          $height={setStyle?.height}
           $isError={error}
           type={newType}
           {...register(name, require)}
           required
-          readOnly={newReadOnly}
+          readOnly={readOnly}
+          onFocus={clearValueHandler}
         />
-        <SpanFloat
-          $isWatch={(newWatch(name) && type === "date") || isValue}
-          $isError={error}
-        >
+        <SpanFloat $isWatch={isValue} $isError={error}>
           {content}
         </SpanFloat>
         {type === "date" && (
           <>
             {showDate && (
-              <CalendarWrapper>
+              <CalendarWrapper $position={setStyle?.position === "top"}>
                 <Calendar onClickDay={dateHandler} value={date} />
               </CalendarWrapper>
             )}

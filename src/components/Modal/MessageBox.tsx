@@ -5,7 +5,7 @@ import { Img } from "../style";
 import logoIcon from "../../assets/logo_white.png";
 type styleType = {
   width: number;
-  height: number;
+  height: number | string;
 };
 const RemindContainer = styled.div<{ $style: styleType }>`
   width: ${(props) => props.$style.width}px;

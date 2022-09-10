@@ -96,6 +96,7 @@ export const mileagePercent = (part: partType, car: carType) => {
 export const datePercent = (part: partType) => {
   if (part.month === 0 && part.year === 0) return null;
   let message = "";
+
   const startMillisecond = new Date(part.startDate).getTime();
   const endMillisecond = new Date(part.endDate).getTime();
   const nowMillisecond = new Date().getTime();
@@ -105,8 +106,9 @@ export const datePercent = (part: partType) => {
     ((endMillisecond - nowMillisecond) * 100) / diffMillisecond
   );
   const months = Math.ceil(
-    ((endMillisecond - nowMillisecond) / 1000) * 60 * 60 * 24 * 30
+    (endMillisecond - nowMillisecond) / (1000 * 60 * 60 * 24 * 30)
   );
+
   if (endMillisecond - nowMillisecond <= 0) {
     message = "使用期限已到";
   } else if (months >= 12) {

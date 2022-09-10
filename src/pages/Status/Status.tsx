@@ -15,10 +15,10 @@ import { carType } from "../../types/carType";
 import { carAgeAndInspectionDay } from "../../utils/calcFunc";
 import { getTodayMs } from "../../utils/calcFunc";
 import Loading from "../../components/Loading/Loading";
+import { useLocation } from "react-router-dom";
 
 import arrowImg from "../../assets/icon/arrow_down.png";
 import motorImg from "../../assets/bike_blue_1.png";
-import { userActions } from "../../store/user/userReducer";
 
 const Container = styled.div`
   width: 100%;
@@ -82,9 +82,11 @@ const ContentBx = styled.div<{ $isShow: boolean }>`
   background-color: #fff;
   margin-top: 5px;
   border-radius: 4px;
-  transition: 0.5s;
+
   overflow: hidden;
-  height: ${(props) => (props.$isShow ? "auto" : "0")};
+  height: 0;
+  height: ${(props) => props.$isShow && "auto"};
+  transition: 0.5s;
 `;
 
 const Content = styled.div`
@@ -119,7 +121,7 @@ const CarName = styled.p`
   font-size: 14px;
   color: black;
 `;
-let isMounted = true;
+// let isMounted = true;
 
 const compareDate = (cars: carType[]) => {
   const nowDate = getTodayMs();
@@ -148,6 +150,8 @@ const Status = () => {
   const cars = useAppSelector((state) => state.car.cars);
   const user = useAppSelector((state) => state.user.user);
   const isLoading = useAppSelector((state) => state.user.isLoading);
+  // const isMounted = useRef<boolean>(true);
+  const firstLogin = useLocation().state;
 
   const [showContent, setShowContent] = useState<boolean>(false);
   const [showRemind, setShowRemind] = useState<boolean>(false);
@@ -157,20 +161,20 @@ const Status = () => {
 
   useEffect(() => {
     if (
-      isMounted &&
+      firstLogin === "first" &&
       user.continueRemind &&
       (user.insuranceRemind || user.inspectionRemind)
     ) {
       const result = compareDate(cars);
+      console.log(result);
       const found = result.every((result) => result === null);
 
       if (!found) {
         setShowRemind(true);
         setRemindMessages(result);
       }
-      isMounted = false;
     }
-  }, [cars, user]);
+  }, [cars, user, firstLogin]);
 
   useEffect(() => {
     const nowDate = getTodayMs();
@@ -205,7 +209,6 @@ const Status = () => {
   const showContentHandler = () => {
     setShowContent((pre) => !pre);
   };
-  console.log(isLoading);
 
   return (
     <>

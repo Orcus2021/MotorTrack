@@ -177,7 +177,7 @@ const Record = () => {
   const clearUpdateId = () => {
     setUpdate("");
   };
-  console.log(isLoading);
+
   return (
     <>
       {recordCategory === "record" && (

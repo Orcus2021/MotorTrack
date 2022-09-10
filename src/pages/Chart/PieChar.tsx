@@ -7,7 +7,6 @@ const PieChar = () => {
   const expense = useAppSelector((state) => state.record.expenses);
   const dispatch = useAppDispatch();
   const car = useAppSelector((state) => state.car.car);
-  console.log(car);
 
   const {
     allExpenses,
