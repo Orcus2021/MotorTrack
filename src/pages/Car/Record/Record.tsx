@@ -6,9 +6,10 @@ import Expenses from "./Expenses/Expenses";
 import RecordList from "./RecordList";
 import styled from "styled-components/macro";
 import Motor from "../../../components/Loading/Motor";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import plusIcon from "../../../assets/icon/plus.png";
+import { userActions } from "../../../store/user/userReducer";
 const CartBx = styled.div`
   position: relative;
   width: 100%;
@@ -145,10 +146,11 @@ const Record = () => {
   const [selectCategory, setSelectCategory] = useState<string>("all");
   const [updateId, setUpdate] = useState<string>("");
   const recordId = useLocation().state as string;
+  const dispatch = useAppDispatch();
 
   const isLoading = useAppSelector((state) => state.user.isLoading);
-  const recordState = useAppSelector((state) => state.record);
-  const { expenses, fee, refuel, repair } = recordState;
+  const expenses = useAppSelector((state) => state.record.expenses);
+  const isNav = useAppSelector((state) => state.user.isNav);
 
   useEffect(() => {
     if (recordId) {
@@ -178,12 +180,16 @@ const Record = () => {
     setUpdate("");
   };
 
+  const navHandler = () => {
+    dispatch(userActions.showNav(!isNav));
+  };
+
   return (
     <>
       {recordCategory === "record" && (
         <>
           <CartBx>
-            <Card>
+            <Card onClick={navHandler}>
               <ExpenseText>總費用:${expenses.allExpenses}</ExpenseText>
             </Card>
             <Card>

@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   getStorage,
@@ -87,6 +88,18 @@ const firebase = {
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
         });
+    });
+  },
+  async onAuth(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const uid = user.uid;
+          resolve(uid);
+        } else {
+          reject("SignedOut");
+        }
+      });
     });
   },
   async getDoc(url: string): Promise<DocumentData | undefined> {

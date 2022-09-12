@@ -9,7 +9,8 @@ import asyncCarAction from "../../../../store/car/asyncCarAction";
 import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import SelectCategory from "./SelectCategory";
-import Input from "../../../../components/Input";
+import InputBox from "../../../../components/Input/InputBox";
+import Textarea from "../../../../components/Textarea";
 
 import trashIcon from "../../../../assets/trash.png";
 const RepairContainer = styled.div`
@@ -33,11 +34,8 @@ const ConfirmBtn = styled.button`
   background-color: transparent;
   margin-right: 10px;
 `;
-const TitleBx = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+const InputWrapper = styled.div`
+  margin-right: 10px;
 `;
 
 const DetailBX = styled.div`
@@ -45,22 +43,13 @@ const DetailBX = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10px;
 `;
 const Detail = styled.div`
   width: 50%;
   display: flex;
   flex-direction: row;
 `;
-const NoteTitle = styled.p`
-  width: 100%;
-  font-size: 16px;
-`;
-const NoteContent = styled.textarea`
-  resize: none;
-  width: 100%;
-  height: 150px;
-`;
+
 const IconBx = styled.div`
   position: relative;
   height: 20px;
@@ -82,12 +71,7 @@ const Select = styled.input`
   outline: none;
   background-color: transparent;
 `;
-const ErrorMsg = styled.p`
-  text-align: left;
-  height: 10px;
-  font-size: 10px;
-  padding-left: 10px;
-`;
+
 const InputBx = styled.div`
   margin-right: 10px;
   flex-grow: 1;
@@ -206,57 +190,58 @@ const Expenses: React.FC<{
             )}
             <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
           </HeaderBar>
-          <TitleBx>
-            <Input
-              name="title"
-              content="標題"
-              error={errors?.title}
-              require={{ required: true }}
-              type="text"
-            />
-            <ErrorMsg>{errors.title && "標題尚未填寫"}</ErrorMsg>
-          </TitleBx>
+          <InputBox
+            message={errors.title && "標題尚未填寫"}
+            name="title"
+            content="標題"
+            error={typeof errors?.title?.type === "string"}
+            require={{ required: true }}
+            type="text"
+          />
           <DetailBX>
             <Detail>
-              <InputBx>
-                <Input
+              <InputWrapper>
+                <InputBox
+                  message={errors.date && "日期尚未填寫"}
                   name="date"
                   content="日期"
-                  error={errors?.date}
+                  error={typeof errors?.date?.type === "string"}
                   require={{ required: true }}
                   type="date"
                 />
-                <ErrorMsg>{errors.date && "日期尚未填寫"}</ErrorMsg>
-              </InputBx>
-              <InputBx>
-                <Input
+              </InputWrapper>
+              <InputWrapper>
+                <InputBox
+                  message={
+                    errors.mileage?.type === "min" ? "勿低於目前里程數" : ""
+                  }
                   name="mileage"
                   content="里程數"
-                  error={errors?.mileage}
+                  error={typeof errors?.mileage?.type === "string"}
                   require={{
                     required: true,
                     min: updateId ? record?.mileage : carMileage,
                   }}
                   type="number"
                 />
-                <ErrorMsg>
-                  {errors.mileage?.type === "min" && "勿低於目前里程數"}
-                </ErrorMsg>
-              </InputBx>
+              </InputWrapper>
             </Detail>
             <Detail>
               <AmountBx>
-                <Input
+                <InputBox
+                  message={
+                    errors.amount?.type === "min"
+                      ? "總金額錯誤"
+                      : errors.amount?.type === "required"
+                      ? "總金額尚未填寫"
+                      : ""
+                  }
                   name="amount"
                   content="總金額"
-                  error={errors?.amount}
+                  error={typeof errors?.amount?.type === "string"}
                   require={{ required: true, min: 0 }}
                   type="number"
                 />
-                <ErrorMsg>
-                  {errors.amount?.type === "min" && "總金額錯誤"}
-                  {errors.amount?.type === "required" && "總金額尚未填寫"}
-                </ErrorMsg>
               </AmountBx>
             </Detail>
           </DetailBX>
@@ -267,9 +252,7 @@ const Expenses: React.FC<{
           />
 
           <Select {...register("category")} />
-
-          <NoteTitle>備註</NoteTitle>
-          <NoteContent {...register("note")} />
+          <Textarea name="note" content="備註" height={150} />
         </FormProvider>
       </RepairContainer>
     </>

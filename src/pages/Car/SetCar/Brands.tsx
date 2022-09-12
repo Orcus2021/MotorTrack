@@ -2,30 +2,42 @@ import React, { useRef } from "react";
 import styled from "styled-components/macro";
 import brands, { brandsMapType } from "../../../utils/brands";
 import { Img } from "../../../components/style";
+import Card from "../../../components/Card";
 
 const BrandBx = styled.div`
-  border: 1px solid #fff;
+  border: 2px solid #a9c7fae1;
   width: 100%;
   height: 400px;
   border-radius: 8px;
   display: flex;
   flex-direction: row;
+  margin: 10px;
   justify-content: space-around;
   flex-wrap: wrap;
-  overflow-y: auto;
+  overflow-y: scroll;
+  gap: 10px;
+  padding: 10px;
+  background: #a9c7fa1a;
+  /* box-shadow: "3px 3px 15px rgb(0, 0, 0)"; */
+  &::-webkit-scrollbar {
+    width: 7px;
+    position: fixed;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    background-color: rgba(136, 136, 136, 0.5);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mainColor);
+  }
 `;
 
 const BrandCard = styled.div<{ $isSelected: boolean }>`
-  width: 90px;
-  height: 115px;
-  border-radius: 10px;
-  margin: 5px;
-  background-color: ${(props) =>
-    props.$isSelected ? "var(--mainColor)" : "var(--thirdBack)"};
+  height: 105px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 5px;
+
   cursor: pointer;
 `;
 const ImgBx = styled.div`
@@ -47,6 +59,10 @@ const BrandImg = styled(Img)`
 const Name = styled.p`
   font-size: 10px;
 `;
+
+// const CardWrapper=styled.div`
+
+// `
 type brandType = { name: string; key: string };
 const Brands: React.FC<{
   onBrand: (name: string, key: string) => void;
@@ -58,18 +74,25 @@ const Brands: React.FC<{
     <BrandBx>
       {allBrands.current.map((brand) => {
         return (
-          <BrandCard
-            key={brand[1].name}
-            $isSelected={brand[1].name === brandName.name}
-            onClick={() => {
-              onBrand(brand[1].name, brand[0]);
-            }}
+          <Card
+            width={100}
+            isSelect={brand[1].name === brandName.name}
+            hover={true}
+            boxShadow={true}
           >
-            <ImgBx>
-              <BrandImg src={brand[1].img} />
-            </ImgBx>
-            <Name>{brand[1].name}</Name>
-          </BrandCard>
+            <BrandCard
+              key={brand[1].name}
+              $isSelected={brand[1].name === brandName.name}
+              onClick={() => {
+                onBrand(brand[1].name, brand[0]);
+              }}
+            >
+              <ImgBx>
+                <BrandImg src={brand[1].img} />
+              </ImgBx>
+              <Name>{brand[1].name}</Name>
+            </BrandCard>
+          </Card>
         );
       })}
     </BrandBx>

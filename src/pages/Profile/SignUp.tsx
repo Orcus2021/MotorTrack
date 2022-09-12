@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Input from "../../components/Input/Input";
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -16,14 +17,14 @@ const SignUpWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const Input = styled.input`
-  width: 300px;
-  outline: none;
-  background-color: transparent;
-  border: 2px solid #fff;
-  color: #fff;
-  margin-bottom: 10px;
-`;
+// const Input = styled.input`
+//   width: 300px;
+//   outline: none;
+//   background-color: transparent;
+//   border: 2px solid #fff;
+//   color: #fff;
+//   margin-bottom: 10px;
+// `;
 const SubmitBtn = styled.button`
   border: none;
   background-color: var(--mainColor);
@@ -47,10 +48,10 @@ const SignUp: React.FC<{
   onInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onShowSignUP: () => void;
 }> = (props) => {
-  const { name, email, password, onSignUp, onInput, onShowSignUP } = props;
+  // const { name, email, password, onSignUp, onInput, onShowSignUP } = props;
   return (
     <LoginContainer>
-      <SignUpWrapper>
+      {/* <SignUpWrapper>
         <Input
           id="name"
           type="text"
@@ -76,7 +77,7 @@ const SignUp: React.FC<{
           已申請帳號<SignUpSpan onClick={onShowSignUP}>登入</SignUpSpan>
         </SignUpTxt>
         <SubmitBtn onClick={onSignUp}>註冊</SubmitBtn>
-      </SignUpWrapper>
+      </SignUpWrapper> */}
     </LoginContainer>
   );
 };

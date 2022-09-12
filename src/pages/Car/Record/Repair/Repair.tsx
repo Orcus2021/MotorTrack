@@ -14,8 +14,9 @@ import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
-import Input from "../../../../components/Input";
+import Input from "../../../../components/Input/Input";
 import moment from "moment";
+import Textarea from "../../../../components/Textarea";
 
 import trashIcon from "../../../../assets/trash.png";
 
@@ -66,17 +67,7 @@ const AmountDetail = styled.div`
   flex-direction: column;
   align-items: flex-start;
 `;
-const NoteTitle = styled.p`
-  width: 100%;
-  font-size: 16px;
-`;
-const NoteContent = styled.textarea`
-  resize: none;
-  width: 100%;
-  height: 150px;
-  background-color: transparent;
-  color: #fff;
-`;
+
 const IconBx = styled.div`
   position: relative;
   height: 20px;
@@ -127,7 +118,6 @@ const Repair: React.FC<{
     },
   });
   const {
-    register,
     handleSubmit,
     reset,
     setValue,
@@ -273,7 +263,7 @@ const Repair: React.FC<{
             <Input
               name="title"
               content="標題"
-              error={errors?.title}
+              error={typeof errors?.title?.type === "string"}
               require={{ required: true }}
               type="text"
             />
@@ -285,7 +275,7 @@ const Repair: React.FC<{
                 <Input
                   name="date"
                   content="日期"
-                  error={errors?.date}
+                  error={typeof errors?.date?.type === "string"}
                   require={{ required: true }}
                   type="date"
                 />
@@ -295,7 +285,7 @@ const Repair: React.FC<{
                 <Input
                   name="mileage"
                   content="里程數"
-                  error={errors?.mileage}
+                  error={typeof errors?.mileage?.type === "string"}
                   require={{
                     required: true,
                     min: updateId ? record?.mileage : carMileage,
@@ -311,7 +301,7 @@ const Repair: React.FC<{
               <Input
                 name="amount"
                 content="總金額"
-                error={errors?.amount}
+                error={typeof errors?.amount?.type === "string"}
                 require={{ required: true }}
                 type="number"
                 readOnly={true}
@@ -325,8 +315,7 @@ const Repair: React.FC<{
             parts={parts}
             onDeletePart={deletePartHandler}
           />
-          <NoteTitle>備註</NoteTitle>
-          <NoteContent {...register("note")} />
+          <Textarea content="備註" name="note" height={150} />
         </RepairContainer>
       </FormProvider>
     </>

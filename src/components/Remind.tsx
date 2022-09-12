@@ -3,15 +3,13 @@ import styled from "styled-components/macro";
 import { useAppDispatch, useAppSelector } from "../store";
 import asyncUserAction from "../store/user/asyncUserAction";
 import { resultType } from "../types/recordType";
+import Button from "./Button";
 import MessageBox from "../components/Modal/MessageBox";
 
 const Message = styled.p`
   font-size: 16px;
 `;
-const ConfirmBtn = styled.button`
-  border: none;
-  background-color: var(--mainColor);
-`;
+
 const RejectBx = styled.div`
   display: flex;
   flex-direction: row;
@@ -40,7 +38,7 @@ const Remind: React.FC<{ onClose: () => void; remindMessages: resultType }> = (
     if (user.insuranceRemind) {
       remindMessages.forEach((data) => {
         if (data?.insurance) {
-          messages.push(`車牌:${data.plateNum}，保險即將到期`);
+          messages.push(`車牌:${data.plateNum}，${data.insuranceMsg}`);
         }
       });
     }
@@ -67,14 +65,14 @@ const Remind: React.FC<{ onClose: () => void; remindMessages: resultType }> = (
   return (
     <MessageBox setStyle={{ width: 400, height: 200 }}>
       {messages?.map((msg) => (
-        <Message>{msg}</Message>
+        <Message key={msg}>{msg}</Message>
       ))}
       <RejectBx>
         <RejectRemind checked={rejectRemind} onChange={rejectRemindHandler} />
         <RejectLabel>到期前不在提醒</RejectLabel>
       </RejectBx>
 
-      <ConfirmBtn onClick={closeRemindHandler}>確認</ConfirmBtn>
+      <Button label="確認" type="primary" handleClick={closeRemindHandler} />
     </MessageBox>
   );
 };

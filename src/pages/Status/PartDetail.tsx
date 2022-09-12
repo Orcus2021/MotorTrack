@@ -24,22 +24,11 @@ const PartsBx = styled.div`
   margin-bottom: 10px;
   padding: 5px 10px;
   border-radius: 8px 8px 0 0;
-  /* background: linear-gradient(#49505e 0%, #20232a 10%, #222); */
 
   border-radius: 8px;
   overflow: hidden;
-  /* border: 2px solid #000; */
+
   transition: 0.5s;
-  /* &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    z-index: 10;
-  } */
 `;
 
 const IconBx = styled.span`
@@ -137,6 +126,7 @@ const PartsWrapper = styled.div`
   border-radius: 8px;
   margin-bottom: 10px;
   padding: 10px;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
 `;
 const PartsList = styled.div`
   width: 100%;
@@ -147,6 +137,7 @@ const PartsList = styled.div`
   overflow-y: scroll;
   height: 310px;
   padding: 0 10px 10px 10px;
+  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
   &::-webkit-scrollbar {
     width: 7px;
   }
@@ -175,6 +166,7 @@ const ListTitle = styled.p`
   padding: 10px;
   color: var(--mainColor);
   background-color: var(--secondBack);
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
 `;
 const MessageDetail = styled.p`
   font-size: 12px;
@@ -188,8 +180,8 @@ const PartList = styled.div`
 `;
 
 const Return = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   position: relative;
   cursor: pointer;
 `;

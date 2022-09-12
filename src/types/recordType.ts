@@ -47,5 +47,7 @@ export type expensesType = {
 export type resultType = ({
   plateNum: string;
   insurance: boolean;
+  insuranceMsg: string;
   inspection: boolean;
+  inspectionMsg: string;
 } | null)[];

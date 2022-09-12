@@ -1,132 +1,181 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Card from "../../components/Card";
+import InputBox from "../../components/Input/InputBox";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/Button";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 import styled from "styled-components";
-import SignUp from "./SignUp";
+import { NeonText } from "../../components/style";
 import Loading from "../../components/Loading/Loading";
+import { useForm, FormProvider } from "react-hook-form";
+import backImg from "../../assets/img/back-view2.jpg";
 
 const LoginContainer = styled.div`
-  margin-top: 68px;
   width: 100%;
-  height: calc(100vh -68px);
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  /* background-image: url(${backImg}); */
+  background-size: cover;
+  background-position: center center;
+
   display: flex;
   align-items: center;
   justify-content: center;
 `;
-const LoginWrapper = styled.div`
-  border: 2px solid var(--mainColor);
-  width: 400px;
-  height: 500px;
+
+const SignInWrapper = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-const Input = styled.input`
-  width: 300px;
-  outline: none;
-  background-color: transparent;
-  border: 2px solid #fff;
-  color: #fff;
-  margin-bottom: 10px;
+const Title = styled.p`
+  font-weight: 600;
+  font-size: 22px;
+  margin-top: 5px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
 `;
-const SubmitBtn = styled.button`
-  border: none;
-  background-color: var(--mainColor);
-  padding: 5px;
-  cursor: pointer;
-`;
+
 const SignUpTxt = styled.p`
-  font-size: 8px;
+  font-size: 12px;
+  margin-bottom: 15px;
 `;
 const SignUpSpan = styled.span`
   color: var(--mainColor);
   cursor: pointer;
 `;
+const BtnBox = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 10px;
+`;
+// const NameBox = styled.div<{ $isShow: boolean }>`
+//   position: relative;
+//   height: auto;
+//   width: 100%;
+//   overflow: hidden;
+// `;
+
+type userInfo = {
+  email: string;
+  password: string;
+  name?: string;
+};
 
 const Login = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const isLoading = useAppSelector((state) => state.user.isLoading);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   if (user.isAuth && !name) {
-  //     navigate("/status");
-  //   }
-  // }, [user.isAuth, navigate, name]);
-
-  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.id === "name") {
-      setName(e.target.value);
-    } else if (e.target.id === "email") {
-      setEmail(e.target.value);
-    } else if (e.target.id === "password") {
-      setPassword(e.target.value);
-    }
-  };
+  const methods = useForm<userInfo>({ mode: "onBlur" });
+  const {
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = methods;
 
   const showSingUp = () => {
     setIsSignUp((pre) => !pre);
+    reset();
+    setValue("name", "");
+    setValue("email", "");
+    setValue("password", "");
   };
 
-  const signUp = async () => {
-    const user = {
-      email,
-      password,
-      name,
-    };
-    await dispatch(asyncUserAction.signUp(user));
-    navigate("/profile");
+  const signIn = async (user: userInfo) => {
+    if (user.name) {
+      await dispatch(asyncUserAction.signUp(user));
+      navigate("/profile");
+    } else {
+      await dispatch(asyncUserAction.signIn(user));
+      navigate("/status", { state: "first" });
+    }
   };
-  const signIn = async () => {
-    const user = {
-      email,
-      password,
-    };
-    await dispatch(asyncUserAction.signIn(user));
-    navigate("/status", { state: "first" });
+  const goHomePageHandler = () => {
+    navigate("/");
   };
 
   return (
     <>
       {isLoading && <Loading />}
-      {!isSignUp && (
+      <FormProvider {...methods}>
         <LoginContainer>
-          <LoginWrapper>
-            <Input
-              id="email"
-              type="text"
-              placeholder="帳號"
-              value={email}
-              onChange={inputHandler}
-            />
-            <Input
-              id="password"
-              type="password"
-              placeholder="密碼"
-              value={password}
-              onChange={inputHandler}
-            />
-            <SignUpTxt>
-              尚未註冊請點擊<SignUpSpan onClick={showSingUp}>註冊</SignUpSpan>
-            </SignUpTxt>
-            <SubmitBtn onClick={signIn}>登入</SubmitBtn>
-          </LoginWrapper>
+          <Card width={300} boxShadow={true}>
+            <SignInWrapper>
+              <Title>{isSignUp ? "註冊" : "登入"}</Title>
+              {isSignUp && (
+                <InputBox
+                  message={errors?.password && "尚未填寫姓名"}
+                  type="text"
+                  name="name"
+                  content="姓名"
+                  error={typeof errors?.name?.type === "string"}
+                  require={{ required: true }}
+                />
+              )}
+              <InputBox
+                message={
+                  errors?.email?.type === "required"
+                    ? "尚未填寫信箱"
+                    : errors?.email?.type === "pattern"
+                    ? "信箱格式錯誤"
+                    : ""
+                }
+                type="text"
+                name="email"
+                content="信箱"
+                error={typeof errors?.email?.type === "string"}
+                require={{
+                  required: true,
+                  pattern:
+                    /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                }}
+              />
+              <InputBox
+                message={
+                  errors?.password?.type === "required"
+                    ? "尚未填寫密碼"
+                    : errors?.password?.type === "minLength"
+                    ? "密碼長度不足"
+                    : "最少6字元"
+                }
+                type="password"
+                name="password"
+                content="密碼"
+                error={typeof errors?.password?.type === "string"}
+                require={{ required: true, minLength: 6 }}
+              />
+
+              <SignUpTxt>
+                {isSignUp ? "已經有帳號了嗎？" : "新朋友?"}
+                <SignUpSpan onClick={showSingUp}>
+                  {isSignUp ? "登入" : "註冊"}
+                </SignUpSpan>
+              </SignUpTxt>
+              <BtnBox>
+                <Button
+                  label="返回"
+                  type="cancel"
+                  handleClick={goHomePageHandler}
+                />
+                <Button
+                  label={isSignUp ? "註冊" : "登入"}
+                  type="primary"
+                  handleClick={handleSubmit(signIn)}
+                />
+              </BtnBox>
+            </SignInWrapper>
+          </Card>
         </LoginContainer>
-      )}
-      {isSignUp && (
-        <SignUp
-          name={name}
-          email={email}
-          password={password}
-          onInput={inputHandler}
-          onSignUp={signUp}
-          onShowSignUP={showSingUp}
-        />
-      )}
+      </FormProvider>
     </>
   );
 };

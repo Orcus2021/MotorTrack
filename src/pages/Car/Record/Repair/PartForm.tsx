@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/macro";
 import parts from "../../../../utils/parts";
 import { partType } from "../../../../types/recordType";
 import { useForm, FormProvider } from "react-hook-form";
-import Input from "../../../../components/Input";
+import Input from "../../../../components/Input/Input";
 import SelectCategory from "./SelectCategory";
+import InputBox from "../../../../components/Input/InputBox";
+import Textarea from "../../../../components/Textarea";
+import Button from "../../../../components/Button";
 
 const PartContainer = styled.div`
   width: 400px;
@@ -34,12 +37,12 @@ const Note = styled.textarea`
   width: 100%;
   height: 80px;
 `;
-const Btn = styled.button`
-  border: 2px solid var(--mainColor);
-  background-color: var(--mainColor);
-  color: black;
-  cursor: pointer;
-`;
+// const Btn = styled.button`
+//   border: 2px solid var(--mainColor);
+//   background-color: var(--mainColor);
+//   color: black;
+//   cursor: pointer;
+// `;
 
 const InputBx = styled.div`
   display: flex;
@@ -63,8 +66,11 @@ const SpecBx = styled.div`
 `;
 const ButtonBx = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: row;
   align-items: center;
+  justify-content: space-around;
+  margin-top: 10px;
 `;
 
 const PartForm: React.FC<{
@@ -120,7 +126,7 @@ const PartForm: React.FC<{
             <Input
               name="spec"
               content="規格"
-              error={errors?.spec}
+              error={typeof errors?.spec?.type === "string"}
               type="text"
             />
           </SpecBx>
@@ -131,10 +137,11 @@ const PartForm: React.FC<{
             <Input
               name="price"
               content="單價"
-              error={errors?.price}
+              error={typeof errors?.price?.type === "string"}
               type="number"
               require={{
                 required: true,
+                min: 1,
                 onBlur: (e: { target: { value: number } }) => {
                   setValue("subtotal", e.target.value * watch("qty"));
                 },
@@ -146,7 +153,7 @@ const PartForm: React.FC<{
             <Input
               name="qty"
               content="數量"
-              error={errors?.qty}
+              error={typeof errors?.qty?.type === "string"}
               type="number"
               require={{
                 required: true,
@@ -161,7 +168,7 @@ const PartForm: React.FC<{
             <Input
               name="subtotal"
               content="總額"
-              error={errors?.subtotal}
+              error={typeof errors?.subtotal?.type === "string"}
               type="number"
               require={{
                 required: true,
@@ -178,7 +185,7 @@ const PartForm: React.FC<{
             <Input
               name="mileage"
               content="使用里程"
-              error={errors?.mileage}
+              error={typeof errors?.mileage?.type === "string"}
               require={{ required: true }}
               type="text"
             />
@@ -188,7 +195,7 @@ const PartForm: React.FC<{
             <Input
               name="year"
               content="年"
-              error={errors?.year}
+              error={typeof errors?.year?.type === "string"}
               require={{ required: true }}
               type="number"
             />
@@ -198,16 +205,21 @@ const PartForm: React.FC<{
             <Input
               name="month"
               content="月"
-              error={errors?.month}
+              error={typeof errors?.month?.type === "string"}
               require={{ required: true }}
               type="number"
             />
           </InputBx>
         </InputWrapper>
-        <Note placeholder="備註" {...register("note")} />
+        <Textarea content="備註" name="note" height={80} />
+
         <ButtonBx>
-          <Btn onClick={closeFormHandler}>取消</Btn>
-          <Btn onClick={handleSubmit(submitPart)}>新增</Btn>
+          <Button label="取消" type="cancel" handleClick={closeFormHandler} />
+          <Button
+            label="新增"
+            type="primary"
+            handleClick={handleSubmit(submitPart)}
+          />
         </ButtonBx>
       </FormProvider>
     </PartContainer>

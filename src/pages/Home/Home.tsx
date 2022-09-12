@@ -1,10 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect } from "react";
 import { userActions } from "../../store/user/userReducer";
 import { useAppDispatch, useAppSelector } from "../../store";
 import Loading from "../../components/Loading/Loading";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+import styled from "styled-components/macro";
 
-import Input from "../../components/Input";
-import { useForm } from "react-hook-form";
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const Home = () => {
   const isLoading = useAppSelector((state) => state.user.isLoading);
@@ -13,36 +19,18 @@ const Home = () => {
     dispatch(userActions.loading(true));
     setTimeout(() => {
       dispatch(userActions.loading(false));
-    }, 1000);
+    }, 500);
   }, [dispatch]);
 
-  // -----------------------------
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
-
-  const createFrom = () => {
-    // console.log(data);
-  };
-
   return (
-    <>
+    <Container>
       {isLoading && <Loading />}
-      <div>Home</div>
-      {/* <div>
-        <Input
-          name="insuranceDate"
-          content="保險到期日"
-          error={{ key: "kkk" }}
-          require={{ required: true }}
-          type="text"
-        />
-        <button onClick={handleSubmit(createFrom)}>典籍</button>
-      </div> */}
-    </>
+      <Card width={100} height={150} hover={true} handleClick={() => {}}>
+        <div>Home</div>
+      </Card>
+
+      <Button label="刪除" type="cancel" handleClick={() => {}} />
+    </Container>
   );
 };
 

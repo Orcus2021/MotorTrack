@@ -12,14 +12,12 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/react-redux": "^7.1.24",
-    "chart.js": "^3.9.1",
     "echarts": "^5.3.3",
     "echarts-for-react": "^3.0.2",
     "firebase": "^9.9.3",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-calendar": "^3.8.0",
-    "react-chartjs-2": "^4.3.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
     "react-redux": "^8.0.2",
@@ -35,12 +33,24 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
     ]
   },
   "browserslist": {
@@ -56,8 +66,23 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^6.5.10",
+    "@storybook/addon-actions": "^6.5.10",
+    "@storybook/addon-essentials": "^6.5.10",
+    "@storybook/addon-interactions": "^6.5.10",
+    "@storybook/addon-links": "^6.5.10",
+    "@storybook/builder-webpack5": "^6.5.10",
+    "@storybook/manager-webpack5": "^6.5.10",
+    "@storybook/node-logger": "^6.5.10",
+    "@storybook/preset-create-react-app": "^4.1.2",
+    "@storybook/react": "^6.5.10",
+    "@storybook/testing-library": "^0.0.13",
     "@types/react-calendar": "^3.5.2",
     "@types/styled-components": "^5.1.26",
-    "babel-plugin-macros": "^3.1.0"
+    "babel-plugin-macros": "^3.1.0",
+    "babel-plugin-named-exports-order": "^0.0.2",
+    "prop-types": "^15.8.1",
+    "storybook-theme-css-vars": "^0.0.5",
+    "webpack": "^5.74.0"
   }
 }

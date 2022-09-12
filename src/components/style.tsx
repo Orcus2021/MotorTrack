@@ -46,3 +46,12 @@ export const Img = styled.img`
   top: 0;
   left: 0;
 `;
+export const NeonText = styled.p`
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px var(--mainColor), 0 0 20px var(--mainColor),
+    0 0 40px var(--mainColor), 0 0 80px var(--mainColor),
+    0 0 120px var(--mainColor);
+`;

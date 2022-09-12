@@ -18,6 +18,7 @@ const initialUserState = {
   notification: null as notificationType | null,
   isAuth: false,
   isLoading: false,
+  isNav: true,
 };
 
 const userSlice = createSlice({
@@ -49,6 +50,9 @@ const userSlice = createSlice({
     },
     loading(state, action) {
       state.isLoading = action.payload;
+    },
+    showNav(state, action) {
+      state.isNav = action.payload;
     },
   },
 });

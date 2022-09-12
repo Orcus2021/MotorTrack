@@ -38,7 +38,11 @@ const Icon = styled.img`
   width: 50px;
   object-fit: cover;
   /* background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); */
-  background: linear-gradient(120deg, #84fab0 0%, var(--mainColor) 100%); ;
+  background: linear-gradient(
+    120deg,
+    var(--secondColor) 0%,
+    var(--mainColor) 100%
+  ); ;
 `;
 const Category = styled.p`
   margin-top: 5px;

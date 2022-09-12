@@ -6,6 +6,7 @@ import userIcon from "../../assets/img/dog.jpg";
 import styled from "styled-components/macro";
 import { useAppSelector } from "../../store";
 import { partType, partsType } from "../../types/recordType";
+import Motor from "../../components/Loading/Motor";
 
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
 
@@ -27,9 +28,10 @@ const DetailBx = styled.div`
   display: flex;
   flex-direction: row;
   padding: 10px;
-  background-color: var(--thirdBack);
   width: 100%;
   border-radius: 8px;
+  background-color: var(--thirdBack);
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
 `;
 const ChartBx = styled.div`
   position: relative;
@@ -80,7 +82,6 @@ const Message = styled.p`
   font-size: 0.8rem;
 `;
 const PartsWrapper = styled.div`
-  /* background-color: var(--thirdBack); */
   background-color: var(--thirdBack);
   padding: 0 10px;
   width: 100%;
@@ -88,6 +89,7 @@ const PartsWrapper = styled.div`
   border-radius: 10px;
   height: 350px;
   overflow-y: scroll;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
   &::-webkit-scrollbar {
     width: 7px;
   }
@@ -99,8 +101,16 @@ const PartsWrapper = styled.div`
     background-color: var(--mainColor);
   }
 `;
+const LoadingBx = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
-const StatusInfo = () => {
+const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
+  const { isBoxLoading } = props;
   const car = useAppSelector((state) => state.car.car);
   const userImg = useAppSelector((state) => state.user.user.userImg);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
@@ -161,7 +171,13 @@ const StatusInfo = () => {
               </MessageBx>
             </Detail>
           </DetailBx>
+
           <PartsWrapper>
+            {isBoxLoading && (
+              <LoadingBx>
+                <Motor />
+              </LoadingBx>
+            )}
             {partStatus.map((part: partType[], index) => (
               <PartStatus
                 onSelect={() => {

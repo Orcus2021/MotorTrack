@@ -3,6 +3,7 @@ import brands from "../../utils/brands";
 import styled from "styled-components/macro";
 import { useAppSelector, useAppDispatch } from "../../store";
 import { carActions } from "../../store/car/carReducer";
+import { userActions } from "../../store/user/userReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
 import asyncCarAction from "../../store/car/asyncCarAction";
@@ -35,6 +36,7 @@ const LeftWrapper = styled.div`
   padding: 20px;
 `;
 const RightWrapper = styled.div`
+  position: relative;
   width: 40%;
   display: flex;
   padding: 0 20px 10px 0;
@@ -121,6 +123,7 @@ const CarName = styled.p`
   font-size: 14px;
   color: black;
 `;
+
 // let isMounted = true;
 
 const compareDate = (cars: carType[]) => {
@@ -131,12 +134,18 @@ const compareDate = (cars: carType[]) => {
     const inspect = new Date(`${car.inspectionDay} 00:00:00`).getTime();
     const isInsurance = nowDate >= insurance - twoDays || nowDate >= insurance;
     const isInspect = nowDate >= inspect - twoDays || nowDate >= inspect;
+    let insuranceMsg = "保險即將到期";
+    let inspectionMsg = "驗車時間即將到期";
+    if (nowDate >= insurance) insuranceMsg = "保險已到期";
+    if (nowDate >= inspect) inspectionMsg = "驗車時間已到期";
 
     if (isInsurance || isInspect) {
       return {
         plateNum: car.plateNum,
         insurance: isInsurance,
+        insuranceMsg,
         inspection: isInspect,
+        inspectionMsg,
       };
     } else {
       return null;
@@ -145,36 +154,68 @@ const compareDate = (cars: carType[]) => {
 
   return result;
 };
+
 const Status = () => {
   const car = useAppSelector((state) => state.car.car);
   const cars = useAppSelector((state) => state.car.cars);
   const user = useAppSelector((state) => state.user.user);
+  const isAuth = useAppSelector((state) => state.user.isAuth);
   const isLoading = useAppSelector((state) => state.user.isLoading);
-  // const isMounted = useRef<boolean>(true);
-  const firstLogin = useLocation().state;
+  const isMounted = useRef<boolean>(true);
+
+  let firstLogin = useLocation().state;
 
   const [showContent, setShowContent] = useState<boolean>(false);
   const [showRemind, setShowRemind] = useState<boolean>(false);
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [remindMessages, setRemindMessages] = useState<resultType>([]);
+  const [isBoxLoading, setIsBoxLoading] = useState<boolean>(false);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(userActions.loading(true));
+    if (isAuth) {
+      setTimeout(() => {
+        dispatch(userActions.loading(false));
+      }, 500);
+    }
+  }, [dispatch, isAuth]);
+
+  // useEffect(() => {
+  //   if (
+  //     firstLogin === "first" &&
+  //     user.continueRemind &&
+  //     (user.insuranceRemind || user.inspectionRemind)
+  //   ) {
+  //     const result = compareDate(cars);
+
+  //     const found = result.every((result) => result === null);
+
+  //     if (!found) {
+  //       setShowRemind(true);
+  //       setRemindMessages(result);
+  //     }
+  //   }
+  // }, [cars, user, firstLogin]);
 
   useEffect(() => {
     if (
       firstLogin === "first" &&
+      isMounted.current &&
       user.continueRemind &&
       (user.insuranceRemind || user.inspectionRemind)
     ) {
       const result = compareDate(cars);
-      console.log(result);
+
       const found = result.every((result) => result === null);
 
       if (!found) {
         setShowRemind(true);
         setRemindMessages(result);
       }
+      isMounted.current = false;
     }
-  }, [cars, user, firstLogin]);
+  }, [cars, user, isMounted, firstLogin]);
 
   useEffect(() => {
     const nowDate = getTodayMs();
@@ -201,10 +242,12 @@ const Status = () => {
   };
 
   const selectMotorHandler = async (id: string, ownerId: string) => {
+    setIsBoxLoading(true);
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
     await dispatch(asyncRecordAction.getAllRecords(id));
     setShowContent(false);
+    setIsBoxLoading(false);
   };
   const showContentHandler = () => {
     setShowContent((pre) => !pre);
@@ -234,6 +277,7 @@ const Status = () => {
                   onClick={() => {
                     selectMotorHandler(car.id, car.ownerId);
                   }}
+                  key={car.id}
                 >
                   <BrandBx>
                     <Img src={brands.get(car.brand)?.img} />
@@ -248,10 +292,10 @@ const Status = () => {
           <MotorImg src={motorImg} />
         </LeftWrapper>
         <RightWrapper>
-          {isLoading && <Loading />}
-          <StatusInfo />
+          <StatusInfo isBoxLoading={isBoxLoading} />
         </RightWrapper>
       </Container>
+      {isLoading && <Loading />}
       {showRemind && (
         <Modal
           onClose={closeRemindHandler}

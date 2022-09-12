@@ -12,7 +12,7 @@ const HeaderWrapper = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  background-color: var(--mainBack);
+  background-color: transparent;
   height: 68px;
   display: flex;
   align-items: center;

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components/macro";
 import MessageBox from "../../../components/Modal/MessageBox";
+import Button from "../../../components/Button";
 
 const BtnBx = styled.div`
   display: flex;
@@ -40,8 +41,8 @@ const Confirm: React.FC<{ onClose: () => void; onDelete: () => void }> = (
     <MessageBox setStyle={{ width: 400, height: 200 }}>
       <Message>確定要刪除嗎?</Message>
       <BtnBx>
-        <ConfirmBtn onClick={deleteHandler}>刪除</ConfirmBtn>
-        <RejectBtn onClick={rejectHandler}>取消</RejectBtn>
+        <Button label="刪除" type="reject" handleClick={deleteHandler} />
+        <Button label="取消" type="cancel" handleClick={rejectHandler} />
       </BtnBx>
     </MessageBox>
   );

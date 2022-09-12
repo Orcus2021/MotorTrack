@@ -1,11 +1,7 @@
-import React, { useEffect, useCallback, useState } from "react";
-import parts from "../../utils/parts";
-import { Img } from "../../components/style";
+import React, { HTMLAttributes } from "react";
+import parts from "../utils/parts";
+import { Img } from "../components/style";
 import styled from "styled-components/macro";
-import { partType } from "../../types/recordType";
-import { useAppSelector } from "../../store";
-import { mileagePercent, datePercent } from "../../utils/calcFunc";
-import { carType } from "../../types/carType";
 
 import returnIcon from "../../assets/icon/return.png";
 
@@ -49,7 +45,11 @@ const Percent = styled.div<{ $isAlert: boolean }>`
     }
   }
 `;
-const Progress = styled.div<{ $length: number }>`
+const ProgressBar = styled.div<{
+  $length: number;
+  $startColor: string | undefined;
+  $endColor: string | undefined;
+}>`
   position: absolute;
   width: ${(props) => `${props.$length}%;`};
   top: 0;
@@ -59,7 +59,11 @@ const Progress = styled.div<{ $length: number }>`
   background: #fff;
   box-shadow: inset 0 0 2px #000;
   animation: animate 4s ease-in-out forwards;
-  background: linear-gradient(45deg, var(--mainColor), #673ab7);
+  background: linear-gradient(
+    45deg,
+    ${(props) => (props.$startColor ? props.$startColor : "var(--mainColor)")},
+    ${(props) => (props.$endColor ? props.$endColor : "#673ab7")}
+  );
   overflow: hidden;
   @keyframes animate {
     from {
@@ -89,13 +93,23 @@ const Progress = styled.div<{ $length: number }>`
     }
   }
 `;
-const Value = styled.span`
+const Value = styled.span<{ $isAlert: boolean }>`
   position: relative;
   width: 40px;
   text-align: left;
   color: #fff;
   margin-top: -2px;
   text-transform: uppercase;
+  ${(props) => (props.$isAlert ? "animation: valueAlert 2s infinite;" : "")};
+  @keyframes valueAlert {
+    0%,
+    100% {
+      color: #fff;
+    }
+    50% {
+      color: rgb(184, 1, 22);
+    }
+  }
 `;
 const Message = styled.p`
   font-size: 12px;
@@ -115,57 +129,44 @@ const Return = styled.div`
   cursor: pointer;
 `;
 
-const PartStatus: React.FC<{
-  part: partType[];
-  onShow: () => void;
-  onSelect: () => void;
-}> = (props) => {
-  const car = useAppSelector((state) => state.car.car);
-  const [partDetail, setPartDetail] = useState<{
-    message: string;
-    percent: number;
-  }>({
-    message: "",
-    percent: 0,
-  });
-  const { part, onShow, onSelect } = props;
+export interface Props extends HTMLAttributes<HTMLDivElement> {
+  message: string;
+  category: string;
+  returnIcon: string;
+  percent: number;
+  startColor?: string;
+  endColor?: string;
+  handleClick: () => void;
+}
 
-  useEffect(() => {
-    const compareDateAndMileage = () => {
-      const mileage = mileagePercent(part[0], car as carType);
-      const date = datePercent(part[0]);
-
-      if (!date) {
-        setPartDetail(mileage);
-      } else if (date.percent < mileage.percent) {
-        setPartDetail(date);
-      } else {
-        setPartDetail(mileage);
-      }
-    };
-    compareDateAndMileage();
-  }, [part, car]);
-
-  const showDetailHandler = () => {
-    onShow();
-    onSelect();
-  };
-  console.log(parts.get(part[0].category)?.icon);
+const Progress: React.FC<Props> = ({
+  message,
+  category,
+  returnIcon,
+  percent,
+  startColor,
+  endColor,
+  handleClick,
+}) => {
   return (
-    <PartsBx onClick={showDetailHandler}>
+    <PartsBx onClick={handleClick}>
       <IconBx>
-        <Img src={parts.get(part[0].category)?.icon} />
+        <Img src={parts.get(category)?.icon} />
       </IconBx>
       <PercentBx>
         <Message>
-          {part[0].name}: {partDetail.message}
+          {parts.get(category)?.name}: {message}
         </Message>
-        <Percent $isAlert={partDetail.percent === 0}>
-          <Progress $length={partDetail.percent} />
+        <Percent $isAlert={percent === 0}>
+          <ProgressBar
+            $length={percent}
+            $startColor={startColor}
+            $endColor={endColor}
+          />
         </Percent>
       </PercentBx>
 
-      <Value>{partDetail.percent}%</Value>
+      <Value $isAlert={percent === 0}>{percent}%</Value>
       <Return>
         <Img src={returnIcon} />
       </Return>
@@ -173,4 +174,4 @@ const PartStatus: React.FC<{
   );
 };
 
-export default PartStatus;
+export default Progress;

@@ -68,7 +68,7 @@ const asyncUserAction = {
       }
     };
   },
-  signIn(data: userLogin) {
+  signIn(data: userLogin | string) {
     return async (dispatch: AppDispatch) => {
       dispatch(userActions.loading(true));
       // dispatch(
@@ -79,11 +79,13 @@ const asyncUserAction = {
       //   })
       // );
       const signIn = async () => {
-        const userID = await firebase.signIn(data).catch((e) => {
-          throw new Error(e);
-        });
-
-        if (userID) {
+        let userID = data;
+        if (typeof data !== "string") {
+          userID = await firebase.signIn(data).catch((e) => {
+            throw new Error(e);
+          });
+        }
+        if (typeof userID === "string") {
           dispatch(asyncCarAction.getCars(userID));
           return await firebase.getDoc(`/users/${userID}`);
         }

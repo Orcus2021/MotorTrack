@@ -81,7 +81,7 @@ const RepairList: React.FC<{
         <tbody>
           {parts.map((record, index) => (
             <RepairItem
-              key={uuid()}
+              key={record.recordID}
               record={record}
               onShow={showPartHandler}
               onSelect={() => selectPartHandler(index)}
