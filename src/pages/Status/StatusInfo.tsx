@@ -197,7 +197,7 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
               <Progress
                 onSelect={() => {
                   selectPartHandler(index);
-                }}
+                }}`
                 onShow={showDetailHandler}
                 key={part[0].name}
                 part={part}
