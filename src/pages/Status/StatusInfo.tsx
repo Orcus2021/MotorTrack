@@ -7,6 +7,7 @@ import styled from "styled-components/macro";
 import { useAppSelector } from "../../store";
 import { partType, partsType } from "../../types/recordType";
 import Motor from "../../components/Loading/Motor";
+import Progress from "../../components/Progress";
 
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
 
@@ -188,6 +189,20 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
                 part={part}
               />
             ))}
+            {/* {partStatus.map((part: partType[], index) => {
+              
+              
+              
+              return(
+              <Progress
+                onSelect={() => {
+                  selectPartHandler(index);
+                }}
+                onShow={showDetailHandler}
+                key={part[0].name}
+                part={part}
+              />
+            )})} */}
           </PartsWrapper>
         </InfoWrapper>
       )}
