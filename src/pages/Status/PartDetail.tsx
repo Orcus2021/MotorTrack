@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components/macro";
 import { useAppSelector } from "../../store";
 import { partType } from "../../types/recordType";
-import parts from "../../utils/parts";
-import { Img } from "../../components/style";
+import { compareDateAndMileage } from "../../utils/calcFunc";
 import { mileagePercent, datePercent } from "../../utils/calcFunc";
 import { carType } from "../../types/carType";
 import { useNavigate } from "react-router-dom";
+import Progress from "../../components/Progress";
 
 import returnIcon from "../../assets/icon/return.png";
 
@@ -16,108 +16,7 @@ const InfoWrapper = styled.div`
   margin-right: 20px;
   border-radius: 8px;
 `;
-const PartsBx = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 5px 10px;
-  border-radius: 8px 8px 0 0;
 
-  border-radius: 8px;
-  overflow: hidden;
-
-  transition: 0.5s;
-`;
-
-const IconBx = styled.span`
-  position: relative;
-  width: 40px;
-  height: 40px;
-  /* text-align: right;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase; */
-`;
-const Percent = styled.div<{ $isAlert: boolean }>`
-  position: relative;
-  width: 100%;
-  height: 15px;
-
-  border-radius: 10px;
-  box-shadow: inset 0 0 10px #000;
-
-  overflow: hidden;
-  ${(props) => (props.$isAlert ? "animation: alert 2s infinite;" : "")};
-
-  @keyframes alert {
-    0%,
-    100% {
-      box-shadow: inset 0 0 10px #000;
-    }
-    50% {
-      box-shadow: inset 0 0 10px rgb(184, 1, 22);
-    }
-  }
-`;
-const Progress = styled.div<{ $length: number }>`
-  position: absolute;
-  width: ${(props) => `${props.$length}%;`};
-  top: 0;
-  left: 0;
-  height: 100%;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: inset 0 0 2px #000;
-  animation: grow 4s ease-in-out forwards;
-  background: linear-gradient(45deg, var(--mainColor), #673ab7);
-  overflow: hidden;
-  @keyframes grow {
-    from {
-      width: 0;
-    }
-  }
-  &::after {
-    content: "";
-    background-color: #ffffff86;
-    box-shadow: 0px 0px 12px 4px #ffffff;
-    width: 1px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: progressLight 6s ease-in-out infinite;
-  }
-  @keyframes progressLight {
-    0% {
-      left: -5%;
-    }
-    70% {
-      left: 110%;
-    }
-    100% {
-      left: 110%;
-    }
-  }
-`;
-const Value = styled.span`
-  position: relative;
-  width: 40px;
-  text-align: left;
-  color: #fff;
-  margin-top: -2px;
-  text-transform: uppercase;
-`;
-const Message = styled.p`
-  font-size: 12px;
-  padding-left: 5px;
-  margin-bottom: 5px;
-`;
-const PercentBx = styled.div`
-  flex-grow: 1;
-  padding: 0 10px;
-`;
 const PartsWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -179,44 +78,24 @@ const PartList = styled.div`
   padding: 10px;
 `;
 
-const Return = styled.div`
-  width: 15px;
-  height: 15px;
-  position: relative;
-  cursor: pointer;
-`;
-
 const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
   props
 ) => {
   const { onShow, part } = props;
   const navigate = useNavigate();
   const car = useAppSelector((state) => state.car.car);
-  const [partDetail, setPartDetail] = useState<{
-    message: string;
-    percent: number;
-  }>({
-    message: "",
-    percent: 0,
-  });
+
+  const { percent, message } = compareDateAndMileage(part[0], car as carType);
 
   const [isDate, setIsDate] = useState(true);
 
   useEffect(() => {
-    const compareDateAndMileage = () => {
-      const mileage = mileagePercent(part[0], car as carType);
-      const date = datePercent(part[0]);
-
-      if (!date) {
-        setPartDetail(mileage);
-      } else if (date.percent < mileage.percent) {
-        setPartDetail(date);
-        setIsDate(false);
-      } else {
-        setPartDetail(mileage);
-      }
-    };
-    compareDateAndMileage();
+    const mileage = mileagePercent(part[0], car as carType);
+    const date = datePercent(part[0]);
+    if (!date) return;
+    if (date.percent < mileage.percent) {
+      setIsDate(false);
+    }
   }, [part, car]);
 
   const goRecordHandler = (id: string) => {
@@ -226,23 +105,14 @@ const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
   return (
     <InfoWrapper>
       <PartsWrapper>
-        <Return onClick={onShow}>
-          <Img src={returnIcon} />
-        </Return>
-        <PartsBx>
-          <IconBx>
-            <Img src={parts.get(part[0].category)?.icon} />
-          </IconBx>
-          <PercentBx>
-            <Message>
-              {part[0].name}: {partDetail.message}
-            </Message>
-            <Percent $isAlert={partDetail.percent === 0}>
-              <Progress $length={partDetail.percent}></Progress>
-            </Percent>
-          </PercentBx>
-          <Value>{partDetail.percent}%</Value>
-        </PartsBx>
+        <Progress
+          message={message}
+          arrowDirection="back"
+          category={part[0].category}
+          returnIcon={returnIcon}
+          percent={percent}
+          handleClick={onShow}
+        />
         <MessageBx>
           <Title>規格</Title>
           <MessageDetail>{part[0].spec}</MessageDetail>

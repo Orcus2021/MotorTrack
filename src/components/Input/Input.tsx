@@ -215,11 +215,11 @@ const Input: React.FC<Props> = ({
   calendarPosition = "bottom",
 }) => {
   const methods = useFormContext();
-  const { register, setValue, watch, getValues } = methods;
+  const { register, setValue, watch, getValues, clearErrors } = methods;
   const [date, setDate] = useState<Date>(new Date());
   const [showDate, setShowDate] = useState<boolean>(false);
   const [isValue, setIsValue] = useState<boolean>(false);
-  console.log(error);
+
   useEffect(() => {
     if (watch(name)) {
       setIsValue(true);
@@ -242,6 +242,7 @@ const Input: React.FC<Props> = ({
       setValue(name, newDate);
       setIsValue(true);
       setShowDate(false);
+      clearErrors(name);
     }
   };
   const showCalendarHandler = () => {

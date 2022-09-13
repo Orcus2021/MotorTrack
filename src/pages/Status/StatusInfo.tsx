@@ -5,9 +5,12 @@ import { Img } from "../../components/style";
 import userIcon from "../../assets/img/dog.jpg";
 import styled from "styled-components/macro";
 import { useAppSelector } from "../../store";
+import { mileagePercent, datePercent } from "../../utils/calcFunc";
 import { partType, partsType } from "../../types/recordType";
 import Motor from "../../components/Loading/Motor";
 import Progress from "../../components/Progress";
+import { carType } from "../../types/carType";
+import returnIcon from "../../assets/icon/return.png";
 
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
 
@@ -141,6 +144,20 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
   const selectPartHandler = (index: number) => {
     setPartsIndex(index);
   };
+
+  const compareDateAndMileage = (part: partType, car: carType) => {
+    const mileage = mileagePercent(part, car);
+    const date = datePercent(part);
+
+    if (!date) {
+      return mileage;
+    } else if (date.percent < mileage.percent) {
+      return date;
+    } else {
+      return mileage;
+    }
+  };
+
   return (
     <Container>
       {showDetail ? (
@@ -179,30 +196,25 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
                 <Motor />
               </LoadingBx>
             )}
-            {partStatus.map((part: partType[], index) => (
-              <PartStatus
-                onSelect={() => {
-                  selectPartHandler(index);
-                }}
-                onShow={showDetailHandler}
-                key={part[0].name}
-                part={part}
-              />
-            ))}
-            {/* {partStatus.map((part: partType[], index) => {
-              
-              
-              
-              return(
-              <Progress
-                onSelect={() => {
-                  selectPartHandler(index);
-                }}`
-                onShow={showDetailHandler}
-                key={part[0].name}
-                part={part}
-              />
-            )})} */}
+            {partStatus.map((part: partType[], index) => {
+              const { percent, message } = compareDateAndMileage(
+                part[0],
+                car as carType
+              );
+              return (
+                <Progress
+                  message={message}
+                  arrowDirection="go"
+                  category={part[0].category}
+                  returnIcon={returnIcon}
+                  percent={percent}
+                  handleClick={() => {
+                    selectPartHandler(index);
+                    showDetailHandler();
+                  }}
+                />
+              );
+            })}
           </PartsWrapper>
         </InfoWrapper>
       )}

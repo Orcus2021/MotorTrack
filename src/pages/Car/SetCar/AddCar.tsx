@@ -102,7 +102,7 @@ const AddCar = () => {
   const {
     handleSubmit,
     setValue,
-
+    clearErrors,
     formState: { errors },
   } = methods;
 
@@ -127,6 +127,7 @@ const AddCar = () => {
   };
 
   const brandNameHandler = (name: string, key: string) => {
+    clearErrors("brand");
     setBrandName({ name, key });
   };
   // console.log(typeof errors?.licenseDate?.type === "string");

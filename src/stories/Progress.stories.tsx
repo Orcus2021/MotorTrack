@@ -25,7 +25,7 @@ const meta: Meta = {
     (story) => (
       <>
         <GlobalStyle />
-        <div style={{ margin: "30px" }}>{story()}</div>
+        <div style={{ margin: "30px", width: "500px" }}>{story()}</div>
       </>
     ),
   ],

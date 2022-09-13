@@ -7,23 +7,14 @@ const BtnBx = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin-top: 30px;
 `;
-const ConfirmBtn = styled.button`
-  border: none;
-  background-color: var(--errorColor);
-  padding: 5px 10px;
-  cursor: pointer;
-`;
-const RejectBtn = styled.button`
-  border: none;
-  background-color: var(--mainColor);
-  padding: 5px 10px;
-  cursor: pointer;
-`;
+
 const Message = styled.p`
   width: 100%;
   font-size: 16px;
   text-align: center;
+  margin-top: 30px;
 `;
 
 const Confirm: React.FC<{ onClose: () => void; onDelete: () => void }> = (

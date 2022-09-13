@@ -121,11 +121,11 @@ const PercentBx = styled.div`
   padding: 0 10px;
 `;
 
-const Return = styled.div`
+const Return = styled.div<{ $direction: string }>`
   width: 15px;
   height: 15px;
   position: relative;
-  transform: rotate(180deg);
+  transform: ${(props) => (props.$direction === "go" ? "rotate(180deg)" : "")};
   cursor: pointer;
 `;
 
@@ -134,9 +134,10 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
   category: string;
   returnIcon: string;
   percent: number;
+  arrowDirection: "go" | "back";
   startColor?: string;
   endColor?: string;
-  handleClick: () => void;
+  handleClick?: () => void;
 }
 
 const Progress: React.FC<Props> = ({
@@ -144,6 +145,7 @@ const Progress: React.FC<Props> = ({
   category,
   returnIcon,
   percent,
+  arrowDirection,
   startColor,
   endColor,
   handleClick,
@@ -167,7 +169,7 @@ const Progress: React.FC<Props> = ({
       </PercentBx>
 
       <Value $isAlert={percent === 0}>{percent}%</Value>
-      <Return>
+      <Return $direction={arrowDirection}>
         <Img src={returnIcon} />
       </Return>
     </PartsBx>

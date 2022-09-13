@@ -104,7 +104,7 @@ const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
   transition: all 0.5s;
 `;
 const CarInfo = styled.p`
-  font-size: 16px;
+  font-size: 14px;
   flex-grow: 1;
   text-align: center;
 `;

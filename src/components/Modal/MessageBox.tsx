@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { HTMLAttributes } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../style";
 
@@ -14,7 +14,7 @@ const RemindContainer = styled.div<{ $style: styleType }>`
   background-color: var(--thirdBack);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   border-radius: 4px;
 `;
@@ -25,16 +25,18 @@ const LogoBx = styled.div`
   height: 48px;
 `;
 
-const Remind: React.FC<{ children?: React.ReactNode; setStyle: styleType }> = (
-  props
-) => {
-  const { setStyle } = props;
+export interface Props extends HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  setStyle: styleType;
+}
+
+const Remind: React.FC<Props> = ({ setStyle, children }) => {
   return (
     <RemindContainer $style={setStyle}>
       <LogoBx>
         <Img src={logoIcon} />
       </LogoBx>
-      {props.children}
+      {children}
     </RemindContainer>
   );
 };

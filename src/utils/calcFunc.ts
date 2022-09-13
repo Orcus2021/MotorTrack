@@ -154,3 +154,16 @@ export const createMessage = (
     })
   );
 };
+
+export const compareDateAndMileage = (part: partType, car: carType) => {
+  const mileage = mileagePercent(part, car);
+  const date = datePercent(part);
+
+  if (!date) {
+    return mileage;
+  } else if (date.percent < mileage.percent) {
+    return date;
+  } else {
+    return mileage;
+  }
+};
