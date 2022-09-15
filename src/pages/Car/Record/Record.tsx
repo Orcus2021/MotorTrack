@@ -7,23 +7,46 @@ import RecordList from "./RecordList";
 import styled from "styled-components/macro";
 import Motor from "../../../components/Loading/Motor";
 import { useLocation } from "react-router-dom";
-
-import plusIcon from "../../../assets/icon/plus.png";
+import { NeonText } from "../../../components/style";
 import { userActions } from "../../../store/user/userReducer";
-const CartBx = styled.div`
+import TableBox from "../../../components/TableBox";
+import IconButton from "../../../components/Button/IconButton";
+
+import allIcon from "../../../assets/icon/chart-white.png";
+import plusIcon from "../../../assets/icon/plus.png";
+import whitePlusIcon from "../../../assets/icon/plus-white.png";
+import repairIcon from "../../../assets/icon/repair.png";
+import refuelIcon from "../../../assets/icon/refuel.png";
+import feeIcon from "../../../assets/icon/moneyBag.png";
+
+const RecordContainer = styled.div`
+  max-width: 1280px;
+  width: 100%;
+`;
+
+const CartWrapper = styled.div`
   position: relative;
   width: 100%;
-  padding: 20px;
+  /* max-width: 1280px; */
+  padding: 0 20px 20px 20px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
 `;
-const Card = styled.div`
+
+const CardBx = styled.div`
   position: relative;
-  background: var(--thirdBack);
-  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  backdrop-filter: blur(5px);
+  padding: 5px 10px;
+  /* background: var(--thirdBack); */
+  /* padding: 20px; */
+  border-radius: 8px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
 `;
 const RecordDetail = styled.div`
   position: relative;
@@ -34,105 +57,67 @@ const RecordDetail = styled.div`
   /* min-height: 500px; */
 `;
 const ExpenseText = styled.p`
-  font-size: 16px;
+  font-size: 12px;
 `;
 const DetailHeader = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
 `;
 const DetailTitle = styled.p`
   font-size: 16px;
-  margin-right: 10px;
+  margin-right: 20px;
   cursor: pointer;
+  &:nth-child(4) {
+    margin-right: 0px;
+  }
 `;
-const DetailRight = styled.div`
-  background-color: var(--thirdBack);
+const DetailRight = styled.div<{ $category: string }>`
+  /* background-color: var(--thirdBack); */
+  position: relative;
+  /* background: rgba(1, 0, 44, 0.2); */
+  background-color: var(--deepColor);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
   display: flex;
-  padding: 5px 0 0px 10px;
+  padding: 5px 10px 2px 10px;
   margin-left: 20px;
   border-radius: 10px 10px 0 0;
   flex-direction: row;
+  overflow: hidden;
+
+  &::before {
+    transition: 0.5s;
+    content: "";
+    background-color: var(--mainColor);
+    position: absolute;
+    top: 6px;
+    left: ${(props) => {
+      if (props.$category === "all") {
+        return "5px";
+      } else if (props.$category === "repair") {
+        return "57px";
+      } else if (props.$category === "refuel") {
+        return "109px";
+      } else if (props.$category === "fee") {
+        return "161px";
+      }
+    }};
+    width: 42px;
+    height: 24px;
+    border-radius: 24px;
+    z-index: -1;
+  }
 `;
 const CreateRecordWrapper = styled.div`
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 20px 10px 20px;
-`;
-const CreateBx = styled.div`
-  display: flex;
-  padding: 5px 10px;
-  background-color: var(--thirdBack);
-  margin-right: 10px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  cursor: pointer;
-`;
-const IconBx = styled.div`
-  position: relative;
-  width: 16px;
-  height: 16px;
-`;
-const CategoryText = styled.span`
-  font-size: 16px;
-`;
-const TableBx = styled.div`
-  height: 320px;
-  /* overflow-y: scroll; */
-  overflow: overlay;
-  background-color: var(--thirdBack);
-  &::-webkit-scrollbar {
-    width: 7px;
-    position: fixed;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 50px;
-    background-color: rgba(136, 136, 136, 0.5);
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--mainColor);
-  }
+  /* padding: 0 20px 10px 20px; */
 `;
 
-const SubTitle = styled.th`
-  background-color: var(--mainColor);
-
-  font-weight: 500;
-  font-size: 16px;
-  height: 25px;
-  text-align: center;
-  &:nth-child(1) {
-    width: 50px;
-  }
-  &:nth-child(2) {
-    width: 100px;
-  }
-  &:nth-child(3) {
-    width: 120px;
-  }
-  &:nth-child(4) {
-    flex-grow: 1;
-  }
-  &:nth-child(5) {
-    width: 50px;
-  }
-  &:nth-child(6) {
-    width: 150px;
-
-    border-radius: 0 4px 0 0;
-  }
-`;
-const TitleBx = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  border-radius: 4px 4px 0 0;
-  overflow: hidden;
-`;
 const LoadingBx = styled.div`
   width: 100%;
   height: 100%;
@@ -140,6 +125,34 @@ const LoadingBx = styled.div`
   align-items: center;
   justify-content: center;
 `;
+const Title = styled(NeonText)`
+  font-size: 20px;
+  padding: 15px 0 15px 25px;
+  font-weight: 400;
+`;
+
+const ExpenseNum = styled.p`
+  font-size: 22px;
+`;
+const TextBox = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ImgBx = styled.div`
+  height: 40px;
+  width: 40px;
+  position: relative;
+  margin-right: 10px;
+`;
+const tableTitles = [
+  { title: "類別", width: "50px" },
+  { title: "日期", width: "100px" },
+  { title: "里程數(公里)", width: "120px" },
+  { title: "標題", width: "auto" },
+  { title: "總額", width: "50px" },
+  { title: "備註", width: "150px" },
+];
 
 const Record = () => {
   const [recordCategory, setRecordCategory] = useState<string>("record");
@@ -184,50 +197,35 @@ const Record = () => {
     dispatch(userActions.showNav(!isNav));
   };
 
+  const CardInfo = [
+    { title: "總費用", icon: allIcon, expense: expenses.allExpenses },
+    { title: "維修", icon: repairIcon, expense: expenses.repairExpenses },
+    { title: "加油", icon: refuelIcon, expense: expenses.refuelExpenses },
+    { title: "費用", icon: feeIcon, expense: expenses.feeExpenses },
+  ];
+
   return (
     <>
       {recordCategory === "record" && (
-        <>
-          <CartBx>
-            <Card onClick={navHandler}>
-              <ExpenseText>總費用:${expenses.allExpenses}</ExpenseText>
-            </Card>
-            <Card>
-              <ExpenseText>維修:${expenses.repairExpenses}</ExpenseText>
-            </Card>
-            <Card>
-              <ExpenseText>加油:${expenses.refuelExpenses}</ExpenseText>
-            </Card>
-            <Card>
-              <ExpenseText>費用:${expenses.feeExpenses}</ExpenseText>
-            </Card>
-          </CartBx>
-          <CreateRecordWrapper>
-            <CreateBx
-              onClick={() => {
-                recordCategoryHandler("repair");
-              }}
-            >
-              <CategoryText>維修</CategoryText>
-              <IconBx>
-                <Img src={plusIcon} />
-              </IconBx>
-            </CreateBx>
-            <CreateBx
-              onClick={() => {
-                recordCategoryHandler("fee");
-              }}
-            >
-              <CategoryText>加油/充電/費用</CategoryText>
-              <IconBx>
-                <Img src={plusIcon} />
-              </IconBx>
-            </CreateBx>
-          </CreateRecordWrapper>
+        <RecordContainer>
+          <Title onClick={navHandler}>車輛紀錄</Title>
+          <CartWrapper>
+            {CardInfo.map((card) => (
+              <CardBx>
+                <ImgBx>
+                  <Img src={card.icon} />
+                </ImgBx>
+                <TextBox>
+                  <ExpenseNum>${card.expense}</ExpenseNum>
+                  <ExpenseText>{card.title}</ExpenseText>
+                </TextBox>
+              </CardBx>
+            ))}
+          </CartWrapper>
 
           <RecordDetail>
             <DetailHeader>
-              <DetailRight>
+              <DetailRight $category={selectCategory}>
                 <DetailTitle onClick={() => selectCategoryHandler("all")}>
                   全部
                 </DetailTitle>
@@ -241,16 +239,24 @@ const Record = () => {
                   費用
                 </DetailTitle>
               </DetailRight>
+              <CreateRecordWrapper>
+                <IconButton
+                  label="維修"
+                  icon={whitePlusIcon}
+                  handleClick={() => {
+                    recordCategoryHandler("repair");
+                  }}
+                />
+                <IconButton
+                  label="加油/充電/費用"
+                  icon={whitePlusIcon}
+                  handleClick={() => {
+                    recordCategoryHandler("fee");
+                  }}
+                />
+              </CreateRecordWrapper>
             </DetailHeader>
-            <TitleBx>
-              <SubTitle>類別</SubTitle>
-              <SubTitle>日期</SubTitle>
-              <SubTitle>里程數(公里)</SubTitle>
-              <SubTitle>標題</SubTitle>
-              <SubTitle>總額</SubTitle>
-              <SubTitle>備註</SubTitle>
-            </TitleBx>
-            <TableBx>
+            <TableBox titles={tableTitles}>
               {isLoading ? (
                 <LoadingBx>
                   <Motor />
@@ -261,9 +267,9 @@ const Record = () => {
                   selectCategory={selectCategory}
                 />
               )}
-            </TableBx>
+            </TableBox>
           </RecordDetail>
-        </>
+        </RecordContainer>
       )}
       {recordCategory === "repair" && (
         <Repair

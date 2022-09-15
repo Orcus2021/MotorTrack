@@ -152,6 +152,7 @@ const asyncRecordAction = {
     return (dispatch: AppDispatch) => {
       const update = async () => {
         let url = "";
+
         if (data.category === "refuel") {
           url = `/carsRecords/${carId}/refuelRecords/${data.id}`;
         } else {
@@ -162,6 +163,29 @@ const asyncRecordAction = {
       try {
         update();
         dispatch(recordActions.updateExpense(data));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  },
+  updateDiffCategoryExpense(carId: string, data: feeType, oldDate: feeType) {
+    return (dispatch: AppDispatch) => {
+      const update = async () => {
+        let url = "";
+
+        if (data.category === "refuel") {
+          url = `/carsRecords/${carId}/refuelRecords/${data.id}`;
+          firebase.delete(`/carsRecords/${carId}/feeRecords/${data.id}`);
+        } else {
+          url = `/carsRecords/${carId}/feeRecords/${data.id}`;
+          firebase.delete(`/carsRecords/${carId}/refuelRecords/${data.id}`);
+        }
+        firebase.setDoc(url, data);
+      };
+      try {
+        update();
+        dispatch(recordActions.addExpense(data));
+        dispatch(recordActions.deleteExpense(oldDate));
       } catch (e) {
         console.log(e);
       }

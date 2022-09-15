@@ -4,8 +4,12 @@ import expenseCategory from "../../../../utils/expenseItem";
 
 const Container = styled.div`
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  border-radius: 8px;
+  backdrop-filter: blur(5px);
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -24,8 +28,11 @@ const Card = styled.div<{ $isSelect: boolean }>`
   border-radius: 4px;
   flex-direction: column;
   align-items: center;
+
+  box-shadow: ${(props) =>
+    props.$isSelect && "0px 0px 10px  var(--lightColor)"};
   border: 2px solid
-    ${(props) => (props.$isSelect ? "var(--mainColor)" : "transparent")};
+    ${(props) => (props.$isSelect ? "var(--lightColor)" : "transparent")};
   cursor: pointer;
   &:hover {
     border: 2px solid var(--mainColor);

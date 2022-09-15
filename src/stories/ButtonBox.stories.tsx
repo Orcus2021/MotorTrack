@@ -1,4 +1,4 @@
-import ButtonBox, { Props } from "../components/ButtonBox/ButtonBox";
+import ButtonBox, { Props } from "../components/Button/ButtonBox";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { GlobalStyle } from "../App";
 // import Button from "../components/Button";

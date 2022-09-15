@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import brands from "../../utils/brands";
 import styled from "styled-components/macro";
 import { Outlet, useNavigate } from "react-router-dom";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
@@ -8,8 +7,9 @@ import { carActions } from "../../store/car/carReducer";
 import { userActions } from "../../store/user/userReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { Img } from "../../components/style";
-import Card from "../../components/Card";
 import { NeonText } from "../../components/style";
+import SubCarsBox from "./SubCarsBox";
+import CarsBox from "./CarsBox";
 
 import barIcon from "../../assets/icon/bar.png";
 import chartIcon from "../../assets/icon/chart.png";
@@ -17,12 +17,16 @@ import recordIcon from "../../assets/icon/paper.png";
 import addIcon from "../../assets/icon/plus.png";
 import setIcon from "../../assets/icon/setting.png";
 import bikeIcon from "../../assets/icon/motorbike.png";
+import backImg from "../../assets/img/back-bike3.jpg";
 
 const RecordContainer = styled.div`
   display: flex;
   flex-direction: row;
   position: relative;
   width: 100%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
 `;
 const Navigation = styled.div<{ $isNav: boolean }>`
   width: ${(props) => (props.$isNav ? "256px" : "65px")};
@@ -70,61 +74,20 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
   margin-left: ${(props) => (props.$isNav ? "256px" : "65px")};
   /* background: #f5f5f5; */
   transition: 0.5s;
-`;
-const CarsWrapper = styled.div`
-  /* background-color: #9d9d9d1d; */
-  border-radius: 8px;
-  padding: 10px 20px;
-  min-width: 256px;
-  height: 200px;
-  &::-webkit-scrollbar {
-    width: 7px;
-    position: fixed;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 50px;
-    background-color: rgba(136, 136, 136, 0.5);
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--mainColor);
-  }
-  overflow: overlay;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: fit-content;
+  min-height: 100vh;
+
+  background: url(${backImg}) no-repeat;
+  padding-top: 68px;
+
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
 `;
 
-const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
-  left: ${(props) => (props.$isShow ? "65px" : " -100%")};
-  width: 150px;
-  position: absolute;
-  top: 200px;
-  backdrop-filter: blur(5px);
-  border-radius: 0 8px 8px 0;
-  background: rgba(255, 255, 255, 0.15);
-  overflow: overlay;
-  z-index: 2;
-  transition: all 0.5s;
-`;
-const CarInfo = styled.p`
-  font-size: 14px;
-  flex-grow: 1;
-  text-align: center;
-`;
-const SubCarInfo = styled.p`
-  font-size: 12px;
-  flex-grow: 1;
-  text-align: center;
-`;
-const CarWrapper = styled.div`
-  width: 100%;
-  margin-bottom: 10px;
-`;
-const SubCarWrapper = styled.div`
-  width: 100%;
-  padding: 5px;
-  cursor: pointer;
-  &:hover {
-    background-color: var(--mainColor);
-  }
-`;
 const UserImg = styled.img<{ $isNav: boolean }>`
   width: ${(props) => (props.$isNav ? "50%" : "80%")};
   object-fit: cover;
@@ -141,25 +104,7 @@ const ImgBx = styled.div`
   margin-right: 20px;
   cursor: pointer;
 `;
-const SubImgBx = styled.div`
-  width: 20px;
-  height: 20px;
-  position: relative;
-  margin-right: 5px;
-`;
-const CarInfoBx = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-`;
 
-const CarNum = styled.p`
-  font-size: 16px;
-  color: var(--mainColor);
-`;
-const SubCarNum = styled.p`
-  font-size: 12px;
-`;
 const BikeNav = styled(Nav)<{ $isNav: boolean }>`
   ${(props) => props.$isNav && "justify-content: center"};
   overflow: unset;
@@ -180,8 +125,6 @@ const Title = styled(NeonText)`
 
 const Manage = () => {
   const dispatch = useAppDispatch();
-  const cars = useAppSelector((state) => state.car.cars);
-  const carID = useAppSelector((state) => state.car.car?.id);
   const isNav = useAppSelector((state) => state.user.isNav);
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
@@ -205,10 +148,6 @@ const Manage = () => {
   const navToPage = (path: string) => {
     navigate(path);
   };
-
-  // const navHandler = () => {
-  //   dispatch(userActions.showNav(!isNav));
-  // };
 
   return (
     <RecordContainer>
@@ -285,49 +224,11 @@ const Manage = () => {
             )}
           </BikeNav>
 
-          {isNav && (
-            <CarsWrapper>
-              {cars.map((car) => (
-                <CarWrapper key={car.id}>
-                  <Card hover={true} isSelect={car.id === carID}>
-                    <CarInfoBx>
-                      <ImgBx>
-                        <Img src={brands.get(car.brand)?.img} />
-                      </ImgBx>
-                      <CarNum>{car.plateNum}</CarNum>
-                      <CarInfo
-                        key={car.id}
-                        onClick={() => selectCartHandler(car.id, car.ownerId)}
-                      >
-                        {car.name}
-                      </CarInfo>
-                    </CarInfoBx>
-                  </Card>
-                </CarWrapper>
-              ))}
-            </CarsWrapper>
-          )}
+          {isNav && <CarsBox onSelect={selectCartHandler} />}
         </NavWrapper>
       </Navigation>
       {!isNav && (
-        <SubCarsWrapper $isShow={showCars}>
-          {cars.map((car) => (
-            <SubCarWrapper key={car.id}>
-              <CarInfoBx>
-                <SubImgBx>
-                  <Img src={brands.get(car.brand)?.img} />
-                </SubImgBx>
-                <SubCarNum>{car.plateNum}</SubCarNum>
-                <SubCarInfo
-                  key={car.id}
-                  onClick={() => selectCartHandler(car.id, car.ownerId)}
-                >
-                  {car.name}
-                </SubCarInfo>
-              </CarInfoBx>
-            </SubCarWrapper>
-          ))}
-        </SubCarsWrapper>
+        <SubCarsBox showCars={showCars} onSelect={selectCartHandler} />
       )}
 
       <MainWrapper $isNav={isNav}>

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../store/index";
 import styled from "styled-components/macro";
 
@@ -7,18 +7,32 @@ import logoImg from "../assets/logo_white.png";
 import { Img } from "../components/style";
 import PersonIcon from "../assets/icon/person.png";
 
-const HeaderWrapper = styled.div`
+const HeaderWrapper = styled.div<{
+  $isModify: boolean;
+  $isNav: boolean;
+  $isScroll: boolean;
+}>`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background-color: transparent;
+  transition: 0.5s;
+
+  background-color: ${(props) =>
+    props.$isScroll ? "rgba(255, 255, 255, 0.15)" : "transparent"};
+  box-shadow: ${(props) => props.$isScroll && "0px 3px 15px rgb(0, 0, 0)"};
+  backdrop-filter: ${(props) => props.$isScroll && "blur(10px)"};
   height: 68px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   z-index: 5;
-  padding: 0 20px;
+  padding: ${(props) =>
+    props.$isNav && props.$isModify
+      ? "0 20px 0 276px"
+      : props.$isModify
+      ? " 0 20px 0 85px"
+      : "0 20px"};
 `;
 const Logo = styled.img`
   height: 48px;
@@ -46,10 +60,35 @@ const NavRightBx = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  position: absolute;
+  right: 0;
 `;
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  // const scroll = useRef<number>();
   const isAuth = useAppSelector((state) => state.user.isAuth);
+  const isNav = useAppSelector((state) => state.user.isNav);
+  // const [scrollShow, setScrollShow] = useState<boolean>(false);
+  const isModify = location.pathname.includes("car_manage");
+
+  // const scrollScreen = useCallback(() => {
+  //   const lastScrollY = window.scrollY;
+
+  //   if (lastScrollY > 0) {
+  //     setScrollShow(true);
+  //   } else if (lastScrollY === 0) {
+  //     setScrollShow(false);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   window.addEventListener("scroll", scrollScreen);
+  //   scrollScreen();
+  //   return () => {
+  //     window.removeEventListener("scroll", scrollScreen);
+  //   };
+  // }, [scrollScreen]);
 
   const goHomePage = () => {
     if (isAuth) {
@@ -69,10 +108,9 @@ const Header = () => {
     }
   };
   return (
-    <HeaderWrapper>
+    <HeaderWrapper $isModify={isModify} $isNav={isNav} $isScroll={false}>
       <Logo src={logoImg} onClick={goHomePage} />
       <NavRightBx>
-        <NavLink to="/test">Test</NavLink>
         {isAuth && <Nav onClick={goCarRecord}>車輛日誌</Nav>}
         <NavProfile onClick={goProfile}>
           <Img src={PersonIcon} />

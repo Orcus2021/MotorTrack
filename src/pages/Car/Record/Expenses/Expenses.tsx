@@ -10,31 +10,19 @@ import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
-import Textarea from "../../../../components/Textarea";
+import { NeonText } from "../../../../components/style";
+import FormNoteBox from "../FormNoteBox";
 
 import trashIcon from "../../../../assets/trash.png";
-const RepairContainer = styled.div`
+const Container = styled.div`
   width: 100%;
+  max-width: 1280px;
   padding: 10px;
   position: relative;
 `;
-const HeaderBar = styled.div`
-  width: 100%;
-  height: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-`;
-const ConfirmBtn = styled.button`
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: transparent;
-  margin-right: 10px;
-`;
+
 const InputWrapper = styled.div`
+  width: 50%;
   margin-right: 10px;
 `;
 
@@ -50,23 +38,12 @@ const Detail = styled.div`
   flex-direction: row;
 `;
 
-const IconBx = styled.div`
-  position: relative;
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
-`;
-const Icon = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
 const Select = styled.input`
+  position: absolute;
   height: 0;
   width: 0;
+  margin: 0;
+  padding: 0;
   border: none;
   outline: none;
   background-color: transparent;
@@ -78,6 +55,24 @@ const InputBx = styled.div`
 `;
 const AmountBx = styled(InputBx)`
   margin-right: 0;
+`;
+const Title = styled(NeonText)`
+  font-size: 20px;
+  padding: 15px 0 0 25px;
+  font-weight: 400;
+`;
+
+const InputsWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  backdrop-filter: blur(5px);
+  padding: 20px 10px 0px 10px;
+  border-radius: 8px;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
+  margin: 20px 0;
 `;
 
 const Expenses: React.FC<{
@@ -111,8 +106,7 @@ const Expenses: React.FC<{
     setValue,
   } = methods;
 
-  const closeRepair = (e: React.FormEvent) => {
-    e.preventDefault();
+  const closeRepair = () => {
     onClose("record");
   };
 
@@ -139,21 +133,32 @@ const Expenses: React.FC<{
     createMessage(type, dispatch, message);
   };
 
-  const createExpenseHandler = (record: feeType) => {
-    record.amount = Number(record.amount);
-    record.mileage = Number(record.mileage);
-    if (!record.id) {
-      record.id = "";
+  const createExpenseHandler = (newRecord: feeType) => {
+    newRecord.amount = Number(newRecord.amount);
+    newRecord.mileage = Number(newRecord.mileage);
+
+    if (!newRecord.id) {
+      newRecord.id = "";
 
       dispatch(
-        asyncRecordAction.addExpense(carID as string, record, recordAnnual)
+        asyncRecordAction.addExpense(carID as string, newRecord, recordAnnual)
       );
-    } else {
-      dispatch(asyncRecordAction.updateExpense(carID as string, record));
+    } else if (newRecord.category === record?.category) {
+      dispatch(asyncRecordAction.updateExpense(carID as string, newRecord));
+    } else if (newRecord.category !== record?.category) {
+      // FIXME
+      console.log("test");
+      dispatch(
+        asyncRecordAction.updateDiffCategoryExpense(
+          carID as string,
+          newRecord,
+          record as feeType
+        )
+      );
     }
     addMessage("remind");
     dispatch(
-      asyncCarAction.updateCar(carID as string, { mileage: record.mileage })
+      asyncCarAction.updateCar(carID as string, { mileage: newRecord.mileage })
     );
 
     onClose("record");
@@ -177,57 +182,47 @@ const Expenses: React.FC<{
 
   return (
     <>
-      <RepairContainer>
+      <Container>
         <FormProvider {...methods}>
-          <HeaderBar>
-            <ConfirmBtn onClick={handleSubmit(createExpenseHandler)}>
-              {updateId ? "更新" : "新增"}
-            </ConfirmBtn>
-            {updateId && (
-              <IconBx onClick={deleteRepairRecord}>
-                <Icon src={trashIcon} />
-              </IconBx>
-            )}
-            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-          </HeaderBar>
-          <InputBox
-            message={errors.title && "標題尚未填寫"}
-            name="title"
-            content="標題"
-            error={typeof errors?.title?.type === "string"}
-            require={{ required: true }}
-            type="text"
-          />
-          <DetailBX>
-            <Detail>
-              <InputWrapper>
-                <InputBox
-                  message={errors.date && "日期尚未填寫"}
-                  name="date"
-                  content="日期"
-                  error={typeof errors?.date?.type === "string"}
-                  require={{ required: true }}
-                  type="date"
-                />
-              </InputWrapper>
-              <InputWrapper>
-                <InputBox
-                  message={
-                    errors.mileage?.type === "min" ? "勿低於目前里程數" : ""
-                  }
-                  name="mileage"
-                  content="里程數"
-                  error={typeof errors?.mileage?.type === "string"}
-                  require={{
-                    required: true,
-                    min: updateId ? record?.mileage : carMileage,
-                  }}
-                  type="number"
-                />
-              </InputWrapper>
-            </Detail>
-            <Detail>
-              <AmountBx>
+          <Title>費用表單</Title>
+          <InputsWrapper>
+            <InputBox
+              message={errors.title && "標題尚未填寫"}
+              name="title"
+              content="標題"
+              error={typeof errors?.title?.type === "string"}
+              require={{ required: true }}
+              type="text"
+            />
+            <DetailBX>
+              <Detail>
+                <InputWrapper>
+                  <InputBox
+                    message={errors.date && "日期尚未填寫"}
+                    name="date"
+                    content="日期"
+                    error={typeof errors?.date?.type === "string"}
+                    require={{ required: true }}
+                    type="date"
+                  />
+                </InputWrapper>
+                <InputWrapper>
+                  <InputBox
+                    message={
+                      errors.mileage?.type === "min" ? "勿低於目前里程數" : ""
+                    }
+                    name="mileage"
+                    content="里程數"
+                    error={typeof errors?.mileage?.type === "string"}
+                    require={{
+                      required: true,
+                      min: updateId ? record?.mileage : carMileage,
+                    }}
+                    type="number"
+                  />
+                </InputWrapper>
+              </Detail>
+              <Detail>
                 <InputBox
                   message={
                     errors.amount?.type === "min"
@@ -242,9 +237,9 @@ const Expenses: React.FC<{
                   require={{ required: true, min: 0 }}
                   type="number"
                 />
-              </AmountBx>
-            </Detail>
-          </DetailBX>
+              </Detail>
+            </DetailBX>
+          </InputsWrapper>
 
           <SelectCategory
             onSelect={selectHandler}
@@ -252,9 +247,14 @@ const Expenses: React.FC<{
           />
 
           <Select {...register("category")} />
-          <Textarea name="note" content="備註" height={150} />
+          <FormNoteBox
+            onCloseRepair={closeRepair}
+            onDeleteRepair={deleteRepairRecord}
+            updateId={updateId}
+            onSubmit={handleSubmit(createExpenseHandler)}
+          />
         </FormProvider>
-      </RepairContainer>
+      </Container>
     </>
   );
 };

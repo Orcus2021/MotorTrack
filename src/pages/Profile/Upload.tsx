@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../../components/style";
 import asyncUserAction from "../../store/user/asyncUserAction";
+import { createMessage } from "../../utils/calcFunc";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 import cancelIcon from "../../assets/icon/cancel.png";
@@ -121,7 +122,12 @@ const Upload: React.FC<{ imageType: string; onClose: () => void }> = (
     setImage(undefined);
   };
   const uploadHandler = () => {
-    if (image) dispatch(asyncUserAction.uploadImage(userId, imageType, image));
+    if (image) {
+      dispatch(asyncUserAction.uploadImage(userId, imageType, image));
+      onClose();
+    } else {
+      createMessage("error", dispatch, "尚未選擇照片");
+    }
   };
 
   return (

@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 export interface Props extends HTMLAttributes<HTMLDivElement> {
-  message?: string;
+  message?: string | false;
   type: "text" | "number" | "date" | "password";
   name: string;
   content: string;

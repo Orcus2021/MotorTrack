@@ -1,5 +1,6 @@
 import React, { HTMLAttributes } from "react";
 import styled from "styled-components/macro";
+import { Img } from "./style";
 
 const Btn = styled.button<{ $type: string; $size: string }>`
   margin: 0 10px;
@@ -36,8 +37,8 @@ const Btn = styled.button<{ $type: string; $size: string }>`
 
   border-radius: 8px;
   ${(props) => props.$type === "cancel" && "color: #fff;"}
-
-  border:${(props) =>
+  color: #fff;
+  border: ${(props) =>
     props.$type === "cancel" ? "2px solid var(--mainColor)" : "none"};
 
   cursor: pointer;
@@ -71,10 +72,18 @@ const Btn = styled.button<{ $type: string; $size: string }>`
   }
 `;
 
+// const ImgBx = styled.span`
+//   width: 20px;
+//   height: 20px;
+//   display: inline-block;
+//   position: relative;
+// `;
+
 export interface Props extends HTMLAttributes<HTMLButtonElement> {
   label: string;
   type: "primary" | "reject" | "cancel";
   size?: "small" | "medium" | "large";
+  icon?: string;
   handleClick: () => void;
 }
 
@@ -82,11 +91,17 @@ const Button: React.FC<Props> = ({
   label = "確認",
   type = "primary",
   size = "medium",
+  // icon,
   handleClick,
 }) => {
   return (
     <Btn $type={type} onClick={handleClick} $size={size}>
       {label}
+      {/* {icon && (
+        <ImgBx>
+          <Img src={icon} />
+        </ImgBx>
+      )} */}
     </Btn>
   );
 };

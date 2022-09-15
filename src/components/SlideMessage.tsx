@@ -24,6 +24,7 @@ const Container = styled.div<{
   align-items: center;
   justify-content: flex-start;
   transition: 0.7s ease-out;
+  z-index: 101;
 `;
 const Message = styled.p`
   color: var(--mainBack);

@@ -1,19 +1,38 @@
 import React from "react";
 import styled from "styled-components/macro";
 import { partType } from "../../../../types/recordType";
+import parts from "../../../../utils/parts";
 
 import trashIcon from "../../../../assets/trash.png";
 
-const ContentWrapper = styled.tr``;
-const Content = styled.td`
+const ContentWrapper = styled.tr`
+  height: 28px;
+  cursor: pointer;
+  &:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.22);
+  }
+  &:hover {
+    background-color: var(--mainColor);
+    color: black;
+  }
+`;
+const Content = styled.td<{ $width: string }>`
   font-size: 16px;
   text-align: center;
+  width: ${(props) => props.$width};
 `;
-const IconBx = styled.td`
+const IconWrapper = styled.td`
   position: relative;
+  width: 50px;
+  text-align: center;
+  vertical-align: middle;
+`;
+const IconBox = styled.span`
+  position: relative;
+  display: inline-block;
+  margin-top: 2px;
   height: 20px;
   width: 20px;
-  cursor: pointer;
 `;
 const Icon = styled.img`
   position: absolute;
@@ -31,6 +50,8 @@ type Props = {
 };
 const RepairItem: React.FC<Props> = (props) => {
   const { record, onShow, onSelect, onDeletePart } = props;
+  const { category, spec, year, month, mileage, price, qty, subtotal, note } =
+    record;
 
   const showPartFormHandler = () => {
     onShow();
@@ -41,22 +62,39 @@ const RepairItem: React.FC<Props> = (props) => {
     onDeletePart(record);
   };
 
+  const deadline = () => {
+    let msg: string = "";
+    if (year > 0) {
+      msg += `${year}年`;
+    } else if (month > 0) {
+      msg += `${month}月`;
+    } else if (year === 0 && month === 0) {
+      msg = "---";
+    }
+    return msg;
+  };
+
+  const tableContent = [
+    { content: parts.get(category)?.name, width: "100px" },
+    { content: spec, width: "80px" },
+    { content: deadline(), width: "100px" },
+    { content: mileage, width: "auto" },
+    { content: price, width: "80px" },
+    { content: qty, width: "50px" },
+    { content: subtotal, width: "80px" },
+    { content: note, width: "80px" },
+  ];
+
   return (
     <ContentWrapper onClick={showPartFormHandler}>
-      <Content>{record.category}</Content>
-      <Content>{record.spec}</Content>
-      <Content>
-        {record.year > 0 && `${record.year}年`}
-        {record.month > 0 && `${record.month}月`}
-      </Content>
-      <Content>{record.mileage}</Content>
-      <Content>{record.price}</Content>
-      <Content>{record.qty}</Content>
-      <Content>{record.subtotal}</Content>
-      <Content>{record.note}</Content>
-      <IconBx onClick={deletePartHandler}>
-        <Icon src={trashIcon} />
-      </IconBx>
+      {tableContent.map((content) => (
+        <Content $width={content.width}>{content.content}</Content>
+      ))}
+      <IconWrapper onClick={deletePartHandler}>
+        <IconBox>
+          <Icon src={trashIcon} />
+        </IconBox>
+      </IconWrapper>
     </ContentWrapper>
   );
 };

@@ -87,6 +87,7 @@ const recordSlice = createSlice({
       const feeExpenses = selectAnnualExpenses(state.fee, action.payload);
       const refuelExpenses = selectAnnualExpenses(state.refuel, action.payload);
       const repairExpenses = selectAnnualExpenses(state.repair, action.payload);
+
       state.expenses.repairExpenses = repairExpenses;
       state.expenses.refuelExpenses = refuelExpenses;
       state.expenses.feeExpenses = feeExpenses;
@@ -98,6 +99,7 @@ const recordSlice = createSlice({
       const feeExpenses = selectAnnualExpenses(state.fee, undefined);
       const refuelExpenses = selectAnnualExpenses(state.refuel, undefined);
       const repairExpenses = selectAnnualExpenses(state.repair, undefined);
+
       state.expenses.repairExpenses = repairExpenses;
       state.expenses.refuelExpenses = refuelExpenses;
       state.expenses.feeExpenses = feeExpenses;

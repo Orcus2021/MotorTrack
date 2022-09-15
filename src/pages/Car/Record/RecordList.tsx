@@ -3,13 +3,23 @@ import styled from "styled-components";
 import RecordItem from "./RecordItem";
 import { useAppSelector } from "../../../store";
 import { repairType, feeType } from "../../../types/recordType";
+import { NeonText } from "../../../components/style";
 
 const MessageTable = styled.table`
   border: 1px solid black;
   width: 100%;
   border: 0;
   border-collapse: collapse;
-  background-color: var(--thirdBack);
+  background: rgba(1, 0, 44, 0.4);
+  backdrop-filter: blur(5px);
+`;
+const NoRecordMsg = styled(NeonText)`
+  font-size: 25px;
+  line-height: 105px;
+  font-weight: 400;
+
+  opacity: 0.7;
+  text-align: center;
 `;
 
 const RecordList: React.FC<{
@@ -41,17 +51,21 @@ const RecordList: React.FC<{
 
   return (
     <>
-      <MessageTable>
-        <tbody>
-          {sortRecords.map((record) => (
-            <RecordItem
-              key={record.id}
-              record={record}
-              onUpdate={onUpdate}
-            ></RecordItem>
-          ))}
-        </tbody>
-      </MessageTable>
+      {sortRecords.length > 0 ? (
+        <MessageTable>
+          <tbody>
+            {sortRecords.map((record) => (
+              <RecordItem
+                key={record.id}
+                record={record}
+                onUpdate={onUpdate}
+              ></RecordItem>
+            ))}
+          </tbody>
+        </MessageTable>
+      ) : (
+        <NoRecordMsg>還沒開始紀錄...</NoRecordMsg>
+      )}
     </>
   );
 };

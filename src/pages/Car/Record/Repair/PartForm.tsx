@@ -30,21 +30,9 @@ const InputWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   width: 100%;
-  margin-bottom: 15px;
 `;
-const Note = styled.textarea`
-  resize: none;
-  width: 100%;
-  height: 80px;
-`;
-// const Btn = styled.button`
-//   border: 2px solid var(--mainColor);
-//   background-color: var(--mainColor);
-//   color: black;
-//   cursor: pointer;
-// `;
 
-const InputBx = styled.div`
+const BoxWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -54,12 +42,6 @@ const InputBx = styled.div`
   }
 `;
 
-const ErrorMsg = styled.p`
-  text-align: left;
-  height: 10px;
-  font-size: 10px;
-  padding-left: 10px;
-`;
 const SpecBx = styled.div`
   width: 50%;
   margin-right: 10px;
@@ -79,9 +61,8 @@ const PartForm: React.FC<{
   part: partType;
 }> = (props) => {
   const { onAddPart, onClose, part } = props;
-  const methods = useForm<partType>({ mode: "onBlur" });
+  const methods = useForm<partType>({ mode: "all" });
   const {
-    register,
     handleSubmit,
     reset,
     watch,
@@ -133,8 +114,9 @@ const PartForm: React.FC<{
           <SelectCategory />
         </HeaderBx>
         <InputWrapper>
-          <InputBx>
-            <Input
+          <BoxWrapper>
+            <InputBox
+              message={errors.price && "單價錯誤"}
               name="price"
               content="單價"
               error={typeof errors?.price?.type === "string"}
@@ -147,10 +129,9 @@ const PartForm: React.FC<{
                 },
               }}
             />
-            <ErrorMsg>{errors.price && "單價錯誤"}</ErrorMsg>
-          </InputBx>
-          <InputBx>
-            <Input
+          </BoxWrapper>
+          <BoxWrapper>
+            <InputBox
               name="qty"
               content="數量"
               error={typeof errors?.qty?.type === "string"}
@@ -161,11 +142,11 @@ const PartForm: React.FC<{
                   setValue("subtotal", e.target.value * watch("price"));
                 },
               }}
+              message={errors.qty && "數量錯誤"}
             />
-            <ErrorMsg>{errors.qty && "數量錯誤"}</ErrorMsg>
-          </InputBx>
-          <InputBx>
-            <Input
+          </BoxWrapper>
+          <BoxWrapper>
+            <InputBox
               name="subtotal"
               content="總額"
               error={typeof errors?.subtotal?.type === "string"}
@@ -176,40 +157,57 @@ const PartForm: React.FC<{
                   setValue("price", e.target.value / watch("qty"));
                 },
               }}
+              message={errors.subtotal && "總額錯誤"}
             />
-            <ErrorMsg>{errors.subtotal && "總額錯誤"}</ErrorMsg>
-          </InputBx>
+          </BoxWrapper>
         </InputWrapper>
         <InputWrapper>
-          <InputBx>
-            <Input
+          <BoxWrapper>
+            <InputBox
               name="mileage"
               content="使用里程"
               error={typeof errors?.mileage?.type === "string"}
-              require={{ required: true }}
-              type="text"
+              require={{ required: true, min: 0 }}
+              type="number"
+              message={errors.mileage && "里程數錯誤"}
             />
-          </InputBx>
+          </BoxWrapper>
 
-          <InputBx>
-            <Input
+          <BoxWrapper>
+            <InputBox
               name="year"
               content="年"
               error={typeof errors?.year?.type === "string"}
-              require={{ required: true }}
+              require={{
+                required: true,
+                valueAsNumber: true,
+                min: 0,
+                validate: {
+                  positive: (v: number) => v % 1 === 0,
+                },
+              }}
               type="number"
+              message={errors.year && "使用年限錯誤(年)"}
             />
-          </InputBx>
+          </BoxWrapper>
 
-          <InputBx>
-            <Input
+          <BoxWrapper>
+            <InputBox
               name="month"
               content="月"
               error={typeof errors?.month?.type === "string"}
-              require={{ required: true }}
+              require={{
+                required: true,
+                valueAsNumber: true,
+                min: 0,
+                validate: {
+                  positive: (v: number) => v % 1 === 0,
+                },
+              }}
               type="number"
+              message={errors.month && "使用年限錯誤(月)"}
             />
-          </InputBx>
+          </BoxWrapper>
         </InputWrapper>
         <Textarea content="備註" name="note" height={80} />
 

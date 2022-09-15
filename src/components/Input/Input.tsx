@@ -25,20 +25,19 @@ const InputFloat = styled.input<{
 
   border: 1px solid
     ${(props) => {
-      if (props.$isWatch) {
-        return "var(--mainColor)";
-      } else if (props.$isError) {
+      if (props.$isError) {
         return "var(--errorColor)";
+      } else if (props.$isWatch) {
+        return "var(--mainColor)";
       } else {
-        return "rgba(255, 255, 255, 0.25)";
+        return "rgba(255, 255, 255, 0.6)";
       }
     }};
 
   border-left: ${(props) =>
-    props.$isError ? "10px solid var(--errorColor)" : ""};
-
-  border-left: ${(props) =>
     props.$isWatch ? "1px solid var(--mainColor)" : ""};
+  border-left: ${(props) =>
+    props.$isError ? "10px solid var(--errorColor)" : ""};
   border-radius: 4px;
   outline: none;
   color: #fff;
@@ -75,7 +74,7 @@ const SpanFloat = styled.span<{
   padding-left: 10px;
   pointer-events: none;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   transition: 0.5s;
 
@@ -226,8 +225,7 @@ const Input: React.FC<Props> = ({
     } else {
       setIsValue(false);
     }
-  }, [watch, name, value]);
-
+  }, [watch, name, value, type]);
   let newType = type;
 
   if (type === "date") {
@@ -255,9 +253,13 @@ const Input: React.FC<Props> = ({
       setShowDate(false);
     }
   };
+
   const clearValueHandler = () => {
+    if (type === "number" && watch(name) * 10 < 10) {
+      setIsValue(true);
+    }
     if (type === "number" && getValues(name) === 0) {
-      setValue(name, "");
+      setValue(name, null);
     }
   };
 

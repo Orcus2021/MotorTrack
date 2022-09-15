@@ -6,12 +6,11 @@ import { Outlet } from "react-router-dom";
 import firebase from "./utils/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createMessage } from "./utils/calcFunc";
-import reset from "styled-reset";
+import { Reset } from "styled-reset";
 import { createGlobalStyle } from "styled-components/macro";
 import SlideMessage from "./components/SlideMessage";
 
 export const GlobalStyle = createGlobalStyle`
-/* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Poppins&display=swap'); */
 
   *{
     box-sizing: border-box;
@@ -25,8 +24,13 @@ export const GlobalStyle = createGlobalStyle`
     --deepColor:#02697f;
     /* --lightColor:#93f1f9;    */
      /* --secondColor:#0ac3cf; */
-     --deepColor:#24334d;
-     --mainColor:#6797ea;
+
+     /* --deepColor:#24334d; */
+     --deepColor:#1d3557;
+
+     /* --mainColor:#457b9d; */
+     /* --mainColor:#548ae6; */
+     --mainColor:#4581ea;
      --lightColor:#a9c7fa;
 
      --secondColor:rgb(224, 195, 252);
@@ -51,6 +55,18 @@ export const GlobalStyle = createGlobalStyle`
   }
   body{
    color:#fff;
+   &::-webkit-scrollbar {
+    width: 7px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--mainColor);
+  }
+  overflow: overlay;
+
   }
 
   #root{
@@ -59,6 +75,7 @@ export const GlobalStyle = createGlobalStyle`
     min-height:100vh;
     padding-top:68px ;
     position:relative;
+
     
   }
   #root[data-theme="light"] {

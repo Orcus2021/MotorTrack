@@ -24,7 +24,7 @@ const InputFloat = styled.textarea<{
       if (props.$isError) {
         return "var(--errorColor)";
       } else {
-        return "rgba(255, 255, 255, 0.25)";
+        return "rgba(255, 255, 255, 0.6)";
       }
     }};
 
@@ -66,7 +66,7 @@ const SpanFloat = styled.span<{
   padding-left: 10px;
   pointer-events: none;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   transition: 0.5s;
   background-color: ${(props) => (props.$isError ? "var(--errorColor)" : "")};

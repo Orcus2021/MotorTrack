@@ -14,39 +14,18 @@ import { useAppDispatch, useAppSelector } from "../../../../store";
 import asyncRecordAction from "../../../../store/record/asyncRecordAction";
 import { formatDate, createMessage } from "../../../../utils/calcFunc";
 import asyncCarAction from "../../../../store/car/asyncCarAction";
-import Input from "../../../../components/Input/Input";
 import moment from "moment";
-import Textarea from "../../../../components/Textarea";
+import { NeonText } from "../../../../components/style";
+import FormNoteBox from "../FormNoteBox";
+import InputBox from "../../../../components/Input/InputBox";
 
 import trashIcon from "../../../../assets/trash.png";
 
 const RepairContainer = styled.div`
   width: 100%;
+  max-width: 1280px;
   padding: 10px;
   position: relative;
-`;
-const HeaderBar = styled.div`
-  width: 100%;
-  height: 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-`;
-const ConfirmBtn = styled.button`
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: transparent;
-  margin-right: 10px;
-`;
-const TitleBx = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 20px;
 `;
 
 const DetailBX = styled.div`
@@ -54,7 +33,6 @@ const DetailBX = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 5px;
 `;
 const Detail = styled.div`
   width: 50%;
@@ -68,29 +46,28 @@ const AmountDetail = styled.div`
   align-items: flex-start;
 `;
 
-const IconBx = styled.div`
-  position: relative;
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
-`;
-const Icon = styled.img`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-const ErrorMsg = styled.p`
-  text-align: left;
-  height: 10px;
-  font-size: 10px;
-  padding-left: 10px;
+const InputWrapper = styled.div`
+  width: 50%;
+  margin-right: 10px;
 `;
 
-const InputBx = styled.div`
-  margin-right: 10px;
+const Title = styled(NeonText)`
+  font-size: 20px;
+  padding: 15px 0 0 25px;
+  font-weight: 400;
+`;
+
+const InputsWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  backdrop-filter: blur(5px);
+  padding: 20px 10px 0px 10px;
+  border-radius: 8px;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
+  margin: 20px 0;
 `;
 
 const Repair: React.FC<{
@@ -245,44 +222,32 @@ const Repair: React.FC<{
   };
 
   return (
-    <>
-      <FormProvider {...methods}>
-        <RepairContainer>
-          <HeaderBar>
-            <ConfirmBtn onClick={handleSubmit(createRepairHandler)}>
-              {updateId ? "更新" : "新增"}
-            </ConfirmBtn>
-            {updateId && (
-              <IconBx onClick={deleteRepairRecord}>
-                <Icon src={trashIcon} />
-              </IconBx>
-            )}
-            <ConfirmBtn onClick={closeRepair}>取消</ConfirmBtn>
-          </HeaderBar>
-          <TitleBx>
-            <Input
-              name="title"
-              content="標題"
-              error={typeof errors?.title?.type === "string"}
-              require={{ required: true }}
-              type="text"
-            />
-            <ErrorMsg>{errors.title && "標題尚未填寫"}</ErrorMsg>
-          </TitleBx>
+    <FormProvider {...methods}>
+      <RepairContainer>
+        <Title>維修表單</Title>
+        <InputsWrapper>
+          <InputBox
+            name="title"
+            content="標題"
+            error={typeof errors?.title?.type === "string"}
+            require={{ required: true }}
+            type="text"
+            message={errors.title && "標題尚未填寫"}
+          />
           <DetailBX>
             <Detail>
-              <InputBx>
-                <Input
+              <InputWrapper>
+                <InputBox
                   name="date"
                   content="日期"
                   error={typeof errors?.date?.type === "string"}
                   require={{ required: true }}
                   type="date"
+                  message={errors.date && "日期尚未填寫"}
                 />
-                <ErrorMsg>{errors.date && "日期尚未填寫"}</ErrorMsg>
-              </InputBx>
-              <InputBx>
-                <Input
+              </InputWrapper>
+              <InputWrapper>
+                <InputBox
                   name="mileage"
                   content="里程數"
                   error={typeof errors?.mileage?.type === "string"}
@@ -291,14 +256,12 @@ const Repair: React.FC<{
                     min: updateId ? record?.mileage : carMileage,
                   }}
                   type="number"
+                  message={errors.mileage?.type === "min" && "勿低於目前里程數"}
                 />
-                <ErrorMsg>
-                  {errors.mileage?.type === "min" && "勿低於目前里程數"}
-                </ErrorMsg>
-              </InputBx>
+              </InputWrapper>
             </Detail>
             <AmountDetail onClick={remindHandler}>
-              <Input
+              <InputBox
                 name="amount"
                 content="總金額"
                 error={typeof errors?.amount?.type === "string"}
@@ -306,19 +269,25 @@ const Repair: React.FC<{
                 type="number"
                 readOnly={true}
                 value={amountValue}
+                message={errors.amount && "尚未新增零件資料"}
               />
-              <ErrorMsg>{errors.amount && "尚未新增零件資料"}</ErrorMsg>
             </AmountDetail>
           </DetailBX>
-          <RepairList
-            onAdd={addPartHandler}
-            parts={parts}
-            onDeletePart={deletePartHandler}
-          />
-          <Textarea content="備註" name="note" height={150} />
-        </RepairContainer>
-      </FormProvider>
-    </>
+        </InputsWrapper>
+
+        <RepairList
+          onAdd={addPartHandler}
+          parts={parts}
+          onDeletePart={deletePartHandler}
+        />
+        <FormNoteBox
+          onCloseRepair={closeRepair}
+          onDeleteRepair={deleteRepairRecord}
+          updateId={updateId}
+          onSubmit={handleSubmit(createRepairHandler)}
+        />
+      </RepairContainer>
+    </FormProvider>
   );
 };
 

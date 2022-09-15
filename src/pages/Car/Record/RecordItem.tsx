@@ -8,14 +8,19 @@ import feeIcon from "../../../assets/icon/moneyBag.png";
 import refuelIcon from "../../../assets/icon/refuel.png";
 
 const ContentWrapper = styled.tr`
+  &:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.22);
+  }
   &:hover {
     background-color: var(--mainColor);
+    color: black;
   }
 `;
 const Content = styled.td`
   font-size: 16px;
   text-align: center;
   height: 25px;
+  padding: 2px 0;
   cursor: pointer;
   &:nth-child(1) {
     width: 50px;
@@ -35,8 +40,8 @@ const Content = styled.td`
   }
 `;
 const IconBx = styled.div`
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   position: relative;
   margin: 0 auto;
 `;
@@ -67,7 +72,7 @@ const RecordItem: React.FC<{
       <Content>{record.mileage}</Content>
       <Content>{record.title}</Content>
       <Content>{record.amount}</Content>
-      <Content>{record.note}</Content>
+      <Content>{record.note || "---"}</Content>
     </ContentWrapper>
   );
 };

@@ -1,0 +1,78 @@
+import React, { FC } from "react";
+import styled from "styled-components/macro";
+import { Img } from "../../components/style";
+import { useAppSelector } from "../../store";
+import brands from "../../utils/brands";
+
+const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
+  left: ${(props) => (props.$isShow ? "65px" : " -100%")};
+  width: 150px;
+  position: absolute;
+  top: 200px;
+  backdrop-filter: blur(5px);
+  border-radius: 0 8px 8px 0;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: overlay;
+  z-index: 2;
+  transition: all 0.5s;
+`;
+const SubCarWrapper = styled.div`
+  width: 100%;
+  padding: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--mainColor);
+  }
+`;
+const CarInfoBx = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+const SubImgBx = styled.div`
+  width: 20px;
+  height: 20px;
+  position: relative;
+  margin-right: 5px;
+`;
+
+const SubCarNum = styled.p`
+  font-size: 12px;
+`;
+
+const SubCarInfo = styled.p`
+  font-size: 12px;
+  flex-grow: 1;
+  text-align: center;
+`;
+
+const SubCarsBox: FC<{
+  showCars: boolean;
+  onSelect: (id: string, ownerId: string) => Promise<void>;
+}> = (props) => {
+  const { showCars, onSelect } = props;
+  const cars = useAppSelector((status) => status.car.cars);
+
+  return (
+    <SubCarsWrapper $isShow={showCars}>
+      {cars.map((car) => (
+        <SubCarWrapper key={car.id}>
+          <CarInfoBx>
+            <SubImgBx>
+              <Img src={brands.get(car.brand)?.img} />
+            </SubImgBx>
+            <SubCarNum>{car.plateNum}</SubCarNum>
+            <SubCarInfo
+              key={car.id}
+              onClick={() => onSelect(car.id, car.ownerId)}
+            >
+              {car.name}
+            </SubCarInfo>
+          </CarInfoBx>
+        </SubCarWrapper>
+      ))}
+    </SubCarsWrapper>
+  );
+};
+
+export default SubCarsBox;

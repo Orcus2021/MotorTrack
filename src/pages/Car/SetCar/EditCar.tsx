@@ -9,6 +9,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import Input from "../../../components/Input/Input";
+import InputBox from "../../../components/Input/InputBox";
 import { carType } from "../../../types/carType";
 import Modal from "../../../components/Modal/Modal";
 import Confirm from "./Confirm";
@@ -60,15 +61,7 @@ const LogoBx = styled.div`
   position: relative;
   overflow: hidden;
 `;
-const ErrorMsg = styled.p`
-  text-align: left;
-  height: 10px;
-  font-size: 10px;
-  margin-bottom: 15px;
-  &:nth-child(7) {
-    margin-bottom: 0;
-  }
-`;
+
 const LogoWrapper = styled.div`
   width: 250px;
   height: 100px;
@@ -229,18 +222,18 @@ const EditCar = () => {
             </LogoWrapper>
 
             <InputBx>
-              <Input
+              <InputBox
                 name="name"
                 content="暱稱"
                 error={typeof errors?.name?.type === "string"}
                 require={{ required: true }}
                 type="text"
+                message={errors.name && "車輛名稱尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
 
             <InputBx>
-              <Input
+              <InputBox
                 name="plateNum"
                 content="車牌"
                 error={typeof errors?.plateNum?.type === "string"}
@@ -249,23 +242,26 @@ const EditCar = () => {
                   pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
                 }}
                 type="text"
+                message={
+                  errors.plateNum?.type === "required"
+                    ? "尚未填寫"
+                    : errors.plateNum?.type === "pattern"
+                    ? "格式錯誤"
+                    : ""
+                }
               />
             </InputBx>
-            <ErrorMsg>
-              {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
-              {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
-            </ErrorMsg>
 
             <InputBx>
-              <Input
+              <InputBox
                 name="licenseDate"
                 content="行照發照日"
                 error={typeof errors?.licenseDate?.type === "string"}
                 require={{ required: true }}
                 type="date"
+                message={errors.licenseDate && "尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
 
             <CarInfoBx>
               <SubTitle>車齡:</SubTitle>
@@ -275,21 +271,19 @@ const EditCar = () => {
             </CarInfoBx>
 
             <InputBx>
-              <Input
+              <InputBox
                 name="insuranceDate"
                 content="保險到期日"
                 error={typeof errors?.insuranceDate?.type === "string"}
                 require={{ required: true }}
                 type="date"
                 calendarPosition="top"
+                message={errors.insuranceDate && "尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
             <BtnBx>
               <Button label="返回" handleClick={goRecord} type="cancel" />
-
               <Button label="刪除" handleClick={callConfirm} type="reject" />
-
               <Button
                 label="更新"
                 handleClick={handleSubmit(editCarHandler)}

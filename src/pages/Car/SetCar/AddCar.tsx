@@ -11,6 +11,7 @@ import { createMessage } from "../../../utils/calcFunc";
 import Button from "../../../components/Button";
 import Brands from "./Brands";
 import { NeonText } from "../../../components/style";
+import InputBox from "../../../components/Input/InputBox";
 
 import logoIcon from "../../../assets/logo_white.png";
 
@@ -65,12 +66,6 @@ const LogoImg = styled.img`
   object-fit: contain;
   width: 250px;
   height: auto;
-`;
-const ErrorMsg = styled.p`
-  text-align: left;
-  height: 10px;
-  font-size: 10px;
-  margin-bottom: 15px;
 `;
 
 const Title = styled(NeonText)<{ $isError?: boolean }>`
@@ -130,7 +125,7 @@ const AddCar = () => {
     clearErrors("brand");
     setBrandName({ name, key });
   };
-  // console.log(typeof errors?.licenseDate?.type === "string");
+
   return (
     <FormProvider {...methods}>
       <AddContainer>
@@ -158,18 +153,17 @@ const AddCar = () => {
             </LogoWrapper>
 
             <InputBx>
-              <Input
+              <InputBox
                 name="name"
                 content="暱稱"
                 error={typeof errors?.name?.type === "string"}
                 require={{ required: true }}
                 type="text"
+                message={errors.name && "車輛名稱尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.name && "車輛名稱尚未填寫"}</ErrorMsg>
-
             <InputBx>
-              <Input
+              <InputBox
                 name="plateNum"
                 content="車牌"
                 error={typeof errors?.plateNum?.type === "string"}
@@ -178,33 +172,37 @@ const AddCar = () => {
                   pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
                 }}
                 type="text"
+                message={
+                  errors.plateNum?.type === "required"
+                    ? "尚未填寫"
+                    : errors.plateNum?.type === "pattern"
+                    ? "格式錯誤"
+                    : ""
+                }
               />
             </InputBx>
-            <ErrorMsg>
-              {errors.plateNum?.type === "required" && <p>尚未填寫</p>}
-              {errors.plateNum?.type === "pattern" && <p>格式錯誤</p>}
-            </ErrorMsg>
+
             <InputBx>
-              <Input
+              <InputBox
                 name="licenseDate"
                 content="行照發照日"
                 error={typeof errors?.licenseDate?.type === "string"}
                 require={{ required: true }}
                 type="date"
+                message={errors.licenseDate && "尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.licenseDate && "尚未填寫"}</ErrorMsg>
             <InputBx>
-              <Input
+              <InputBox
                 name="insuranceDate"
                 content="保險到期日"
                 error={typeof errors?.insuranceDate?.type === "string"}
                 require={{ required: true }}
                 calendarPosition={"top"}
                 type="date"
+                message={errors.insuranceDate && "尚未填寫"}
               />
             </InputBx>
-            <ErrorMsg>{errors.insuranceDate && "尚未填寫"}</ErrorMsg>
             <BtnBx>
               <Button label="返回" type="cancel" handleClick={goRecord} />
               <Button
