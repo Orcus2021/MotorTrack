@@ -284,6 +284,7 @@ const Record = () => {
                 <RecordList
                   onUpdate={updateRepairHandler}
                   selectCategory={selectCategory}
+                  rwd={false}
                 />
               )}
             </TableBox>
@@ -300,6 +301,7 @@ const Record = () => {
                 <RecordList
                   onUpdate={updateRepairHandler}
                   selectCategory={selectCategory}
+                  rwd={true}
                 />
               )}
             </TableBoxRecord>

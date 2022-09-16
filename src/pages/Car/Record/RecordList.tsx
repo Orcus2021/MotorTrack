@@ -40,8 +40,9 @@ const MessageTableRwd = styled.div`
 const RecordList: React.FC<{
   onUpdate: (id: string, category: string) => void;
   selectCategory: string;
+  rwd: boolean;
 }> = (props) => {
-  const { onUpdate, selectCategory } = props;
+  const { onUpdate, selectCategory, rwd } = props;
   const record = useAppSelector((state) => state.record);
   const allRecords: (repairType | feeType)[] = [
     ...record.fee,
@@ -68,8 +69,21 @@ const RecordList: React.FC<{
     <>
       {sortRecords.length > 0 ? (
         <>
-          <MessageTable>
-            <tbody>
+          {!rwd && (
+            <MessageTable>
+              <tbody>
+                {sortRecords.map((record) => (
+                  <RecordItem
+                    key={record.id}
+                    record={record}
+                    onUpdate={onUpdate}
+                  />
+                ))}
+              </tbody>
+            </MessageTable>
+          )}
+          {rwd && (
+            <MessageTableRwd>
               {sortRecords.map((record) => (
                 <RecordItem
                   key={record.id}
@@ -77,13 +91,8 @@ const RecordList: React.FC<{
                   onUpdate={onUpdate}
                 />
               ))}
-            </tbody>
-          </MessageTable>
-          <MessageTableRwd>
-            {sortRecords.map((record) => (
-              <RecordItem key={record.id} record={record} onUpdate={onUpdate} />
-            ))}
-          </MessageTableRwd>
+            </MessageTableRwd>
+          )}
         </>
       ) : (
         <NoRecordMsg>還沒開始紀錄...</NoRecordMsg>
