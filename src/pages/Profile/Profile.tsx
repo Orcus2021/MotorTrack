@@ -21,21 +21,27 @@ const ProfileContainer = styled.div`
   align-items: center;
 `;
 const ProfileWrapper = styled.div`
-  width: 800px;
+  height: calc(100vh - 68px);
+  min-height: 554px;
+  padding-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: var(--secondBack);
 `;
 
 const Banner = styled.div`
   width: 100%;
+  min-height: 350px;
   height: 350px;
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   justify-content: flex-end;
   position: relative;
-  background-color: var(--mainColor);
+  background-color: var(--secondBack);
 `;
 const UserWrapper = styled.div`
   height: 80px;
@@ -54,7 +60,7 @@ const UserBx = styled.div`
 `;
 const UserImgBx = styled.div`
   position: relative;
-  border: 4px solid var(--mainBack);
+  border: 4px solid var(--secondBack);
   width: 120px;
   height: 120px;
   top: -40px;

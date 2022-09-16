@@ -75,13 +75,13 @@ const Brands: React.FC<{
       {allBrands.current.map((brand) => {
         return (
           <Card
+            key={brand[1].name}
             width={100}
             isSelect={brand[1].name === brandName.name}
             hover={true}
             boxShadow={true}
           >
             <BrandCard
-              key={brand[1].name}
               $isSelected={brand[1].name === brandName.name}
               onClick={() => {
                 onBrand(brand[1].name, brand[0]);

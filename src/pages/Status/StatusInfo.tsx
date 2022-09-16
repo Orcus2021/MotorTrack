@@ -1,47 +1,72 @@
 import React, { useState, useEffect } from "react";
 import PartDetail from "./PartDetail";
-import PartStatus from "./PartStatus";
+import brands from "../../utils/brands";
 import { Img } from "../../components/style";
 import userIcon from "../../assets/img/dog.jpg";
 import styled from "styled-components/macro";
-import { useAppSelector } from "../../store";
-import { mileagePercent, datePercent } from "../../utils/calcFunc";
+import { useAppSelector, useAppDispatch } from "../../store";
+import { compareDateAndMileage } from "../../utils/calcFunc";
 import { partType, partsType } from "../../types/recordType";
-import Motor from "../../components/Loading/Motor";
 import Progress from "../../components/Progress";
 import { carType } from "../../types/carType";
+import SelectBox from "../../components/SelectBox";
+import { carActions } from "../../store/car/carReducer";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import asyncRecordAction from "../../store/record/asyncRecordAction";
+import { useNavigate } from "react-router-dom";
+import Skeleton from "../../components/Skeleton";
+
 import returnIcon from "../../assets/icon/return.png";
-
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
-
+import arrowImg from "../../assets/icon/arrow_down.png";
 const Container = styled.div`
-  width: 100%;
+  width: 410px;
+  max-width: 410px;
   height: 100%;
-  margin-right: 30px;
-
+  /* margin-right: 30px; */
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  /* background-color: var(--thirdBack); */
   border-radius: 8px;
+  @media screen and (max-width: 701px) {
+    width: 322px;
+    max-width: 322px;
+  }
 `;
 
 const InfoWrapper = styled.div`
-  width: 100%;
+  width: 410px;
+  max-width: 410px;
   height: 100%;
-  margin-right: 20px;
+
   border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  @media screen and (max-width: 701px) {
+    width: 322px;
+    max-width: 322px;
+  }
 `;
 const DetailBx = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 10px;
+  padding: 10px 10px 10px 0;
   width: 100%;
   border-radius: 8px;
-  background-color: var(--thirdBack);
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
+  @media screen and (max-width: 701px) {
+    padding: 10px;
+  }
 `;
 const ChartBx = styled.div`
   position: relative;
-  height: 100px;
-  width: 100px;
-  margin-left: 10px;
+  height: 80px;
+  width: 80px;
+
   background-color: var(--mainColor);
   border-radius: 50%;
   overflow: hidden;
@@ -49,7 +74,7 @@ const ChartBx = styled.div`
 `;
 const Detail = styled.div`
   flex-grow: 1;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 `;
 const MileageBx = styled.div`
   display: flex;
@@ -57,7 +82,7 @@ const MileageBx = styled.div`
   justify-content: space-around;
   background-color: var(--mainColor);
   border-radius: 50px;
-  padding: 5px 10px;
+  padding: 2px 10px;
   margin-bottom: 10px;
 `;
 const MileageIconBx = styled.div`
@@ -86,14 +111,14 @@ const Message = styled.p`
   font-size: 0.8rem;
 `;
 const PartsWrapper = styled.div`
-  background-color: var(--thirdBack);
+  /* background-color: var(--thirdBack); */
   padding: 0 10px;
   width: 100%;
-  margin-top: 10px;
+  margin-bottom: 10px;
   border-radius: 10px;
   height: 350px;
-  overflow-y: scroll;
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
+  overflow: overlay;
+  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
   &::-webkit-scrollbar {
     width: 7px;
   }
@@ -109,18 +134,180 @@ const LoadingBx = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+`;
+const LeftBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100px;
+  @media screen and (max-width: 701px) {
+    display: none;
+  }
+`;
+const DisplayName = styled.div`
+  height: 28px;
+  width: 165px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  justify-content: flex-start;
+`;
+const BrandBx = styled.div`
+  height: 25px;
+  width: 25px;
+  position: relative;
+  /* margin-right: 10px; */
+`;
+const CarName = styled.p`
+  width: 65px;
+  font-size: 12px;
+  flex-grow: 1;
+  color: #fff;
+  padding: 0;
+  height: 17px;
+  line-height: 17px;
+  /* text-align: center; */
+`;
+
+const Content = styled.div`
+  height: 28px;
+  width: 100%;
+  display: flex;
+
+  flex-direction: row;
+  align-items: center;
+  padding: 2px 5px;
+  justify-content: flex-start;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--mainColor);
+  }
+  &:hover p {
+    color: #fff;
+  }
+`;
+
+const SelectBrand = styled.div`
+  height: 30px;
+  width: 30px;
+  margin-left: 10px;
+  position: relative;
+`;
+
+const SelectWrapper = styled.div`
+  flex-grow: 1;
+  border: 1px solid #fff;
+  border-radius: 30px;
+  padding: 0 10px;
+`;
+
+const PlateNum = styled.p`
+  font-size: 12px;
+  width: 70px;
+  margin-left: 5px;
+  line-height: 17px;
+  color: #fff;
+`;
+const NavWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+`;
+
+const RecordText = styled.p`
+  font-size: 16px;
+`;
+const RecordBox = styled.div`
+  width: 70px;
+  background-color: var(--mainColor);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  height: 30px;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-left: 10px;
+  &:hover {
+    box-shadow: 0px 0px 10px 2px rgba(224, 195, 252, 0.5),
+      0px 0px 10px 2px rgba(110, 155, 233, 0.5);
+    animation: btnScale linear 0.3s;
+  }
+  @keyframes btnScale {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    80% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+`;
+const Line = styled.div`
+  height: 1.8px;
+  background-color: #ffffff76;
+  width: 80%;
+  border-radius: 5px;
+`;
+const InfoDetailWrapper = styled.div<{ $isDetail: boolean }>`
+  display: flex;
+  align-items: center;
+  transition: 0.5s;
+  width: 820px;
+  transform: ${(props) => (props.$isDetail ? "translateX(-410px)" : "")};
+  @media screen and (max-width: 701px) {
+    width: 644px;
+    max-width: 644px;
+    transform: ${(props) => (props.$isDetail ? "translateX(-322px)" : "")};
+  }
+`;
+
+const NoPartsWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 `;
 
-const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
-  const { isBoxLoading } = props;
+const RemindMessage = styled.p`
+  font-size: 22px;
+  opacity: 0.5;
+`;
+type progressDetailType = {
+  index: number;
+  percent: number;
+  message: string;
+};
+
+const StatusInfo = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const car = useAppSelector((state) => state.car.car);
+  const cars = useAppSelector((state) => state.car.cars);
   const userImg = useAppSelector((state) => state.user.user.userImg);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [showContent, setShowContent] = useState<boolean>(false);
+  const [isBoxLoading, setIsBoxLoading] = useState<boolean>(false);
   const parts = useAppSelector((state) => state.record.parts);
-  const [partsIndex, setPartsIndex] = useState<number>(NaN);
+  const [progressDetail, setProgressDetail] = useState<progressDetailType>();
 
   useEffect(() => {
     let arr = [];
@@ -141,33 +328,65 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
   const showDetailHandler = () => {
     setShowDetail((pre) => !pre);
   };
-  const selectPartHandler = (index: number) => {
-    setPartsIndex(index);
+  const selectPartHandler = (
+    index: number,
+    percent: number,
+    message: string
+  ) => {
+    const progressDetail = {
+      index,
+      percent,
+      message,
+    };
+    setProgressDetail(progressDetail);
   };
 
-  const compareDateAndMileage = (part: partType, car: carType) => {
-    const mileage = mileagePercent(part, car);
-    const date = datePercent(part);
+  const selectMotorHandler = async (id: string, ownerId: string) => {
+    setIsBoxLoading(true);
+    dispatch(carActions.selectCar(id));
+    dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
+    await dispatch(asyncRecordAction.getAllRecords(id));
+    setShowContent(false);
+    setTimeout(() => {
+      setIsBoxLoading(false);
+    }, 1000);
+  };
+  const showContentHandler = () => {
+    setShowContent((pre) => !pre);
+  };
 
-    if (!date) {
-      return mileage;
-    } else if (date.percent < mileage.percent) {
-      return date;
-    } else {
-      return mileage;
-    }
+  const setOptions = () => {
+    const options = cars.map((car) => (
+      <Content
+        onClick={() => {
+          selectMotorHandler(car.id, car.ownerId);
+        }}
+        key={car.id}
+      >
+        <SelectBrand>
+          <Img src={brands.get(car.brand)?.img} />
+        </SelectBrand>
+        <PlateNum>{car?.plateNum}:</PlateNum>
+        <CarName> {car?.name}</CarName>
+      </Content>
+    ));
+    return options;
+  };
+  const goRecordHandler = () => {
+    navigate("/car_manage/record");
   };
 
   return (
     <Container>
-      {showDetail ? (
-        <PartDetail onShow={showDetailHandler} part={partStatus[partsIndex]} />
-      ) : (
+      <InfoDetailWrapper $isDetail={showDetail}>
         <InfoWrapper>
           <DetailBx>
-            <ChartBx>
-              <Img src={userImg || userIcon} />
-            </ChartBx>
+            <LeftBox>
+              <ChartBx>
+                <Img src={userImg || userIcon} />
+              </ChartBx>
+            </LeftBox>
+
             <Detail>
               <MileageBx>
                 <MileageIconBx>
@@ -187,37 +406,80 @@ const StatusInfo: React.FC<{ isBoxLoading: boolean }> = (props) => {
                 <Message>保險時間:</Message>
                 <Message>{car?.insuranceDate}</Message>
               </MessageBx>
+
+              <NavWrapper>
+                <SelectWrapper>
+                  <SelectBox
+                    options={setOptions()}
+                    onShow={showContentHandler}
+                    icon={arrowImg}
+                    showContent={showContent}
+                    width="200px"
+                    border={false}
+                  >
+                    <DisplayName onClick={showContentHandler}>
+                      <BrandBx>
+                        {car?.brand && <Img src={brands.get(car.brand)?.img} />}
+                      </BrandBx>
+                      <PlateNum>{car?.plateNum}:</PlateNum>
+                      <CarName>{car?.name}</CarName>
+                    </DisplayName>
+                  </SelectBox>
+                </SelectWrapper>
+                <RecordBox onClick={goRecordHandler}>
+                  <RecordText>記錄去</RecordText>
+                </RecordBox>
+              </NavWrapper>
             </Detail>
           </DetailBx>
-
+          <Line />
           <PartsWrapper>
             {isBoxLoading && (
               <LoadingBx>
-                <Motor />
+                {Array(5)
+                  .fill(null)
+                  .map((_, index) => (
+                    <Skeleton key={index} />
+                  ))}
               </LoadingBx>
             )}
-            {partStatus.map((part: partType[], index) => {
-              const { percent, message } = compareDateAndMileage(
-                part[0],
-                car as carType
-              );
-              return (
-                <Progress
-                  message={message}
-                  arrowDirection="go"
-                  category={part[0].category}
-                  returnIcon={returnIcon}
-                  percent={percent}
-                  handleClick={() => {
-                    selectPartHandler(index);
-                    showDetailHandler();
-                  }}
-                />
-              );
-            })}
+            {partStatus.length === 0 && !isBoxLoading && (
+              <NoPartsWrapper>
+                <RemindMessage>未登入零件紀錄</RemindMessage>
+              </NoPartsWrapper>
+            )}
+            {!isBoxLoading &&
+              partStatus.map((part: partType[], index) => {
+                const { percent, message } = compareDateAndMileage(
+                  part[0],
+                  car as carType
+                );
+                return (
+                  <Progress
+                    key={part[0].name}
+                    message={message}
+                    arrowDirection="go"
+                    category={part[0].category}
+                    returnIcon={returnIcon}
+                    percent={percent}
+                    handleClick={() => {
+                      selectPartHandler(index, percent, message);
+                      showDetailHandler();
+                    }}
+                  />
+                );
+              })}
           </PartsWrapper>
         </InfoWrapper>
-      )}
+        {progressDetail && partStatus[progressDetail.index] && (
+          <PartDetail
+            onShow={showDetailHandler}
+            part={partStatus[progressDetail.index]}
+            percent={progressDetail.percent}
+            message={progressDetail.message}
+          />
+        )}
+      </InfoDetailWrapper>
     </Container>
   );
 };

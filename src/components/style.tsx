@@ -43,7 +43,7 @@ export const Img = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  top: 0;
+  top: 1px;
   left: 0;
 `;
 export const NeonText = styled.p`

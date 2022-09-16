@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, FC, useState, ReactNode } from "react";
+import React, { HTMLAttributes, FC, ReactNode } from "react";
 import styled from "styled-components/macro";
 import { Img } from "./style";
 
@@ -19,10 +19,10 @@ const Container = styled.div<{
   justify-content: flex-start;
   /* overflow: hidden; */
 `;
-const Name = styled.div`
-  padding: 6px 0 6px 10px;
-  width: calc(100% - 28px);
-  /* background-color: var(--thirdBack); */
+const Name = styled.div<{ $isBorder: boolean }>`
+  padding: ${(props) => (props.$isBorder ? " 6px 0 6px 10px" : "0px")};
+  /* width: calc(100% - 28px); */
+
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -82,7 +82,7 @@ const SelectBox: FC<Props> = ({
 }) => {
   return (
     <Container $width={width} $isBorder={border}>
-      <Name>{children}</Name>
+      <Name $isBorder={border}>{children}</Name>
       <DownBx onClick={onShow}>
         <Img src={icon} />
       </DownBx>

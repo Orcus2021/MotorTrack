@@ -8,12 +8,15 @@ import MessageBox from "../components/Modal/MessageBox";
 
 const Message = styled.p`
   font-size: 16px;
+  margin-top: 5px;
 `;
 
 const RejectBx = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 const RejectRemind = styled.input.attrs({ type: "checkbox" })`
   width: 12px;

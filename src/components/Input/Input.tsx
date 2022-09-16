@@ -106,11 +106,11 @@ const CalendarWrapper = styled.div<{ $position: boolean }>`
   width: 250px;
   margin: auto;
   margin-top: 20px;
-  backdrop-filter: blur(5px);
-  background: rgba(255, 255, 255, 0.2);
+
+  background: rgba(1, 0, 44, 0.8);
   border-top: 1px solid rgba(255, 255, 255, 0.5);
   border-left: 1px solid rgba(255, 255, 255, 0.5);
-
+  backdrop-filter: blur(10px);
   padding: 5px;
   border-radius: 3px;
   /* ~~~ navigation styles ~~~ */

@@ -21,7 +21,7 @@ const Content = styled.div`
   }
 `;
 const DisplayName = styled.p`
-  flex-grow: 1;
+  width: 120px;
 `;
 
 const BrandBx = styled.div`
@@ -78,7 +78,10 @@ const Select = () => {
   const options: JSX.Element[] = [];
   parts.forEach((value, key) => {
     options.push(
-      <Content onClick={() => selectPartHandler(key, value.name)}>
+      <Content
+        onClick={() => selectPartHandler(key, value.name)}
+        key={value.name}
+      >
         <BrandBx>
           <Img src={parts.get(key)?.icon} />
         </BrandBx>
@@ -95,10 +98,10 @@ const Select = () => {
         showContent={showContent}
         width="50%"
       >
-        <DisplayBrandBx>
+        <DisplayBrandBx onClick={showContentHandler}>
           <Img src={parts.get(watch("category"))?.icon} />
         </DisplayBrandBx>
-        <DisplayName>{partName}</DisplayName>
+        <DisplayName onClick={showContentHandler}>{partName}</DisplayName>
         <PartInput readOnly {...register("category", { required: true })} />
       </SelectBox>
     </>

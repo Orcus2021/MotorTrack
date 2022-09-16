@@ -22,8 +22,8 @@ const PartsBx = styled.div`
 
 const IconBx = styled.span`
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
 `;
 const Percent = styled.div<{ $isAlert: boolean }>`
   position: relative;

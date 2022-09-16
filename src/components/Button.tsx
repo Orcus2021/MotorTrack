@@ -6,6 +6,7 @@ const Btn = styled.button<{ $type: string; $size: string }>`
   margin: 0 10px;
   position: relative;
   display: inline-block;
+  line-height: 23.3px;
 
   padding: ${(props) => {
     if (props.$size === "medium") {

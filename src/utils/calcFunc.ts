@@ -80,15 +80,20 @@ export const selectAnnualExpenses = (
 };
 
 export const mileagePercent = (part: partType, car: carType) => {
+  if (part.startMileage === part.endMileage) return null;
   let message = "";
   const diffMileage = Number(part.endMileage) - Number(car?.mileage as number);
-  let percent = Math.floor((diffMileage * 100) / part.mileage);
+  let percent = 0;
+  if (diffMileage > 0) {
+    percent = Math.floor((diffMileage * 100) / part.mileage);
+  }
+
   if (diffMileage <= 0) {
     message = `超過${diffMileage}公里`;
   } else {
     message = `可用${diffMileage}公里`;
   }
-  if (percent < 0) percent = 0;
+  if (percent <= 0) percent = 0;
 
   return { percent, message };
 };
@@ -154,13 +159,26 @@ export const createMessage = (
     })
   );
 };
+type messageType = {
+  percent: number;
+  message: string;
+};
 
-export const compareDateAndMileage = (part: partType, car: carType) => {
+export const compareDateAndMileage = (
+  part: partType,
+  car: carType
+): messageType => {
   const mileage = mileagePercent(part, car);
   const date = datePercent(part);
-
-  if (!date) {
-    return mileage;
+  if (!date && !mileage) {
+    return {
+      percent: 0,
+      message: "無法追蹤",
+    };
+  } else if (!date) {
+    return mileage as messageType;
+  } else if (!mileage) {
+    return date;
   } else if (date.percent < mileage.percent) {
     return date;
   } else {

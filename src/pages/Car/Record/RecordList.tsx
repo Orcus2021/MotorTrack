@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import RecordItem from "./RecordItem";
 import { useAppSelector } from "../../../store";
 import { repairType, feeType } from "../../../types/recordType";
@@ -12,6 +12,9 @@ const MessageTable = styled.table`
   border-collapse: collapse;
   background: rgba(1, 0, 44, 0.4);
   backdrop-filter: blur(5px);
+  @media screen and (max-width: 701px) {
+    display: none;
+  }
 `;
 const NoRecordMsg = styled(NeonText)`
   font-size: 25px;
@@ -20,6 +23,18 @@ const NoRecordMsg = styled(NeonText)`
 
   opacity: 0.7;
   text-align: center;
+`;
+const MessageTableRwd = styled.div`
+  display: none;
+  border: 1px solid black;
+  width: 100%;
+  border: 0;
+  /* border-collapse: collapse; */
+  background: rgba(1, 0, 44, 0.4);
+  backdrop-filter: blur(5px);
+  @media screen and (max-width: 701px) {
+    display: block;
+  }
 `;
 
 const RecordList: React.FC<{
@@ -52,17 +67,24 @@ const RecordList: React.FC<{
   return (
     <>
       {sortRecords.length > 0 ? (
-        <MessageTable>
-          <tbody>
+        <>
+          <MessageTable>
+            <tbody>
+              {sortRecords.map((record) => (
+                <RecordItem
+                  key={record.id}
+                  record={record}
+                  onUpdate={onUpdate}
+                />
+              ))}
+            </tbody>
+          </MessageTable>
+          <MessageTableRwd>
             {sortRecords.map((record) => (
-              <RecordItem
-                key={record.id}
-                record={record}
-                onUpdate={onUpdate}
-              ></RecordItem>
+              <RecordItem key={record.id} record={record} onUpdate={onUpdate} />
             ))}
-          </tbody>
-        </MessageTable>
+          </MessageTableRwd>
+        </>
       ) : (
         <NoRecordMsg>還沒開始紀錄...</NoRecordMsg>
       )}

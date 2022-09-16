@@ -18,20 +18,34 @@ import { NeonText } from "../../../components/style";
 
 import logoIcon from "../../../assets/logo_white.png";
 
+const EditContainer = styled.div`
+  width: 100%;
+  display: flex;
+  max-width: 800px;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const EditWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px 10px 0 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  backdrop-filter: blur(5px);
 `;
 
 const RightBx = styled.div`
-  min-width: 300px;
   display: flex;
+  width: 290px;
+  min-width: 290px;
   flex-direction: column;
   align-items: center;
-  margin: 10px 10px 10px 30px;
+  /* margin: 10px 10px 10px 30px; */
 `;
 
 const CarInfo = styled.p`
@@ -40,7 +54,7 @@ const CarInfo = styled.p`
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
-  height: 400px;
+  margin-right: 17px;
 `;
 const InputBx = styled.div`
   display: flex;
@@ -96,9 +110,14 @@ const BrandInputBx = styled.div`
   height: 0;
 `;
 
-const Title = styled(NeonText)`
+const BrandTitle = styled.p`
   text-align: center;
+  font-size: 16px;
+`;
+const Title = styled(NeonText)`
   font-size: 20px;
+  padding: 20px 0 15px 25px;
+  font-weight: 400;
 `;
 
 type brandType = { name: string; key: string };
@@ -199,99 +218,102 @@ const EditCar = () => {
   return (
     <>
       <FormProvider {...methods}>
-        <EditWrapper>
-          <BrandWrapper>
-            <Title>{watch("brand")}</Title>
-            <BrandInputBx>
-              <Input
-                name="brand"
-                content="廠牌(請選擇)"
-                error={typeof errors?.brand?.type === "string"}
-                require={{ required: true }}
-                type="text"
-                readOnly={true}
-              />
-            </BrandInputBx>
-            <Brands onBrand={brandNameHandler} brandName={brandName} />
-          </BrandWrapper>
-          <RightBx>
-            <LogoWrapper>
-              <LogoBx>
-                <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
-              </LogoBx>
-            </LogoWrapper>
+        <EditContainer>
+          <Title>編輯車輛</Title>
+          <EditWrapper>
+            <BrandWrapper>
+              <BrandTitle>{watch("brand")}</BrandTitle>
+              <BrandInputBx>
+                <Input
+                  name="brand"
+                  content="廠牌(請選擇)"
+                  error={typeof errors?.brand?.type === "string"}
+                  require={{ required: true }}
+                  type="text"
+                  readOnly={true}
+                />
+              </BrandInputBx>
+              <Brands onBrand={brandNameHandler} brandName={brandName} />
+            </BrandWrapper>
+            <RightBx>
+              <LogoWrapper>
+                <LogoBx>
+                  <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
+                </LogoBx>
+              </LogoWrapper>
 
-            <InputBx>
-              <InputBox
-                name="name"
-                content="暱稱"
-                error={typeof errors?.name?.type === "string"}
-                require={{ required: true }}
-                type="text"
-                message={errors.name && "車輛名稱尚未填寫"}
-              />
-            </InputBx>
+              <InputBx>
+                <InputBox
+                  name="name"
+                  content="暱稱"
+                  error={typeof errors?.name?.type === "string"}
+                  require={{ required: true }}
+                  type="text"
+                  message={errors.name && "車輛名稱尚未填寫"}
+                />
+              </InputBx>
 
-            <InputBx>
-              <InputBox
-                name="plateNum"
-                content="車牌"
-                error={typeof errors?.plateNum?.type === "string"}
-                require={{
-                  required: true,
-                  pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
-                }}
-                type="text"
-                message={
-                  errors.plateNum?.type === "required"
-                    ? "尚未填寫"
-                    : errors.plateNum?.type === "pattern"
-                    ? "格式錯誤"
-                    : ""
-                }
-              />
-            </InputBx>
+              <InputBx>
+                <InputBox
+                  name="plateNum"
+                  content="車牌"
+                  error={typeof errors?.plateNum?.type === "string"}
+                  require={{
+                    required: true,
+                    pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                  }}
+                  type="text"
+                  message={
+                    errors.plateNum?.type === "required"
+                      ? "尚未填寫"
+                      : errors.plateNum?.type === "pattern"
+                      ? "格式錯誤"
+                      : ""
+                  }
+                />
+              </InputBx>
 
-            <InputBx>
-              <InputBox
-                name="licenseDate"
-                content="行照發照日"
-                error={typeof errors?.licenseDate?.type === "string"}
-                require={{ required: true }}
-                type="date"
-                message={errors.licenseDate && "尚未填寫"}
-              />
-            </InputBx>
+              <InputBx>
+                <InputBox
+                  name="licenseDate"
+                  content="行照發照日"
+                  error={typeof errors?.licenseDate?.type === "string"}
+                  require={{ required: true }}
+                  type="date"
+                  message={errors.licenseDate && "尚未填寫"}
+                />
+              </InputBx>
 
-            <CarInfoBx>
-              <SubTitle>車齡:</SubTitle>
-              <CarInfo>{carAge}</CarInfo>
-              <SubTitle>驗車日期:</SubTitle>
-              <CarInfo>{inspectionDay}</CarInfo>
-            </CarInfoBx>
+              <CarInfoBx>
+                <SubTitle>車齡:</SubTitle>
+                <CarInfo>{carAge}</CarInfo>
+                <SubTitle>驗車日期:</SubTitle>
+                <CarInfo>{inspectionDay}</CarInfo>
+              </CarInfoBx>
 
-            <InputBx>
-              <InputBox
-                name="insuranceDate"
-                content="保險到期日"
-                error={typeof errors?.insuranceDate?.type === "string"}
-                require={{ required: true }}
-                type="date"
-                calendarPosition="top"
-                message={errors.insuranceDate && "尚未填寫"}
-              />
-            </InputBx>
-            <BtnBx>
-              <Button label="返回" handleClick={goRecord} type="cancel" />
-              <Button label="刪除" handleClick={callConfirm} type="reject" />
-              <Button
-                label="更新"
-                handleClick={handleSubmit(editCarHandler)}
-                type="primary"
-              />
-            </BtnBx>
-          </RightBx>
-        </EditWrapper>
+              <InputBx>
+                <InputBox
+                  name="insuranceDate"
+                  content="保險到期日"
+                  error={typeof errors?.insuranceDate?.type === "string"}
+                  require={{ required: true }}
+                  type="date"
+                  calendarPosition="top"
+                  message={errors.insuranceDate && "尚未填寫"}
+                />
+              </InputBx>
+              <BtnBx>
+                <Button label="返回" handleClick={goRecord} type="cancel" />
+                <Button label="刪除" handleClick={callConfirm} type="reject" />
+                <Button
+                  label="更新"
+                  handleClick={handleSubmit(editCarHandler)}
+                  type="primary"
+                />
+              </BtnBx>
+            </RightBx>
+          </EditWrapper>
+        </EditContainer>
       </FormProvider>
       {showConfirm && (
         <Modal

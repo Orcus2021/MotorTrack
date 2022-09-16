@@ -18,6 +18,7 @@ import addIcon from "../../assets/icon/plus.png";
 import setIcon from "../../assets/icon/setting.png";
 import bikeIcon from "../../assets/icon/motorbike.png";
 import backImg from "../../assets/img/back-bike3.jpg";
+import navIcon from "../../assets/icon/triangle.png";
 
 const RecordContainer = styled.div`
   display: flex;
@@ -40,10 +41,13 @@ const Navigation = styled.div<{ $isNav: boolean }>`
   transition: 0.5s;
   overflow: hidden;
   z-index: 5;
-  /* padding: 20px; */
+  @media screen and (max-width: 701px) {
+    width: ${(props) => (props.$isNav ? "256px" : "0px")};
+  }
 `;
 const NavWrapper = styled.ul`
   width: 100%;
+  height: calc(100vh - 157px);
 `;
 const Nav = styled.li`
   position: relative;
@@ -86,6 +90,10 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+    margin-left: 0px;
+  }
 `;
 
 const UserImg = styled.img<{ $isNav: boolean }>`
@@ -122,6 +130,27 @@ const Title = styled(NeonText)`
   color: #fff;
   width: 100%;
 `;
+const NavIcon = styled.li<{ $isNav: boolean }>`
+  position: relative;
+  width: 100%;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.5s;
+
+  padding: ${(props) => (props.$isNav ? "5px 20px 5px 210px" : "5px 20px")};
+  &:hover {
+    background-color: #b4b4b41f;
+  }
+`;
+const NavImg = styled(Img)<{ $isNav: boolean }>`
+  transition: 0.5s;
+  transform: ${(props) => (props.$isNav ? "rotate(-90deg)" : "rotate(90deg)")};
+`;
 
 const Manage = () => {
   const dispatch = useAppDispatch();
@@ -129,15 +158,16 @@ const Manage = () => {
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
   const [showCars, setShowCars] = useState<boolean>(false);
+  const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
 
   const selectCartHandler = async (id: string, ownerId: string) => {
-    dispatch(userActions.loading(true));
+    setIsFormLoading(true);
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
     await dispatch(asyncRecordAction.getAllRecords(id));
     setTimeout(() => {
-      dispatch(userActions.loading(false));
-    }, 500);
+      setIsFormLoading(false);
+    }, 1000);
   };
 
   const showCarsHandler = () => {
@@ -147,6 +177,10 @@ const Manage = () => {
 
   const navToPage = (path: string) => {
     navigate(path);
+  };
+
+  const navHandler = () => {
+    dispatch(userActions.showNav(!isNav));
   };
 
   return (
@@ -225,6 +259,11 @@ const Manage = () => {
           </BikeNav>
 
           {isNav && <CarsBox onSelect={selectCartHandler} />}
+          <NavIcon onClick={navHandler} $isNav={isNav}>
+            <ImgBx>
+              <NavImg src={navIcon} $isNav={isNav} />
+            </ImgBx>
+          </NavIcon>
         </NavWrapper>
       </Navigation>
       {!isNav && (
@@ -232,7 +271,7 @@ const Manage = () => {
       )}
 
       <MainWrapper $isNav={isNav}>
-        <Outlet />
+        <Outlet context={isFormLoading} />
       </MainWrapper>
     </RecordContainer>
   );

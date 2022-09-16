@@ -17,9 +17,9 @@ const Wrapper = styled.div<{
 
   background: rgba(255, 255, 255, 0.15);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
   border-right: 3px solid transparent;
   border-bottom: 3px solid transparent;
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
   cursor: ${(props) => props.$hover && "pointer"};
 

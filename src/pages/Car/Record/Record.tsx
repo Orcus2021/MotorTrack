@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../../store";
 import { Img } from "../../../components/style";
 import Repair from "./Repair/Repair";
@@ -6,11 +6,13 @@ import Expenses from "./Expenses/Expenses";
 import RecordList from "./RecordList";
 import styled from "styled-components/macro";
 import Motor from "../../../components/Loading/Motor";
-import { useLocation } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { NeonText } from "../../../components/style";
 import { userActions } from "../../../store/user/userReducer";
 import TableBox from "../../../components/TableBox";
 import IconButton from "../../../components/Button/IconButton";
+import SkeletonForm from "../../../components/SkeletonForm";
+import TableBoxRecord from "../../../components/TableBoxRecord";
 
 import allIcon from "../../../assets/icon/chart-white.png";
 import plusIcon from "../../../assets/icon/plus.png";
@@ -32,6 +34,9 @@ const CartWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
+  @media screen and (max-width: 701px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 `;
 
 const CardBx = styled.div`
@@ -41,8 +46,6 @@ const CardBx = styled.div`
   background: rgba(1, 0, 44, 0.2);
   backdrop-filter: blur(5px);
   padding: 5px 10px;
-  /* background: var(--thirdBack); */
-  /* padding: 20px; */
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -53,6 +56,9 @@ const RecordDetail = styled.div`
   width: 100%;
   padding: 20px;
   padding-top: 0;
+  @media screen and (max-width: 701px) {
+    padding: 10px;
+  }
 
   /* min-height: 500px; */
 `;
@@ -118,13 +124,6 @@ const CreateRecordWrapper = styled.div`
   /* padding: 0 20px 10px 20px; */
 `;
 
-const LoadingBx = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
 const Title = styled(NeonText)`
   font-size: 20px;
   padding: 15px 0 15px 25px;
@@ -145,6 +144,14 @@ const ImgBx = styled.div`
   position: relative;
   margin-right: 10px;
 `;
+
+const SkeletonBox = styled.div`
+  width: 100%;
+  height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
 const tableTitles = [
   { title: "類別", width: "50px" },
   { title: "日期", width: "100px" },
@@ -153,6 +160,13 @@ const tableTitles = [
   { title: "總額", width: "50px" },
   { title: "備註", width: "150px" },
 ];
+const tableTitlesRwd = [
+  { title: "類別", width: "50px" },
+  { title: "日期", width: "120px" },
+  { title: "標題", width: "120px" },
+  { title: "里程數(公里)", width: "100px" },
+  { title: "總額", width: "50px" },
+];
 
 const Record = () => {
   const [recordCategory, setRecordCategory] = useState<string>("record");
@@ -160,8 +174,9 @@ const Record = () => {
   const [updateId, setUpdate] = useState<string>("");
   const recordId = useLocation().state as string;
   const dispatch = useAppDispatch();
-
+  const isFormLoading = useOutletContext<boolean>();
   const isLoading = useAppSelector((state) => state.user.isLoading);
+
   const expenses = useAppSelector((state) => state.record.expenses);
   const isNav = useAppSelector((state) => state.user.isNav);
 
@@ -211,7 +226,7 @@ const Record = () => {
           <Title onClick={navHandler}>車輛紀錄</Title>
           <CartWrapper>
             {CardInfo.map((card) => (
-              <CardBx>
+              <CardBx key={card.title}>
                 <ImgBx>
                   <Img src={card.icon} />
                 </ImgBx>
@@ -257,10 +272,14 @@ const Record = () => {
               </CreateRecordWrapper>
             </DetailHeader>
             <TableBox titles={tableTitles}>
-              {isLoading ? (
-                <LoadingBx>
-                  <Motor />
-                </LoadingBx>
+              {isFormLoading ? (
+                <SkeletonBox>
+                  {Array(3)
+                    .fill(null)
+                    .map((_, index) => (
+                      <SkeletonForm key={index} />
+                    ))}
+                </SkeletonBox>
               ) : (
                 <RecordList
                   onUpdate={updateRepairHandler}
@@ -268,6 +287,22 @@ const Record = () => {
                 />
               )}
             </TableBox>
+            <TableBoxRecord titles={tableTitlesRwd}>
+              {isFormLoading ? (
+                <SkeletonBox>
+                  {Array(3)
+                    .fill(null)
+                    .map((_, index) => (
+                      <SkeletonForm key={index} />
+                    ))}
+                </SkeletonBox>
+              ) : (
+                <RecordList
+                  onUpdate={updateRepairHandler}
+                  selectCategory={selectCategory}
+                />
+              )}
+            </TableBoxRecord>
           </RecordDetail>
         </RecordContainer>
       )}

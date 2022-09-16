@@ -18,6 +18,7 @@ import logoIcon from "../../../assets/logo_white.png";
 const AddContainer = styled.div`
   width: 100%;
   display: flex;
+  max-width: 800px;
   flex-direction: column;
   align-items: center;
 `;
@@ -26,16 +27,23 @@ const AddWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px 10px 0 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(1, 0, 44, 0.2);
+  backdrop-filter: blur(5px);
 `;
 const BrandWrapper = styled.div`
-  width: 50%;
+  flex-grow: 1;
+  margin-right: 17px;
   /* background-color: var(--mainColor); */
-  height: 400px;
+  /* height: 400px; */
 `;
 const RightBx = styled.div`
-  width: 50%;
   display: flex;
+  width: 290px;
+  min-width: 290px;
   flex-direction: column;
   align-items: center;
 `;
@@ -68,14 +76,19 @@ const LogoImg = styled.img`
   height: auto;
 `;
 
-const Title = styled(NeonText)<{ $isError?: boolean }>`
+const SubTitle = styled.p<{ $isError?: boolean }>`
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
   ${(props) => {
     if (props.$isError) {
       return "text-shadow: 0 0 10px var(--errorColor), 0 0 20px var(--errorColor), 0 0 40px var(--errorColor), 0 0 80px var(--errorColor), 0 0 120px var(--errorColor);";
     }
   }};
+`;
+const Title = styled(NeonText)`
+  font-size: 20px;
+  padding: 20px 0 15px 25px;
+  font-weight: 400;
 `;
 
 const BrandInputBx = styled.div`
@@ -129,11 +142,12 @@ const AddCar = () => {
   return (
     <FormProvider {...methods}>
       <AddContainer>
+        <Title>新增車輛</Title>
         <AddWrapper>
           <BrandWrapper>
-            <Title $isError={typeof errors?.brand?.type === "string"}>
+            <SubTitle $isError={typeof errors?.brand?.type === "string"}>
               {brandName.name || "廠牌(請選擇)"}
-            </Title>
+            </SubTitle>
             <BrandInputBx>
               <Input
                 name="brand"

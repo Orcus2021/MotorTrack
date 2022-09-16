@@ -56,12 +56,13 @@ const BtnBox = styled.div`
   justify-content: space-around;
   margin-bottom: 10px;
 `;
-// const NameBox = styled.div<{ $isShow: boolean }>`
-//   position: relative;
-//   height: auto;
-//   width: 100%;
-//   overflow: hidden;
-// `;
+const NameBox = styled.div<{ $isShow: boolean }>`
+  position: relative;
+  max-height: ${(props) => (props.$isShow ? "63px" : "0")};
+  width: 100%;
+  overflow: hidden;
+  transition: 0.5s;
+`;
 
 type userInfo = {
   email: string;
@@ -111,16 +112,19 @@ const Login = () => {
           <Card width={300} boxShadow={true}>
             <SignInWrapper>
               <Title>{isSignUp ? "註冊" : "登入"}</Title>
-              {isSignUp && (
-                <InputBox
-                  message={errors?.password && "尚未填寫姓名"}
-                  type="text"
-                  name="name"
-                  content="姓名"
-                  error={typeof errors?.name?.type === "string"}
-                  require={{ required: true }}
-                />
-              )}
+
+              <NameBox $isShow={isSignUp}>
+                {isSignUp && (
+                  <InputBox
+                    message={errors?.password && "尚未填寫姓名"}
+                    type="text"
+                    name="name"
+                    content="姓名"
+                    error={typeof errors?.name?.type === "string"}
+                    require={{ required: true }}
+                  />
+                )}
+              </NameBox>
               <InputBox
                 message={
                   errors?.email?.type === "required"

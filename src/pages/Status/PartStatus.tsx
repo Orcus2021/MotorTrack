@@ -6,6 +6,7 @@ import { partType } from "../../types/recordType";
 import { useAppSelector } from "../../store";
 import { mileagePercent, datePercent } from "../../utils/calcFunc";
 import { carType } from "../../types/carType";
+import { compareDateAndMileage } from "../../utils/calcFunc";
 
 import returnIcon from "../../assets/icon/return.png";
 
@@ -131,19 +132,8 @@ const PartStatus: React.FC<{
   const { part, onShow, onSelect } = props;
 
   useEffect(() => {
-    const compareDateAndMileage = () => {
-      const mileage = mileagePercent(part[0], car as carType);
-      const date = datePercent(part[0]);
-
-      if (!date) {
-        setPartDetail(mileage);
-      } else if (date.percent < mileage.percent) {
-        setPartDetail(date);
-      } else {
-        setPartDetail(mileage);
-      }
-    };
-    compareDateAndMileage();
+    const message = compareDateAndMileage(part[0], car as carType);
+    setPartDetail(message);
   }, [part, car]);
 
   const showDetailHandler = () => {

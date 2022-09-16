@@ -11,30 +11,40 @@ import Progress from "../../components/Progress";
 import returnIcon from "../../assets/icon/return.png";
 
 const InfoWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  margin-right: 20px;
+  width: 410px;
+  max-width: 410px;
+  height: 522.8px;
+
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* background-color: var(--thirdBack); */
+  @media screen and (max-width: 701px) {
+    width: 322px;
+    max-width: 322px;
+  }
 `;
 
 const PartsWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--secondBack);
+  /* background-color: var(--secondBack); */
   border-radius: 8px;
-  margin-bottom: 10px;
-  padding: 10px;
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
+
+  padding: 10px 10px 0 10px;
+  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
 `;
 const PartsList = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: var(--secondBack);
+  /* background-color: var(--secondBack); */
   border-radius: 0 0 8px 8px;
-  overflow-y: scroll;
-  height: 310px;
+  overflow: overlay;
+  height: 317px;
   padding: 0 10px 10px 10px;
   /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
   &::-webkit-scrollbar {
@@ -60,41 +70,63 @@ const Title = styled.p`
 `;
 const ListTitle = styled.p`
   font-size: 12px;
-  border-radius: 8px 8px 0 0;
-  width: 100%;
+
   padding: 10px;
   color: var(--mainColor);
-  background-color: var(--secondBack);
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
 `;
 const MessageDetail = styled.p`
   font-size: 12px;
 `;
 
 const PartList = styled.div`
-  background-color: var(--thirdBack);
+  background-color: var(--secondBack);
   border-radius: 8px;
   margin: 0 0 10px 0;
   padding: 10px;
 `;
+const ListTitleBox = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+`;
+const Line = styled.div`
+  height: 1.8px;
+  background-color: #ffffff76;
+  width: 80%;
+  border-radius: 5px;
+  @media screen and (max-width: 701px) {
+    width: 75%;
+  }
+`;
 
-const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
-  props
-) => {
-  const { onShow, part } = props;
+const PartDetail: React.FC<{
+  onShow: () => void;
+  part: partType[];
+  percent: number;
+  message: string;
+}> = (props) => {
+  const { onShow, part, percent, message } = props;
+
   const navigate = useNavigate();
   const car = useAppSelector((state) => state.car.car);
 
-  const { percent, message } = compareDateAndMileage(part[0], car as carType);
-
   const [isDate, setIsDate] = useState(true);
+  const [isMileage, setIsMileage] = useState(true);
 
   useEffect(() => {
     const mileage = mileagePercent(part[0], car as carType);
     const date = datePercent(part[0]);
-    if (!date) return;
-    if (date.percent < mileage.percent) {
+
+    if (!date) {
+      console.log("rest");
       setIsDate(false);
+    } else {
+      setIsDate(true);
+    }
+    if (!mileage) {
+      setIsMileage(false);
+    } else {
+      setIsMileage(true);
     }
   }, [part, car]);
 
@@ -105,14 +137,6 @@ const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
   return (
     <InfoWrapper>
       <PartsWrapper>
-        <Progress
-          message={message}
-          arrowDirection="back"
-          category={part[0].category}
-          returnIcon={returnIcon}
-          percent={percent}
-          handleClick={onShow}
-        />
         <MessageBx>
           <Title>規格</Title>
           <MessageDetail>{part[0].spec}</MessageDetail>
@@ -122,7 +146,7 @@ const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
           <MessageDetail>{part[0].subtotal}</MessageDetail>
         </MessageBx>
         <MessageBx>
-          <Title>使用里程</Title>
+          <Title>{isMileage ? "使用里程" : "安裝里程"}</Title>
           <MessageDetail>
             {part[0].startMileage}公里~{part[0].endMileage}公里
           </MessageDetail>
@@ -135,8 +159,20 @@ const PartDetail: React.FC<{ onShow: () => void; part: partType[] }> = (
               : `${part[0].startDate}`}
           </MessageDetail>
         </MessageBx>
+        <Progress
+          message={message}
+          arrowDirection="back"
+          category={part[0].category}
+          returnIcon={returnIcon}
+          percent={percent}
+          handleClick={onShow}
+        />
       </PartsWrapper>
-      <ListTitle>安裝紀錄</ListTitle>
+      <ListTitleBox>
+        <ListTitle>安裝紀錄</ListTitle>
+        <Line />
+      </ListTitleBox>
+
       <PartsList>
         {part.map((part) => (
           <PartList

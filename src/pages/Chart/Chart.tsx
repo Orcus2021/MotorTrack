@@ -29,6 +29,7 @@ const DetailWrapper = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(1, 0, 44, 0.2);
+
   backdrop-filter: blur(5px);
   overflow: hidden;
   /* height: */
@@ -45,7 +46,8 @@ const BarChartWrapper = styled.div`
 
 const SelectTitle = styled.p`
   font-size: 16px;
-  width: 100%;
+  width: 50px;
+  text-align: center;
 `;
 const Option = styled.p`
   font-size: 16px;
@@ -63,6 +65,7 @@ const TitleBox = styled.div`
   padding: 0px 10px 2px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
+
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -152,6 +155,7 @@ const Chart = () => {
   annual.forEach((year) =>
     options.push(
       <Option
+        key={year}
         onClick={() => {
           selectAnnualHandler(year);
           showContentHandler();
@@ -167,14 +171,14 @@ const Chart = () => {
       <TitleBox>
         <Title>統計圖 :</Title>
         <SelectBox
-          width="100px"
+          width="70px"
           options={options}
           showContent={showContent}
           onShow={showContentHandler}
           icon={arrowIcon}
           border={false}
         >
-          <SelectTitle>{select}</SelectTitle>
+          <SelectTitle onClick={showContentHandler}>{select}</SelectTitle>
         </SelectBox>
       </TitleBox>
       <DetailWrapper>
