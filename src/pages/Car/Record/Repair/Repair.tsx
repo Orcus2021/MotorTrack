@@ -19,8 +19,6 @@ import { NeonText } from "../../../../components/style";
 import FormNoteBox from "../FormNoteBox";
 import InputBox from "../../../../components/Input/InputBox";
 
-import trashIcon from "../../../../assets/trash.png";
-
 const RepairContainer = styled.div`
   width: 100%;
   max-width: 1280px;
@@ -33,22 +31,36 @@ const DetailBX = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  @media screen and (max-width: 701px) {
+    flex-direction: column;
+  }
 `;
 const Detail = styled.div`
   width: 50%;
   display: flex;
   flex-direction: row;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 const AmountDetail = styled.div`
   width: 50%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 
 const InputWrapper = styled.div`
   width: 50%;
   margin-right: 10px;
+  @media screen and (max-width: 701px) {
+    &:nth-child(2) {
+      margin-right: 0;
+    }
+  }
 `;
 
 const Title = styled(NeonText)`
@@ -62,16 +74,17 @@ const InputsWrapper = styled.div`
   width: 100%;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(1, 0, 44, 0.2);
   backdrop-filter: blur(5px);
   padding: 20px 10px 0px 10px;
   border-radius: 8px;
+  background: rgba(1, 0, 44, 0.2);
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
   margin: 20px 0;
+  z-index: 1;
 `;
 
 const Repair: React.FC<{
-  onClose: Dispatch<SetStateAction<string>>;
+  onClose: (str: string) => void;
   updateId: string;
   onClear: () => void;
 }> = (props) => {
@@ -171,7 +184,10 @@ const Repair: React.FC<{
     record.mileage = Number(record.mileage);
     record.records = setPartDateAndMileage(record);
 
-    if (record.records.length === 0) return;
+    if (record.records.length === 0) {
+      createMessage("alert", dispatch, "請新增維修項目");
+      return;
+    }
 
     if (!record.id && carID) {
       record.id = "";

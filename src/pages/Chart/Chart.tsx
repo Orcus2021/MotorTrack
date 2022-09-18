@@ -88,8 +88,7 @@ const ChartOption = styled.p<{ $isSelectBar: boolean }>`
   text-align: center;
   padding: 2px 0;
   width: 102px;
-  /* box-shadow: ${(props) =>
-    props.$isSelectBar ? "" : "inset 0 0 7px #000"}; */
+
   cursor: pointer;
   background-color: ${(props) => props.$isSelectBar && "var(--mainColor)"};
   color: ${(props) => (props.$isSelectBar ? "#fff" : "#d4d4d4")};
@@ -114,6 +113,10 @@ const ChartWrapper = styled.div<{ $isSelectBar: string }>`
     props.$isSelectBar === "bar"
       ? "translateX(-319.5px)"
       : "translateX(319.5px)"};
+  @media screen and (max-width: 701px) {
+    transform: ${(props) =>
+      props.$isSelectBar === "bar" ? "translateX(-25%)" : "translateX(25%)"};
+  }
 `;
 
 const Chart = () => {

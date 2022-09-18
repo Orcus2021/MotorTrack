@@ -20,56 +20,17 @@ const Text = styled.span`
   text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
     0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
     0 0 80px var(--lightColor), 0 0 120px var(--lightColor);
-
-  /* &:nth-child(1) {
-    animation: spark 2.5s linear infinite 0s;
-  }
-  &:nth-child(1) {
-    animation: spark 2.5s linear infinite 0s;
-  }
-  &:nth-child(2) {
-    animation: spark 2.5s linear infinite 0.25s;
-  }
-  &:nth-child(3) {
-    animation: spark 2.5s linear infinite 0.5s;
-  }
-  &:nth-child(4) {
-    animation: spark 2.5s linear infinite 0.75s;
-  }
-  &:nth-child(5) {
-    animation: spark 2.5s linear infinite 1s;
-  }
-  &:nth-child(6) {
-    animation: spark 2.5s linear infinite 1.25s;
-  }
-  &:nth-child(7) {
-    animation: spark 2.5s linear infinite 1.5s;
-  }
-  &:nth-child(8) {
-    animation: spark 2.5s linear infinite 1.75s;
-  }
-  &:nth-child(9) {
-    animation: spark 2.5s linear infinite 2s;
-  }
-  &:nth-child(10) {
-    animation: spark 2.5s linear infinite 2.25s;
-  } */
+  font-family: "Kanit", sans-serif;
 
   @keyframes spark {
     0%,
     100% {
-      /* text-shadow: 0 0 10px var(--mainColor), 0 0 20px var(--mainColor),
-        0 0 40px var(--mainColor), 0 0 60px var(--mainColor),
-        0 0 80px var(--mainColor), 0 0 120px var(--mainColor); */
       text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
         0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
         0 0 80px var(--lightColor), 0 0 120px var(--lightColor);
     }
     10%,
     90% {
-      /* text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
-        0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
-        0 0 80px var(--lightColor), 0 0 120px var(--lightColor); */
       text-shadow: unset;
     }
   }

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { useAppDispatch, useAppSelector } from "./store";
 import asyncUserAction from "./store/user/asyncUserAction";
 import { Outlet } from "react-router-dom";
@@ -26,12 +27,12 @@ export const GlobalStyle = createGlobalStyle`
      /* --secondColor:#0ac3cf; */
 
      /* --deepColor:#24334d; */
-     --deepColor:#1d3557;
+     --deepColor:rgb(29, 53, 87);
 
      /* --mainColor:#457b9d; */
      /* --mainColor:#548ae6; */
-     --mainColor:#4581ea;
-     --lightColor:#a9c7fa;
+     --mainColor:rgb(69, 129, 234);
+     --lightColor:rgb(169, 199, 250);
 
      --secondColor:rgb(224, 195, 252);
      /* --secondColor:#84fab0; */
@@ -105,6 +106,7 @@ const App = () => {
       <GlobalStyle />
       <Header />
       <Outlet />
+      <Footer />
       <SlideMessage />
     </>
   );

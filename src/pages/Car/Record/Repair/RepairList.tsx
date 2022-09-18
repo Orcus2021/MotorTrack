@@ -8,6 +8,7 @@ import Modal from "../../../../components/Modal/Modal";
 import PartForm from "./PartForm";
 import IconButton from "../../../../components/Button/IconButton";
 import { Img } from "../../../../components/style";
+import TableBoxRepair from "../../../../components/TableBoxRepair";
 
 import circlePlusIcon from "../../../../assets/icon/circle-plus-white.png";
 
@@ -61,6 +62,12 @@ const tableTitle = [
   { title: "備註", width: "80px" },
   { title: "刪除", width: "50px" },
 ];
+const tableTitleRwd = [
+  { title: "零件/項目", width: "100px" },
+  { title: "小計", width: "100px" },
+  { title: "備註", width: "auto" },
+  { title: "刪除", width: "50px" },
+];
 
 const RepairList: React.FC<{
   onAdd: (part: partType) => void;
@@ -109,6 +116,7 @@ const RepairList: React.FC<{
                   onShow={showPartHandler}
                   onSelect={() => selectPartHandler(index)}
                   onDeletePart={onDeletePart}
+                  rwd={false}
                 />
               ))}
             </tbody>
@@ -122,6 +130,31 @@ const RepairList: React.FC<{
           </ImgWrapper>
         )}
       </TableBox>
+      <TableBoxRepair titles={tableTitleRwd}>
+        {parts.length > 0 && (
+          <MessageTable>
+            <tbody>
+              {parts.map((record, index) => (
+                <RepairItem
+                  key={record.recordID}
+                  record={record}
+                  onShow={showPartHandler}
+                  onSelect={() => selectPartHandler(index)}
+                  onDeletePart={onDeletePart}
+                  rwd={true}
+                />
+              ))}
+            </tbody>
+          </MessageTable>
+        )}
+        {parts.length === 0 && (
+          <ImgWrapper onClick={showPartHandler}>
+            <ImgBx>
+              <Img src={circlePlusIcon} />
+            </ImgBx>
+          </ImgWrapper>
+        )}
+      </TableBoxRepair>
 
       {showPartForm && (
         <Modal

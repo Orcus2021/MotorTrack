@@ -20,6 +20,10 @@ const Content = styled.td<{ $width: string }>`
   font-size: 16px;
   text-align: center;
   width: ${(props) => props.$width};
+  max-width: ${(props) => props.$width};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 const IconWrapper = styled.td`
   position: relative;
@@ -47,9 +51,10 @@ type Props = {
   onShow: () => void;
   onSelect: () => void;
   onDeletePart: (removePart: partType) => void;
+  rwd: boolean;
 };
 const RepairItem: React.FC<Props> = (props) => {
-  const { record, onShow, onSelect, onDeletePart } = props;
+  const { record, onShow, onSelect, onDeletePart, rwd } = props;
   const { category, spec, year, month, mileage, price, qty, subtotal, note } =
     record;
 
@@ -84,12 +89,26 @@ const RepairItem: React.FC<Props> = (props) => {
     { content: subtotal, width: "80px" },
     { content: note, width: "80px" },
   ];
+  const tableContentRwd = [
+    { content: parts.get(category)?.name, width: "100px" },
+    { content: subtotal, width: "100px" },
+    { content: note, width: "auto" },
+  ];
 
   return (
     <ContentWrapper onClick={showPartFormHandler}>
-      {tableContent.map((content) => (
-        <Content $width={content.width}>{content.content}</Content>
-      ))}
+      {!rwd &&
+        tableContent.map((content) => (
+          <Content key={content.content} $width={content.width}>
+            {content.content}
+          </Content>
+        ))}
+      {rwd &&
+        tableContentRwd.map((content) => (
+          <Content key={content.content + "rwd"} $width={content.width}>
+            {content.content}
+          </Content>
+        ))}
       <IconWrapper onClick={deletePartHandler}>
         <IconBox>
           <Icon src={trashIcon} />

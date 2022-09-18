@@ -8,10 +8,11 @@ const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
   left: ${(props) => (props.$isShow ? "65px" : " -100%")};
   width: 150px;
   position: absolute;
-  top: 200px;
+  top: 290px;
   backdrop-filter: blur(5px);
   border-radius: 0 8px 8px 0;
-  background: rgba(255, 255, 255, 0.15);
+  /* background: rgba(255, 255, 255, 0.15); */
+  background: var(--mainColor);
   overflow: overlay;
   z-index: 2;
   transition: all 0.5s;
@@ -34,16 +35,21 @@ const SubImgBx = styled.div`
   height: 20px;
   position: relative;
   margin-right: 5px;
+  min-width: 20px;
 `;
 
 const SubCarNum = styled.p`
   font-size: 12px;
+  min-width: 61px;
 `;
 
 const SubCarInfo = styled.p`
   font-size: 12px;
   flex-grow: 1;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SubCarsBox: FC<{
@@ -56,18 +62,16 @@ const SubCarsBox: FC<{
   return (
     <SubCarsWrapper $isShow={showCars}>
       {cars.map((car) => (
-        <SubCarWrapper key={car.id}>
+        <SubCarWrapper
+          key={car.id}
+          onClick={() => onSelect(car.id, car.ownerId)}
+        >
           <CarInfoBx>
             <SubImgBx>
               <Img src={brands.get(car.brand)?.img} />
             </SubImgBx>
             <SubCarNum>{car.plateNum}</SubCarNum>
-            <SubCarInfo
-              key={car.id}
-              onClick={() => onSelect(car.id, car.ownerId)}
-            >
-              {car.name}
-            </SubCarInfo>
+            <SubCarInfo key={car.id}>{car.name}</SubCarInfo>
           </CarInfoBx>
         </SubCarWrapper>
       ))}

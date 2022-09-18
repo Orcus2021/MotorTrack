@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import ReactDOM from "react-dom";
 import React from "react";
 
@@ -40,6 +40,9 @@ const ModalBx = styled.div<{ $isClose: boolean; $width: number }>`
       transform: translateY(-10rem);
     }
   }
+  @media screen and (max-width: 701px) {
+    left: 2.5vw;
+  }
 `;
 
 const ModalContent = styled.div`
@@ -48,6 +51,9 @@ const ModalContent = styled.div`
   justify-content: center;
   width: 100%;
   height: 100%;
+  @media screen and (max-width: 701px) {
+    width: 95vw;
+  }
 `;
 
 const ModalOverlay: React.FC<{

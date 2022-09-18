@@ -48,13 +48,18 @@ const ImgBx = styled.div`
 
 const CarNum = styled.p`
   font-size: 16px;
-  color: var(--mainColor);
+  min-width: 82px;
+  color: var(--lightColor);
 `;
 
 const CarInfo = styled.p`
   font-size: 14px;
   flex-grow: 1;
+  max-width: 69px;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const CarsBox: FC<{
@@ -66,19 +71,14 @@ const CarsBox: FC<{
   return (
     <CarsWrapper>
       {cars.map((car) => (
-        <CarWrapper key={car.id}>
+        <CarWrapper key={car.id} onClick={() => onSelect(car.id, car.ownerId)}>
           <Card hover={true} isSelect={car.id === carID}>
             <CarInfoBx>
               <ImgBx>
                 <Img src={brands.get(car.brand)?.img} />
               </ImgBx>
               <CarNum>{car.plateNum}</CarNum>
-              <CarInfo
-                key={car.id}
-                onClick={() => onSelect(car.id, car.ownerId)}
-              >
-                {car.name}
-              </CarInfo>
+              <CarInfo key={car.id}>{car.name}</CarInfo>
             </CarInfoBx>
           </Card>
         </CarWrapper>

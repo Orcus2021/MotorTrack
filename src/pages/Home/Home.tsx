@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
-import { userActions } from "../../store/user/userReducer";
-import { useAppDispatch, useAppSelector } from "../../store";
-import Loading from "../../components/Loading/Loading";
+import React, { useEffect, useState, useRef } from "react";
+
 import styled from "styled-components/macro";
 import { useNavigate } from "react-router-dom";
+import HomeLoading from "../../components/Loading/HomeLoading";
 
 import bikeImg from "../../assets/img/bike_blue_1.png";
 
@@ -16,19 +15,6 @@ const Container = styled.div`
   padding: 10px 100px 30px 100px;
   flex-direction: column;
 
-  /* &::before {
-    content: "MotorTrack";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 16vw;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.25);
-    text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
-      0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
-      0 0 80px var(--lightColor), 0 0 120px var(--lightColor);
-  } */
   @media screen and (max-width: 701px) {
     min-height: 500px;
     height: calc(100vh - 68px);
@@ -42,6 +28,7 @@ const Content = styled.div`
   flex-direction: column;
   /* margin-top: 100px; */
   z-index: 1;
+  transform-style: preserve-3d;
   @media screen and (max-width: 701px) {
     transform: translateY(-30px);
     /* min-width: 300px; */
@@ -78,10 +65,12 @@ const Button = styled.button`
     transform: translateY(-30px);
   }
 `;
-const BackImg = styled.img`
+const BackImg = styled.img<{ $deg: number }>`
   max-width: 80%;
   min-width: 600px;
   object-fit: contain;
+  transform: translateX();
+  transform: ${(props) => `translateX(${props.$deg}px)`};
   @media screen and (max-width: 701px) {
     max-width: 90%;
     min-width: 300px;
@@ -97,11 +86,11 @@ const BackTextBox = styled.div`
   align-items: center;
   justify-content: center;
   padding: 10px 100px 30px 100px;
-  /* background-color: red; */
 `;
 const Text = styled.span`
   font-size: 16vw;
   font-weight: 700;
+  font-family: "Kanit", sans-serif;
   color: rgba(255, 255, 255, 0.25);
   text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
     0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
@@ -144,18 +133,12 @@ const Text = styled.span`
   @keyframes spark {
     0%,
     100% {
-      /* text-shadow: 0 0 10px var(--mainColor), 0 0 20px var(--mainColor),
-        0 0 40px var(--mainColor), 0 0 60px var(--mainColor),
-        0 0 80px var(--mainColor), 0 0 120px var(--mainColor); */
       text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
         0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
         0 0 80px var(--lightColor), 0 0 120px var(--lightColor);
     }
     10%,
     90% {
-      /* text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
-        0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
-        0 0 80px var(--lightColor), 0 0 120px var(--lightColor); */
       text-shadow: unset;
     }
   }
@@ -163,23 +146,41 @@ const Text = styled.span`
 
 const Home = () => {
   const navigate = useNavigate();
-  const isLoading = useAppSelector((state) => state.user.isLoading);
-  const dispatch = useAppDispatch();
+  const home = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [imgDeg, setImgDeg] = useState<number>(0);
+
   useEffect(() => {
-    dispatch(userActions.loading(true));
+    setIsLoading(true);
     setTimeout(() => {
-      dispatch(userActions.loading(false));
-    }, 500);
-  }, [dispatch]);
+      setIsLoading(false);
+    }, 6500);
+  }, []);
 
   const goLoginHandler = () => {
     navigate("/login");
   };
+  const detectMouse = (e: React.MouseEvent) => {
+    if (home.current) {
+      const halfView = home.current?.clientWidth / 2;
+      if (e.clientX > halfView) {
+        const deg = Math.floor(((e.clientX - halfView) * 30) / halfView);
+        setImgDeg(deg);
+      } else {
+        const deg = (30 - Math.floor((e.clientX * 30) / halfView)) * -1;
+        setImgDeg(deg);
+      }
+    }
+
+    // console.log(e.clientX);
+    // console.log(home.current?.clientX);
+    // console.log(home.current?.offsetParent);
+  };
 
   return (
     <>
-      {isLoading && <Loading />}
-      <Container>
+      {isLoading && <HomeLoading />}
+      <Container ref={home} onMouseMove={detectMouse}>
         <BackTextBox>
           <Text>M</Text>
           <Text>o</Text>
@@ -195,7 +196,7 @@ const Home = () => {
         <Content>
           <Title>READY TO TRACK</Title>
           <Button onClick={goLoginHandler}>開始記錄</Button>
-          <BackImg src={bikeImg} />
+          <BackImg src={bikeImg} $deg={imgDeg} />
         </Content>
       </Container>
     </>

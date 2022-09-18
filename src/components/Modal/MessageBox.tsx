@@ -17,6 +17,9 @@ const RemindContainer = styled.div<{ $style: styleType }>`
   /* justify-content: space-between; */
   align-items: center;
   border-radius: 4px;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 
 const LogoBx = styled.div`

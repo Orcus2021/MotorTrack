@@ -1,20 +1,20 @@
 import React from "react";
 import styled from "styled-components/macro";
 import { Img } from "../style";
-import loadingIcon from "../../assets/icon/logo-bike-black.png";
+import loadingIcon from "../../assets/icon/logo-bike-blue.png";
 
 const Wrapper = styled.div`
   position: relative;
   width: 150px;
   height: 75px;
-  filter: drop-shadow(2px -6px 7px #93f1f9);
+  /* filter: drop-shadow(2px -6px 7px rgb(169, 199, 250)); */
   transform: translateY(-50%);
 `;
 const FrontLoader = styled.div`
   position: relative;
   display: inline-block;
   top: 42px;
-  left: -7px;
+  left: -5px;
   width: 43px;
   height: 43px;
   /* border: 1px solid #16181d; */
@@ -32,9 +32,9 @@ const FrontLoader = styled.div`
     right: 12px;
     bottom: 12px;
     z-index: 2;
-    background: #16181d;
+    background: #2d313b;
     border-radius: 50%;
-    border: 2px solid #16181d;
+    border: 2px solid #2d313b;
     box-shadow: inset -0.5px -0.5px 1px rgba(255, 255, 255, 0.2),
       inset 1px 1px 1px rgba(0, 0, 0, 0.5);
   }
@@ -44,8 +44,9 @@ const Border = styled.span`
   width: 100%;
   height: 100%;
   border-radius: 50%;
+
   z-index: -1;
-  background: linear-gradient(#a2fff1, #51b1ff);
+  background: linear-gradient(rgb(52, 168, 252), #38ccf1);
   filter: blur(5px);
   animation: runTire 0.5s linear infinite;
   @keyframes runTire {

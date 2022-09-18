@@ -1,23 +1,26 @@
 import React from "react";
 import styled from "styled-components/macro";
-import Motor from "./Motor";
+import LogoFlicker from "./LogoFlicker";
 
 const Back = styled.div`
   position: fixed;
   z-index: 200;
-  top: 68px;
+  top: 0;
   width: 100%;
-  height: calc(100vh - 68px);
-  background-color: #16181dcf;
+  height: 100vh;
+  background: linear-gradient(var(--mainBack), var(--secondBack));
   display: flex;
   align-items: center;
   justify-content: center;
+  @media screen and (max-width: 701px) {
+    min-height: 500px;
+  }
 `;
 
 const Loading = () => {
   return (
     <Back>
-      <Motor />
+      <LogoFlicker />
     </Back>
   );
 };

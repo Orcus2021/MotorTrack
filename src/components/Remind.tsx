@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 import { useAppDispatch, useAppSelector } from "../store";
 import asyncUserAction from "../store/user/asyncUserAction";
 import { resultType } from "../types/recordType";
-import Button from "./Button";
+import Button from "./Button/Button";
 import MessageBox from "../components/Modal/MessageBox";
 
 const Message = styled.p`

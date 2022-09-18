@@ -1,4 +1,4 @@
-import Button, { Props } from "../components/Button";
+import Button, { Props } from "../components/Button/Button";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { GlobalStyle } from "../App";
 

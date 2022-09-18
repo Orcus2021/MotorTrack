@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components/macro";
 import { Outlet, useNavigate } from "react-router-dom";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
@@ -10,6 +10,7 @@ import { Img } from "../../components/style";
 import { NeonText } from "../../components/style";
 import SubCarsBox from "./SubCarsBox";
 import CarsBox from "./CarsBox";
+import Loading from "../../components/Loading/Loading";
 
 import barIcon from "../../assets/icon/bar.png";
 import chartIcon from "../../assets/icon/chart.png";
@@ -40,7 +41,7 @@ const Navigation = styled.div<{ $isNav: boolean }>`
   background: var(--deepColor);
   transition: 0.5s;
   overflow: hidden;
-  z-index: 5;
+  z-index: 6;
   @media screen and (max-width: 701px) {
     width: ${(props) => (props.$isNav ? "256px" : "0px")};
   }
@@ -49,7 +50,20 @@ const NavWrapper = styled.ul`
   width: 100%;
   height: calc(100vh - 157px);
 `;
-const Nav = styled.li`
+const Mask = styled.div<{ $isNav: boolean }>`
+  display: none;
+  @media screen and (max-width: 701px) {
+    display: block;
+    width: ${(props) => (props.$isNav ? "100%" : "0px")};
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    background: rgba(1, 0, 44, 0.7);
+  }
+`;
+const Nav = styled.li<{ $selected: boolean }>`
   position: relative;
   width: 100%;
   list-style: none;
@@ -59,7 +73,7 @@ const Nav = styled.li`
   margin-bottom: 5px;
   overflow: hidden;
   cursor: pointer;
-
+  background-color: ${(props) => props.$selected && "#b4b4b41f"};
   padding: 5px 20px;
   &:hover {
     background-color: #b4b4b41f;
@@ -93,6 +107,8 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
   @media screen and (max-width: 701px) {
     width: 100%;
     margin-left: 0px;
+    padding-bottom: 60px;
+    min-width: 350px;
   }
 `;
 
@@ -155,10 +171,14 @@ const NavImg = styled(Img)<{ $isNav: boolean }>`
 const Manage = () => {
   const dispatch = useAppDispatch();
   const isNav = useAppSelector((state) => state.user.isNav);
+  const isAuth = useAppSelector((state) => state.user.isAuth);
+  const isLoading = useAppSelector((state) => state.user.isLoading);
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
   const [showCars, setShowCars] = useState<boolean>(false);
   const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
+  const [selectNav, setSelectNav] = useState<string>("record");
+  const [recordCategory, setRecordCategory] = useState<string>("record");
 
   const selectCartHandler = async (id: string, ownerId: string) => {
     setIsFormLoading(true);
@@ -169,6 +189,14 @@ const Manage = () => {
       setIsFormLoading(false);
     }, 1000);
   };
+  useEffect(() => {
+    dispatch(userActions.loading(true));
+    if (isAuth) {
+      setTimeout(() => {
+        dispatch(userActions.loading(false));
+      }, 1500);
+    }
+  }, [dispatch, isAuth]);
 
   const showCarsHandler = () => {
     if (isNav) return;
@@ -176,104 +204,136 @@ const Manage = () => {
   };
 
   const navToPage = (path: string) => {
+    // if(path.includes("record")){
+    //   navigate(path),{state:};
+    // }
+
     navigate(path);
   };
 
   const navHandler = () => {
+    if (isNav) {
+      setShowCars(false);
+    }
+
     dispatch(userActions.showNav(!isNav));
   };
+  const recordCategoryHandler = useCallback((category: string) => {
+    console.log("Manage");
+    setRecordCategory(category);
+  }, []);
 
   return (
-    <RecordContainer>
-      <Navigation $isNav={isNav}>
-        <UserImg
-          src={user.userImg}
-          $isNav={isNav}
-          onClick={() => {
-            navToPage("/profile");
-          }}
-        />
-        <NavWrapper>
-          <Nav
+    <>
+      {isLoading && <Loading />}
+      <RecordContainer>
+        <Navigation $isNav={isNav}>
+          <UserImg
+            src={user.userImg}
+            $isNav={isNav}
             onClick={() => {
-              navToPage("/status");
+              navToPage("/profile");
             }}
-          >
-            <ImgBx>
-              <Img src={barIcon} />
-            </ImgBx>
-            <RecordLink>車輛狀態表</RecordLink>
-          </Nav>
-          <Nav
-            onClick={() => {
-              navToPage("/car_manage/record");
-            }}
-          >
-            <ImgBx
+          />
+          <NavWrapper>
+            <Nav
+              $selected={selectNav === "status"}
               onClick={() => {
-                navToPage("/car_manage/record");
+                navToPage("/status");
+                setSelectNav("status");
               }}
             >
-              <Img src={recordIcon} />
-            </ImgBx>
-            <RecordLink>車輛紀錄表</RecordLink>
-          </Nav>
-          <Nav
-            onClick={() => {
-              navToPage("/car_manage/chart");
-            }}
-          >
-            <ImgBx>
-              <Img src={chartIcon} />
-            </ImgBx>
-            <RecordLink>費用統計圖</RecordLink>
-          </Nav>
-          <Nav
-            onClick={() => {
-              navToPage("/car_manage/edit");
-            }}
-          >
-            <ImgBx>
-              <Img src={setIcon} />
-            </ImgBx>
-            <RecordLink>車輛設定</RecordLink>
-          </Nav>
-          <Nav
-            onClick={() => {
-              navToPage("/car_manage/add");
-            }}
-          >
-            <ImgBx>
-              <Img src={addIcon} />
-            </ImgBx>
-            <RecordLink>新增車輛</RecordLink>
-          </Nav>
-          <BikeNav $isNav={isNav} onClick={showCarsHandler}>
-            {isNav ? (
-              <Title>My Motors</Title>
-            ) : (
               <ImgBx>
-                <Img src={bikeIcon} />
+                <Img src={barIcon} />
               </ImgBx>
-            )}
-          </BikeNav>
+              <RecordLink>車輛狀態表</RecordLink>
+            </Nav>
+            <Nav
+              $selected={selectNav === "record"}
+              onClick={() => {
+                navToPage("/car_manage/record");
+                setSelectNav("record");
+                setRecordCategory("record");
+              }}
+            >
+              <ImgBx
+                onClick={() => {
+                  navToPage("/car_manage/record");
+                }}
+              >
+                <Img src={recordIcon} />
+              </ImgBx>
+              <RecordLink>車輛紀錄表</RecordLink>
+            </Nav>
+            <Nav
+              $selected={selectNav === "chart"}
+              onClick={() => {
+                navToPage("/car_manage/chart");
+                setSelectNav("chart");
+              }}
+            >
+              <ImgBx>
+                <Img src={chartIcon} />
+              </ImgBx>
+              <RecordLink>費用統計圖</RecordLink>
+            </Nav>
+            <Nav
+              $selected={selectNav === "edit"}
+              onClick={() => {
+                navToPage("/car_manage/edit");
+                setSelectNav("edit");
+              }}
+            >
+              <ImgBx>
+                <Img src={setIcon} />
+              </ImgBx>
+              <RecordLink>車輛設定</RecordLink>
+            </Nav>
+            <Nav
+              $selected={selectNav === "add"}
+              onClick={() => {
+                navToPage("/car_manage/add");
+                setSelectNav("add");
+              }}
+            >
+              <ImgBx>
+                <Img src={addIcon} />
+              </ImgBx>
+              <RecordLink>新增車輛</RecordLink>
+            </Nav>
+            <BikeNav $isNav={isNav} onClick={showCarsHandler} $selected={false}>
+              {isNav ? (
+                <Title>My Motors</Title>
+              ) : (
+                <ImgBx>
+                  <Img src={bikeIcon} />
+                </ImgBx>
+              )}
+            </BikeNav>
 
-          {isNav && <CarsBox onSelect={selectCartHandler} />}
-          <NavIcon onClick={navHandler} $isNav={isNav}>
-            <ImgBx>
-              <NavImg src={navIcon} $isNav={isNav} />
-            </ImgBx>
-          </NavIcon>
-        </NavWrapper>
-      </Navigation>
-      {!isNav && (
-        <SubCarsBox showCars={showCars} onSelect={selectCartHandler} />
-      )}
-
-      <MainWrapper $isNav={isNav}>
-        <Outlet context={isFormLoading} />
-      </MainWrapper>
-    </RecordContainer>
+            {isNav && <CarsBox onSelect={selectCartHandler} />}
+            <NavIcon onClick={navHandler} $isNav={isNav}>
+              <ImgBx>
+                <NavImg src={navIcon} $isNav={isNav} />
+              </ImgBx>
+            </NavIcon>
+          </NavWrapper>
+        </Navigation>
+        {!isNav && (
+          <SubCarsBox showCars={showCars} onSelect={selectCartHandler} />
+        )}
+        {isNav && <Mask $isNav={isNav} onClick={navHandler} />}
+        <MainWrapper $isNav={isNav}>
+          <Outlet
+            context={{
+              isFormLoading,
+              recordCategory,
+              onRecord: recordCategoryHandler,
+            }}
+          />
+        </MainWrapper>
+      </RecordContainer>
+    </>
   );
 };
 

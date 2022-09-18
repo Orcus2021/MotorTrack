@@ -24,6 +24,11 @@ const Container = styled.div`
 const InputWrapper = styled.div`
   width: 50%;
   margin-right: 10px;
+  @media screen and (max-width: 701px) {
+    &:nth-child(2) {
+      margin-right: 0;
+    }
+  }
 `;
 
 const DetailBX = styled.div`
@@ -31,11 +36,17 @@ const DetailBX = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  @media screen and (max-width: 701px) {
+    flex-direction: column;
+  }
 `;
 const Detail = styled.div`
   width: 50%;
   display: flex;
   flex-direction: row;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 
 const Select = styled.input`
@@ -49,13 +60,6 @@ const Select = styled.input`
   background-color: transparent;
 `;
 
-const InputBx = styled.div`
-  margin-right: 10px;
-  flex-grow: 1;
-`;
-const AmountBx = styled(InputBx)`
-  margin-right: 0;
-`;
 const Title = styled(NeonText)`
   font-size: 20px;
   padding: 15px 0 0 25px;
@@ -73,10 +77,11 @@ const InputsWrapper = styled.div`
   border-radius: 8px;
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
   margin: 20px 0;
+  z-index: 1;
 `;
 
 const Expenses: React.FC<{
-  onClose: Dispatch<SetStateAction<string>>;
+  onClose: (str: string) => void;
   updateId: string;
 }> = (props) => {
   const { onClose, updateId } = props;

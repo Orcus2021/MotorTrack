@@ -9,7 +9,7 @@ import refuelIcon from "../../../assets/icon/refuel.png";
 
 const ContentWrapper = styled.tr`
   &:nth-child(odd) {
-    background-color: rgba(255, 255, 255, 0.22);
+    background-color: rgba(255, 255, 255, 0.4);
   }
   &:hover {
     background-color: var(--mainColor);
@@ -84,6 +84,7 @@ const IconBx = styled.div`
 `;
 const ContentBox = styled.div`
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   align-items: center;
 `;
@@ -91,8 +92,9 @@ const ContentBox = styled.div`
 const RecordItem: React.FC<{
   record: repairType | feeType;
   onUpdate: (id: string, category: string) => void;
+  rwd: boolean;
 }> = (props) => {
-  const { record, onUpdate } = props;
+  const { record, onUpdate, rwd } = props;
   const updateHandler = () => {
     onUpdate(record.id, record.category);
   };
@@ -105,31 +107,35 @@ const RecordItem: React.FC<{
 
   return (
     <>
-      <ContentWrapper onClick={updateHandler}>
-        <Content>
-          <IconBx>
-            <Img src={iconSrc} />
-          </IconBx>
-        </Content>
-        <Content>{record.date}</Content>
-        <Content>{record.mileage}</Content>
-        <Content>{record.title}</Content>
-        <Content>{record.amount}</Content>
-        <Content>{record.note || "---"}</Content>
-      </ContentWrapper>
-      <ContentWrapperRwd onClick={updateHandler}>
-        <ContentCategory>
-          <IconBx>
-            <Img src={iconSrc} />
-          </IconBx>
-        </ContentCategory>
-        <ContentBox>
-          <ContentDateAndTitle>{record.date}</ContentDateAndTitle>
-          <ContentDateAndTitle>{record.title}</ContentDateAndTitle>
-        </ContentBox>
-        <ContentMileage>{record.mileage}</ContentMileage>
-        <ContentAmount>{record.amount}</ContentAmount>
-      </ContentWrapperRwd>
+      {!rwd && (
+        <ContentWrapper onClick={updateHandler}>
+          <Content>
+            <IconBx>
+              <Img src={iconSrc} />
+            </IconBx>
+          </Content>
+          <Content>{record.date}</Content>
+          <Content>{record.mileage}</Content>
+          <Content>{record.title}</Content>
+          <Content>{record.amount}</Content>
+          <Content>{record.note || "---"}</Content>
+        </ContentWrapper>
+      )}
+      {rwd && (
+        <ContentWrapperRwd onClick={updateHandler}>
+          <ContentCategory>
+            <IconBx>
+              <Img src={iconSrc} />
+            </IconBx>
+          </ContentCategory>
+          <ContentBox>
+            <ContentDateAndTitle>{record.date}</ContentDateAndTitle>
+            <ContentDateAndTitle>{record.title}</ContentDateAndTitle>
+          </ContentBox>
+          <ContentMileage>{record.mileage}</ContentMileage>
+          <ContentAmount>{record.amount}</ContentAmount>
+        </ContentWrapperRwd>
+      )}
     </>
   );
 };

@@ -101,7 +101,7 @@ const CalendarWrapper = styled.div<{ $position: boolean }>`
   /* ~~~ container styles ~~~ */
   position: absolute;
   ${(props) => (props.$position ? "bottom: 50px" : " top: 20px")};
-  z-index: 5;
+  z-index: 7;
   left: 0px;
   width: 250px;
   margin: auto;

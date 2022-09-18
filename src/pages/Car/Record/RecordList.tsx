@@ -12,6 +12,7 @@ const MessageTable = styled.table`
   border-collapse: collapse;
   background: rgba(1, 0, 44, 0.4);
   backdrop-filter: blur(5px);
+  height: fit-content;
   @media screen and (max-width: 701px) {
     display: none;
   }
@@ -20,6 +21,7 @@ const NoRecordMsg = styled(NeonText)`
   font-size: 25px;
   line-height: 105px;
   font-weight: 400;
+  margin: 0 auto;
 
   opacity: 0.7;
   text-align: center;
@@ -32,6 +34,7 @@ const MessageTableRwd = styled.div`
   /* border-collapse: collapse; */
   background: rgba(1, 0, 44, 0.4);
   backdrop-filter: blur(5px);
+  height: fit-content;
   @media screen and (max-width: 701px) {
     display: block;
   }
@@ -77,6 +80,7 @@ const RecordList: React.FC<{
                     key={record.id}
                     record={record}
                     onUpdate={onUpdate}
+                    rwd={rwd}
                   />
                 ))}
               </tbody>
@@ -89,6 +93,7 @@ const RecordList: React.FC<{
                   key={record.id}
                   record={record}
                   onUpdate={onUpdate}
+                  rwd={rwd}
                 />
               ))}
             </MessageTableRwd>

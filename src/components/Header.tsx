@@ -45,6 +45,7 @@ const HeaderWrapper = styled.div<{
         : props.$isModify
         ? " 0 40px 0 40px"
         : "0 40px"};
+    min-width: 350px;
   }
 `;
 const Logo = styled.img`
@@ -65,6 +66,12 @@ const NavProfile = styled.div`
 const Nav = styled.p`
   cursor: pointer;
   margin-right: 10px;
+  &:hover {
+    color: var(--lightColor);
+  }
+  @media screen and (max-width: 701px) {
+    display: none;
+  }
 `;
 const NavRightBx = styled.div`
   display: flex;
@@ -125,6 +132,11 @@ const MenuImg = styled.img`
   left: 10px;
   width: 30px;
   height: 30px;
+  cursor: pointer;
+  transition: 0.3s;
+  &:hover {
+    width: 40px;
+  }
 `;
 const Header = () => {
   const navigate = useNavigate();
@@ -180,7 +192,7 @@ const Header = () => {
       <Logo src={logoImg} onClick={goHomePage} />
 
       <NavRightBx>
-        {isAuth && <Nav onClick={goCarRecord}>車輛日誌</Nav>}
+        {isAuth && <Nav onClick={goCarRecord}>摩特日誌</Nav>}
 
         <MemberBox onClick={goProfile}>
           <NavProfile>

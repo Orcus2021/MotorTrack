@@ -27,11 +27,15 @@ const Name = styled.div<{ $isBorder: boolean }>`
   flex-direction: row;
   align-items: center;
   cursor: pointer;
+  @media screen and (max-width: 701px) {
+    flex-grow: 1;
+  }
 `;
 const DownBx = styled.div`
   height: 15px;
   width: 15px;
   position: relative;
+  margin-right: 5px;
   cursor: pointer;
 `;
 const ContentBx = styled.div<{ $isShow: boolean }>`
@@ -51,14 +55,15 @@ const ContentBx = styled.div<{ $isShow: boolean }>`
   }
 
   border-radius: 4px;
-  top: 40px;
+  top: calc(100% + 5px);
   left: 0;
-  background-color: var(--secondBack);
+  background-color: var(--thirdBack);
 
   /* overflow-y: scroll; */
   max-height: 0;
   max-height: ${(props) => props.$isShow && "250px"};
   transition: 0.5s;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
   cursor: pointer;
 `;
 

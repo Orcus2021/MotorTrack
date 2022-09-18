@@ -27,6 +27,7 @@ const SubTitle = styled.th<{ $width: string }>`
   text-align: center;
 `;
 const SubTitleBox = styled.div`
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

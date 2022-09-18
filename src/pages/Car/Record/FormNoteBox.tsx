@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import styled from "styled-components/macro";
 import Textarea from "../../../components/Textarea";
-import Button from "../../../components/Button";
+import Button from "../../../components/Button/Button";
 
 const Container = styled.div`
   position: relative;

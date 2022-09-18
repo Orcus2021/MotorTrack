@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components/macro";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { Img } from "../../components/style";
@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from "../../store/index";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../components/Modal/Modal";
 import Upload from "./Upload";
+import { userActions } from "../../store/user/userReducer";
+import Loading from "../../components/Loading/Loading";
 
 import banner from "../../assets/img/banner.JPG";
 import camera from "../../assets/icon/camera.png";
@@ -166,11 +168,21 @@ const CheckBox = styled.input.attrs({ type: "checkbox" })`
 `;
 
 const Profile = () => {
-  const user = useAppSelector((state) => state.user.user);
+  const userState = useAppSelector((state) => state.user);
+  const { user, isAuth, isLoading } = userState;
   const [uploadImg, setUploadImg] = useState<string>("");
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(userActions.loading(true));
+    if (isAuth) {
+      setTimeout(() => {
+        dispatch(userActions.loading(false));
+      }, 1500);
+    }
+  }, [dispatch, isAuth]);
 
   const logoutHandler = () => {
     dispatch(asyncUserAction.logout());
@@ -202,6 +214,7 @@ const Profile = () => {
   };
   return (
     <>
+      {isLoading && <Loading />}
       <ProfileContainer>
         <ProfileWrapper>
           <Banner>

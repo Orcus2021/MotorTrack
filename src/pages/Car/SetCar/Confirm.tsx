@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components/macro";
 import MessageBox from "../../../components/Modal/MessageBox";
-import Button from "../../../components/Button";
+import Button from "../../../components/Button/Button";
 
 const BtnBx = styled.div`
   display: flex;

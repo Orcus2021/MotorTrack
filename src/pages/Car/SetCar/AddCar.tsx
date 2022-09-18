@@ -8,7 +8,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import asyncCarAction from "../../../store/car/asyncCarAction";
 import { carType } from "../../../types/carType";
 import { createMessage } from "../../../utils/calcFunc";
-import Button from "../../../components/Button";
+import Button from "../../../components/Button/Button";
 import Brands from "./Brands";
 import { NeonText } from "../../../components/style";
 import InputBox from "../../../components/Input/InputBox";
@@ -33,6 +33,9 @@ const AddWrapper = styled.div`
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(1, 0, 44, 0.2);
   backdrop-filter: blur(5px);
+  @media screen and (max-width: 701px) {
+    flex-direction: column;
+  }
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
@@ -46,6 +49,9 @@ const RightBx = styled.div`
   min-width: 290px;
   flex-direction: column;
   align-items: center;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 const InputBx = styled.div`
   display: flex;
@@ -53,6 +59,9 @@ const InputBx = styled.div`
   width: 250px;
   flex-direction: column;
   align-items: flex-start;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 const BtnBx = styled.div`
   display: flex;

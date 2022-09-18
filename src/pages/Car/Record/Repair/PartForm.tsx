@@ -7,7 +7,7 @@ import Input from "../../../../components/Input/Input";
 import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
 import Textarea from "../../../../components/Textarea";
-import Button from "../../../../components/Button";
+import Button from "../../../../components/Button/Button";
 
 const PartContainer = styled.div`
   width: 400px;
@@ -16,6 +16,9 @@ const PartContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  @media screen and (max-width: 701px) {
+    width: 100%;
+  }
 `;
 const HeaderBx = styled.div`
   width: 100%;
@@ -53,6 +56,27 @@ const ButtonBx = styled.div`
   align-items: center;
   justify-content: space-around;
   margin-top: 10px;
+`;
+
+const MileageColumn = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  @media screen and (max-width: 701px) {
+    flex-wrap: wrap;
+  }
+`;
+const MileageBox = styled(BoxWrapper)`
+  @media screen and (max-width: 701px) {
+    width: 100%;
+    margin-right: 0;
+  }
+`;
+const TimeBox = styled(BoxWrapper)`
+  @media screen and (max-width: 701px) {
+    width: calc((100% - 10px) / 2);
+  }
 `;
 
 const PartForm: React.FC<{
@@ -161,8 +185,8 @@ const PartForm: React.FC<{
             />
           </BoxWrapper>
         </InputWrapper>
-        <InputWrapper>
-          <BoxWrapper>
+        <MileageColumn>
+          <MileageBox>
             <InputBox
               name="mileage"
               content="使用里程"
@@ -171,9 +195,9 @@ const PartForm: React.FC<{
               type="number"
               message={errors.mileage && "里程數錯誤"}
             />
-          </BoxWrapper>
+          </MileageBox>
 
-          <BoxWrapper>
+          <TimeBox>
             <InputBox
               name="year"
               content="年"
@@ -189,9 +213,9 @@ const PartForm: React.FC<{
               type="number"
               message={errors.year && "使用年限錯誤(年)"}
             />
-          </BoxWrapper>
+          </TimeBox>
 
-          <BoxWrapper>
+          <TimeBox>
             <InputBox
               name="month"
               content="月"
@@ -207,8 +231,8 @@ const PartForm: React.FC<{
               type="number"
               message={errors.month && "使用年限錯誤(月)"}
             />
-          </BoxWrapper>
-        </InputWrapper>
+          </TimeBox>
+        </MileageColumn>
         <Textarea content="備註" name="note" height={80} />
 
         <ButtonBx>

@@ -22,6 +22,10 @@ const Content = styled.div`
 `;
 const DisplayName = styled.p`
   width: 120px;
+  @media screen and (max-width: 701px) {
+    flex-grow: 1;
+    width: auto;
+  }
 `;
 
 const BrandBx = styled.div`

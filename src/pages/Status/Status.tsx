@@ -14,8 +14,8 @@ import { getTodayMs } from "../../utils/calcFunc";
 import Loading from "../../components/Loading/Loading";
 import { useLocation } from "react-router-dom";
 import HomeBack from "../Home/HomeBack";
+// import LogoFlicker from "../../components/Loading/LogoFlicker";
 
-import motorImg from "../../assets/img/bike_blue_1.png";
 import backImg from "../../assets/img/status-back.jpg";
 
 const Container = styled.div`
@@ -28,40 +28,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
 `;
-const CarWrapper = styled.div`
-  position: relative;
-  width: 60%;
-  height: 100%;
-  align-items: center;
-  padding: 20px;
-`;
-const RightWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  /* padding: 0 20px 10px 0; */
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-const MotorImg = styled.img`
-  position: absolute;
-  top: 0;
-  width: 92%;
-  height: calc(100% - 18px);
-  object-fit: contain;
-`;
-const BackImg = styled.img`
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
-  /* max-width: 80%;
-  min-width: 600px; */
-  object-fit: cover;
-`;
+
 const BackView = styled.div`
   position: absolute;
   width: 100%;
@@ -122,7 +89,7 @@ const Status = () => {
     if (isAuth) {
       setTimeout(() => {
         dispatch(userActions.loading(false));
-      }, 500);
+      }, 1500);
     }
   }, [dispatch, isAuth]);
 
@@ -175,10 +142,6 @@ const Status = () => {
         <BackView />
         <HomeBack />
         <StatusInfo />
-        {/* <CarWrapper><MotorImg src={motorImg} /></CarWrapper> */}
-        {/* <RightWrapper>
-          <StatusInfo />
-        </RightWrapper> */}
       </Container>
       {isLoading && <Loading />}
       {!isLoading && showRemind && (

@@ -29,6 +29,8 @@ const Container = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(5px);
+  background: rgba(1, 0, 44, 0.2);
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
   /* background-color: var(--thirdBack); */
   border-radius: 8px;
   @media screen and (max-width: 701px) {
@@ -173,6 +175,9 @@ const CarName = styled.p`
   padding: 0;
   height: 17px;
   line-height: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   /* text-align: center; */
 `;
 

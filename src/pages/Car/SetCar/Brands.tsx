@@ -30,6 +30,9 @@ const BrandBx = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background-color: var(--mainColor);
   }
+  @media screen and (max-width: 701px) {
+    height: 290px;
+  }
 `;
 
 const BrandCard = styled.div<{ $isSelected: boolean }>`

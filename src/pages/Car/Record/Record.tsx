@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../../store";
+
 import { Img } from "../../../components/style";
 import Repair from "./Repair/Repair";
 import Expenses from "./Expenses/Expenses";
@@ -122,6 +123,9 @@ const CreateRecordWrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   /* padding: 0 20px 10px 20px; */
+  @media screen and (max-width: 701px) {
+    display: none;
+  }
 `;
 
 const Title = styled(NeonText)`
@@ -169,33 +173,48 @@ const tableTitlesRwd = [
 ];
 
 const Record = () => {
-  const [recordCategory, setRecordCategory] = useState<string>("record");
+  // const [recordCategory, setRecordCategory] = useState<string>("record");
   const [selectCategory, setSelectCategory] = useState<string>("all");
+
   const [updateId, setUpdate] = useState<string>("");
-  const recordId = useLocation().state as string;
+  const location = useLocation().state as string;
   const dispatch = useAppDispatch();
-  const isFormLoading = useOutletContext<boolean>();
+  const outletProps =
+    useOutletContext<{
+      isFormLoading: boolean;
+      recordCategory: string;
+      onRecord: (str: string) => void;
+    }>();
+  const { isFormLoading, recordCategory, onRecord } = outletProps;
   const isLoading = useAppSelector((state) => state.user.isLoading);
 
   const expenses = useAppSelector((state) => state.record.expenses);
   const isNav = useAppSelector((state) => state.user.isNav);
 
   useEffect(() => {
-    if (recordId) {
-      setUpdate(recordId);
-      setRecordCategory("repair");
+    console.log("run");
+    if (location === "repair") {
+      onRecord("repair");
+    } else if (location === "fee") {
+      onRecord("fee");
+    } else if (location) {
+      setUpdate(location);
+      onRecord("repair");
+    } else {
+      onRecord("record");
     }
-  }, [recordId]);
+  }, [location, onRecord]);
 
   const recordCategoryHandler = (category: string) => {
-    setRecordCategory(category);
+    // setRecordCategory(category);
+    onRecord(category);
     setUpdate("");
   };
   const updateRepairHandler = (id: string, category: string) => {
     if (category === "repair") {
-      setRecordCategory(category);
+      onRecord(category);
     } else {
-      setRecordCategory("fee");
+      onRecord("fee");
     }
     setUpdate(id);
   };
@@ -218,7 +237,7 @@ const Record = () => {
     { title: "加油", icon: refuelIcon, expense: expenses.refuelExpenses },
     { title: "費用", icon: feeIcon, expense: expenses.feeExpenses },
   ];
-
+  console.log(recordCategory);
   return (
     <>
       {recordCategory === "record" && (
@@ -310,13 +329,13 @@ const Record = () => {
       )}
       {recordCategory === "repair" && (
         <Repair
-          onClose={setRecordCategory}
+          onClose={onRecord}
           updateId={updateId}
           onClear={clearUpdateId}
         />
       )}
       {recordCategory === "fee" && (
-        <Expenses onClose={setRecordCategory} updateId={updateId} />
+        <Expenses onClose={onRecord} updateId={updateId} />
       )}
     </>
   );

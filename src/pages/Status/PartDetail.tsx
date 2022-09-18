@@ -66,13 +66,13 @@ const MessageBx = styled.div`
 const Title = styled.p`
   font-size: 12px;
   width: 60px;
-  color: var(--mainColor);
+  color: var(--lightColor);
 `;
 const ListTitle = styled.p`
   font-size: 12px;
 
   padding: 10px;
-  color: var(--mainColor);
+  color: var(--lightColor);
 `;
 const MessageDetail = styled.p`
   font-size: 12px;
