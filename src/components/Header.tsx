@@ -45,7 +45,7 @@ const HeaderWrapper = styled.div<{
         : props.$isModify
         ? " 0 40px 0 40px"
         : "0 40px"};
-    min-width: 350px;
+    /* min-width: 350px; */
   }
 `;
 const Logo = styled.img`

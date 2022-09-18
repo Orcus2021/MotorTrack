@@ -1,10 +1,20 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "Motor Track",
+  "short_name": "Motor Track",
+  "lang": "zh-TW",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#4581ea",
   "icons": [
     {
+      "src": "maskable.png",
+      "type": "image/png",
+      "sizes": "261x261",
+      "purpose": "any maskable"
+    },
+    {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
@@ -13,13 +23,20 @@
       "sizes": "192x192"
     },
     {
+      "src": "logo256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "logo384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#16181d"
 }

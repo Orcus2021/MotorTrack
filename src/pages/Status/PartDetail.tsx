@@ -118,7 +118,6 @@ const PartDetail: React.FC<{
     const date = datePercent(part[0]);
 
     if (!date) {
-      console.log("rest");
       setIsDate(false);
     } else {
       setIsDate(true);

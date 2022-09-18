@@ -99,7 +99,7 @@ const asyncUserAction = {
           dispatch(carActions.selectCar(user.selectCar));
           await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
-        dispatch(userActions.loading(false));
+        // dispatch(userActions.loading(false));
         // dispatch(
         //   userActions.showNotification({
         //     status: "success",
@@ -107,8 +107,16 @@ const asyncUserAction = {
         //     message: "Sign in successfully!",
         //   })
         // );
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        console.log(e.message);
+        if (
+          e.message.includes("auth/user-not-found") ||
+          e.message.includes("auth/wrong-password")
+        ) {
+          createMessage("error", dispatch, "帳號或密碼錯誤");
+        }
+        dispatch(userActions.loading(false));
+
         // dispatch(
         //   userActions.showNotification({
         //     status: "error",
@@ -176,6 +184,7 @@ const asyncUserAction = {
       };
 
       try {
+        console.log("upload");
         dispatch(userActions.loading(true));
         await upload();
         dispatch(userActions.update(data));

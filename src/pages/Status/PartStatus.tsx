@@ -140,7 +140,7 @@ const PartStatus: React.FC<{
     onShow();
     onSelect();
   };
-  console.log(parts.get(part[0].category)?.icon);
+
   return (
     <PartsBx onClick={showDetailHandler}>
       <IconBx>

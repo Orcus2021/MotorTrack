@@ -152,7 +152,7 @@ const Expenses: React.FC<{
       dispatch(asyncRecordAction.updateExpense(carID as string, newRecord));
     } else if (newRecord.category !== record?.category) {
       // FIXME
-      console.log("test");
+
       dispatch(
         asyncRecordAction.updateDiffCategoryExpense(
           carID as string,

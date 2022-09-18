@@ -154,7 +154,7 @@ const Home = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-    }, 6500);
+    }, 4200);
   }, []);
 
   const goLoginHandler = () => {
@@ -171,10 +171,6 @@ const Home = () => {
         setImgDeg(deg);
       }
     }
-
-    // console.log(e.clientX);
-    // console.log(home.current?.clientX);
-    // console.log(home.current?.offsetParent);
   };
 
   return (

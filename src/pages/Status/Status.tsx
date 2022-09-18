@@ -85,11 +85,11 @@ const Status = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(userActions.loading(true));
     if (isAuth) {
+      dispatch(userActions.loading(true));
       setTimeout(() => {
         dispatch(userActions.loading(false));
-      }, 1500);
+      }, 1000);
     }
   }, [dispatch, isAuth]);
 

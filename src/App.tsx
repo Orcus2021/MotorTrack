@@ -31,8 +31,8 @@ export const GlobalStyle = createGlobalStyle`
 
      /* --mainColor:#457b9d; */
      /* --mainColor:#548ae6; */
-     --mainColor:rgb(69, 129, 234);
-     --lightColor:rgb(169, 199, 250);
+     --mainColor:#4581ea;
+     --lightColor:#a9c7fa;
 
      --secondColor:rgb(224, 195, 252);
      /* --secondColor:#84fab0; */
@@ -76,6 +76,7 @@ export const GlobalStyle = createGlobalStyle`
     min-height:100vh;
     padding-top:68px ;
     position:relative;
+    min-width: 350px;
 
     
   }
@@ -95,7 +96,9 @@ const App = () => {
         navigate("/");
         createMessage("error", dispatch, "尚未登入");
       });
-      if (userId) dispatch(asyncUserAction.signIn(userId));
+      if (userId) {
+        dispatch(asyncUserAction.signIn(userId));
+      }
     };
     const pathName = location.pathname;
     if (isAuth || pathName === "/" || pathName === "/login") return;

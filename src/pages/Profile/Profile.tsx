@@ -176,11 +176,12 @@ const Profile = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log("profile");
     dispatch(userActions.loading(true));
     if (isAuth) {
       setTimeout(() => {
         dispatch(userActions.loading(false));
-      }, 1500);
+      }, 500);
     }
   }, [dispatch, isAuth]);
 

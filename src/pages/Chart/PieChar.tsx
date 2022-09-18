@@ -15,7 +15,6 @@ const PieChar = () => {
     feeExpenses,
     selectYear,
   } = expense;
-  // console.log(refuelExpenses, repairExpenses, feeExpenses);
 
   let finalData = [
     { value: repairExpenses, name: "維修" },

@@ -192,7 +192,6 @@ const Record = () => {
   const isNav = useAppSelector((state) => state.user.isNav);
 
   useEffect(() => {
-    console.log("run");
     if (location === "repair") {
       onRecord("repair");
     } else if (location === "fee") {
@@ -237,7 +236,7 @@ const Record = () => {
     { title: "加油", icon: refuelIcon, expense: expenses.refuelExpenses },
     { title: "費用", icon: feeIcon, expense: expenses.feeExpenses },
   ];
-  console.log(recordCategory);
+
   return (
     <>
       {recordCategory === "record" && (

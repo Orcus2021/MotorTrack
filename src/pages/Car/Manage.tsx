@@ -190,6 +190,7 @@ const Manage = () => {
     }, 1000);
   };
   useEffect(() => {
+    console.log("manage");
     dispatch(userActions.loading(true));
     if (isAuth) {
       setTimeout(() => {
@@ -219,7 +220,6 @@ const Manage = () => {
     dispatch(userActions.showNav(!isNav));
   };
   const recordCategoryHandler = useCallback((category: string) => {
-    console.log("Manage");
     setRecordCategory(category);
   }, []);
 

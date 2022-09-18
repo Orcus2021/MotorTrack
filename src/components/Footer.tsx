@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/macro";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAppSelector } from "../store";
 
 import statusIcon from "../assets/icon/chart-white.png";
 import recordIcon from "../assets/icon/paper-white.png";
@@ -8,7 +9,7 @@ import repairIcon from "../assets/icon/repair-plus.png";
 import feeIcon from "../assets/icon/moneyBag-plus.png";
 import refuelIcon from "../assets/icon/refuel-plus.png";
 
-const Container = styled.div`
+const Container = styled.div<{ $isAuth: boolean }>`
   display: none;
   position: fixed;
   bottom: 0;
@@ -19,7 +20,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   @media screen and (max-width: 701px) {
-    display: flex;
+    display: ${(props) => props.$isAuth && "flex"};
     min-width: 350px;
   }
 `;
@@ -71,6 +72,7 @@ const Img = styled.img`
 
 const Footer = () => {
   const [selectPage, setSelectPage] = useState<string>("status");
+  const isAuth = useAppSelector((state) => state.user.isAuth);
   const navigate = useNavigate();
   const path = useLocation().pathname;
 
@@ -96,7 +98,7 @@ const Footer = () => {
     }
   };
   return (
-    <Container>
+    <Container $isAuth={isAuth}>
       <NavWrapper>
         <Nav
           $isSelect={selectPage === "status"}

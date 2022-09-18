@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../../components/Card";
 import InputBox from "../../components/Input/InputBox";
 import { useNavigate } from "react-router-dom";
@@ -72,6 +72,7 @@ type userInfo = {
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const isLoading = useAppSelector((state) => state.user.isLoading);
+  const isAuth = useAppSelector((state) => state.user.isAuth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const methods = useForm<userInfo>({ mode: "onBlur" });
@@ -90,13 +91,21 @@ const Login = () => {
     setValue("password", "");
   };
 
+  useEffect(() => {
+    if (isSignUp && isAuth) {
+      navigate("/profile");
+    } else if (!isSignUp && isAuth) {
+      navigate("/status", { state: "first" });
+    }
+  }, [isSignUp, isAuth, navigate]);
+
   const signIn = async (user: userInfo) => {
     if (user.name) {
       await dispatch(asyncUserAction.signUp(user));
-      navigate("/profile");
+      // navigate("/profile");
     } else {
       await dispatch(asyncUserAction.signIn(user));
-      navigate("/status", { state: "first" });
+      // navigate("/status", { state: "first" });
     }
   };
   const goHomePageHandler = () => {

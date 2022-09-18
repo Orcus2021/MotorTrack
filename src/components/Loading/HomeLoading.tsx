@@ -33,7 +33,7 @@ const LogoWrapper = styled.div`
   align-items: center;
   width: 215px;
 
-  animation: scaleLogo linear forwards 2s 3s;
+  animation: scaleLogo linear forwards 1s 3s;
   @keyframes scaleLogo {
     0% {
       /* transform: scale(1); */
