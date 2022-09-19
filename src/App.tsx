@@ -98,12 +98,26 @@ const App = () => {
       });
       if (userId) {
         dispatch(asyncUserAction.signIn(userId));
+        //  if(navigator.onLine){
+
+        //  }
       }
     };
     const pathName = location.pathname;
     if (isAuth || pathName === "/" || pathName === "/login") return;
     auth();
   }, [isAuth, dispatch, navigate, location]);
+
+  useEffect(() => {
+    const onPWA = async () => {
+      const response = await firebase.onOffline().catch((msg) => {
+        console.log(msg);
+      });
+      console.log(response);
+    };
+    onPWA();
+  }, []);
+
   return (
     <>
       <GlobalStyle />

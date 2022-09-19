@@ -28,6 +28,7 @@ import {
   updateDoc,
   DocumentData,
   arrayRemove,
+  enableIndexedDbPersistence,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -257,6 +258,28 @@ const firebase = {
           });
         }
       );
+    });
+  },
+  async onOffline(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      enableIndexedDbPersistence(db)
+        .then((res) => {
+          console.log(res);
+          resolve("success");
+        })
+        .catch((err) => {
+          if (err.code === "failed-precondition") {
+            // Multiple tabs open, persistence can only be enabled
+            // in one tab at a a time.
+            // ...
+            reject("Multiple tabs open");
+          } else if (err.code === "unimplemented") {
+            // The current browser does not support all of the
+            // features required to enable persistence
+            // ...
+            reject("The current browser does not support");
+          }
+        });
     });
   },
 };
