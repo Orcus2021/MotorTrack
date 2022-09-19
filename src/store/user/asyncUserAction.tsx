@@ -185,7 +185,6 @@ const asyncUserAction = {
       };
 
       try {
-        console.log("upload");
         dispatch(userActions.loading(true));
         await upload();
         dispatch(userActions.update(data));

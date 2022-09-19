@@ -150,6 +150,7 @@ const EditCar = () => {
   );
   const initCar = useMemo(() => {
     return {
+      id: car?.id,
       name: car?.name,
       brand: car?.brand,
       plateNum: car?.plateNum,
@@ -187,13 +188,12 @@ const EditCar = () => {
     setValue("brand", brandName.name);
   }, [brandName, setValue]);
 
-  const editCarHandler = async (car: carType) => {
-    car.brand = brandName.key;
-    car.age = carAge;
-    car.inspectionDay = inspectionDay;
-
-    dispatch(asyncCarAction.updateCar(car?.id as string, car));
-
+  const editCarHandler = async (editCar: carType) => {
+    editCar.brand = brandName.key;
+    editCar.age = carAge;
+    editCar.inspectionDay = inspectionDay;
+    dispatch(asyncCarAction.updateCar(editCar.id as string, editCar));
+    createMessage("remind", dispatch, "已更新車輛");
     navigate("/car_manage/record");
   };
   const callConfirm = () => {
@@ -288,6 +288,7 @@ const EditCar = () => {
                   error={typeof errors?.licenseDate?.type === "string"}
                   require={{ required: true }}
                   type="date"
+                  calendarPosition="top"
                   message={errors.licenseDate && "尚未填寫"}
                 />
               </InputBx>

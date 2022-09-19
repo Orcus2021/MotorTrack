@@ -1,6 +1,6 @@
 {
-  "name": "Motor Track",
-  "short_name": "Motor Track",
+  "name": "MotorTrack",
+  "short_name": "MotorTrack",
   "lang": "zh-TW",
   "start_url": "/",
   "display": "standalone",

@@ -241,7 +241,7 @@ const Record = () => {
     <>
       {recordCategory === "record" && (
         <RecordContainer>
-          <Title onClick={navHandler}>車輛紀錄</Title>
+          <Title>車輛紀錄</Title>
           <CartWrapper>
             {CardInfo.map((card) => (
               <CardBx key={card.title}>

@@ -55,11 +55,11 @@ const asyncCarAction = {
     return async (dispatch: AppDispatch) => {
       const url = `/carsRecords/${id}`;
       const update = async () => {
-        await firebase.updateDoc(url, data);
+        firebase.updateDoc(url, data);
+        dispatch(carActions.update(data));
       };
       try {
         await update();
-        dispatch(carActions.update(data));
       } catch (e) {
         console.log(e);
       }

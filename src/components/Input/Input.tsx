@@ -47,7 +47,7 @@ const InputFloat = styled.input<{
 
   &:valid ~ span,
   &:focus ~ span {
-    color: var(--mainBack);
+    color: #fff;
     transform: translate(14px, -20px);
     font-size: 0.8rem;
     padding: 0 10px;
@@ -78,7 +78,7 @@ const SpanFloat = styled.span<{
   text-transform: uppercase;
   transition: 0.5s;
 
-  ${(props) => props.$isWatch && "color: var(--mainBack)"};
+  ${(props) => props.$isWatch && "color: #fff"};
   ${(props) => props.$isWatch && "transform: translate(14px, -20px);"};
   ${(props) => props.$isWatch && "font-size: 0.8rem;"};
   ${(props) => props.$isWatch && "padding: 0 10px;"};

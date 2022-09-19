@@ -15,7 +15,7 @@ const LoginContainer = styled.div`
   height: 100vh;
   position: absolute;
   top: 0;
-  /* background-image: url(${backImg}); */
+  background-image: url(${backImg});
   background-size: cover;
   background-position: center center;
 
@@ -71,6 +71,7 @@ type userInfo = {
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [signUpEffect, setSignEffect] = useState<boolean>(false);
   const isLoading = useAppSelector((state) => state.user.isLoading);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const dispatch = useAppDispatch();
@@ -84,7 +85,14 @@ const Login = () => {
   } = methods;
 
   const showSingUp = () => {
-    setIsSignUp((pre) => !pre);
+    if (isSignUp) {
+      setTimeout(() => {
+        setIsSignUp((pre) => !pre);
+      }, 600);
+    } else {
+      setIsSignUp((pre) => !pre);
+    }
+    setSignEffect((pre) => !pre);
     reset();
     setValue("name", "");
     setValue("email", "");
@@ -102,10 +110,8 @@ const Login = () => {
   const signIn = async (user: userInfo) => {
     if (user.name) {
       await dispatch(asyncUserAction.signUp(user));
-      // navigate("/profile");
     } else {
       await dispatch(asyncUserAction.signIn(user));
-      // navigate("/status", { state: "first" });
     }
   };
   const goHomePageHandler = () => {
@@ -121,7 +127,7 @@ const Login = () => {
             <SignInWrapper>
               <Title>{isSignUp ? "註冊" : "登入"}</Title>
 
-              <NameBox $isShow={isSignUp}>
+              <NameBox $isShow={signUpEffect}>
                 {isSignUp && (
                   <InputBox
                     message={errors?.password && "尚未填寫姓名"}

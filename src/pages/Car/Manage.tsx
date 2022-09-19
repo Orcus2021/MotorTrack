@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import styled from "styled-components/macro";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
 import { useAppSelector, useAppDispatch } from "../../store";
 import { carActions } from "../../store/car/carReducer";
@@ -14,9 +14,13 @@ import Loading from "../../components/Loading/Loading";
 
 import barIcon from "../../assets/icon/bar.png";
 import chartIcon from "../../assets/icon/chart.png";
+import chartWhiteIcon from "../../assets/icon/chart-white.png";
 import recordIcon from "../../assets/icon/paper.png";
+import recordWhiteIcon from "../../assets/icon/paper-white.png";
 import addIcon from "../../assets/icon/plus.png";
+import addWhiteIcon from "../../assets/icon/plus-white2.png";
 import setIcon from "../../assets/icon/setting.png";
+import setWhiteIcon from "../../assets/icon/setting-white.png";
 import bikeIcon from "../../assets/icon/motorbike.png";
 import backImg from "../../assets/img/back-bike3.jpg";
 import navIcon from "../../assets/icon/triangle.png";
@@ -55,8 +59,9 @@ const Mask = styled.div<{ $isNav: boolean }>`
   @media screen and (max-width: 701px) {
     display: block;
     width: ${(props) => (props.$isNav ? "100%" : "0px")};
-    height: 100vh;
-    position: absolute;
+    min-height: 100vh;
+
+    position: fixed;
     top: 0;
     left: 0;
     z-index: 5;
@@ -156,7 +161,7 @@ const NavIcon = styled.li<{ $isNav: boolean }>`
   margin-bottom: 5px;
   overflow: hidden;
   cursor: pointer;
-  transition: 0.5s;
+  /* transition: 0.5s; */
 
   padding: ${(props) => (props.$isNav ? "5px 20px 5px 210px" : "5px 20px")};
   &:hover {
@@ -164,7 +169,7 @@ const NavIcon = styled.li<{ $isNav: boolean }>`
   }
 `;
 const NavImg = styled(Img)<{ $isNav: boolean }>`
-  transition: 0.5s;
+  /* transition: 0.5s; */
   transform: ${(props) => (props.$isNav ? "rotate(-90deg)" : "rotate(90deg)")};
 `;
 
@@ -173,8 +178,10 @@ const Manage = () => {
   const isNav = useAppSelector((state) => state.user.isNav);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const isLoading = useAppSelector((state) => state.user.isLoading);
+  const recordPage = useRef<HTMLDivElement>(null);
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
+  const path = useLocation().pathname;
   const [showCars, setShowCars] = useState<boolean>(false);
   const [isFormLoading, setIsFormLoading] = useState<boolean>(false);
   const [selectNav, setSelectNav] = useState<string>("record");
@@ -190,7 +197,6 @@ const Manage = () => {
     }, 1000);
   };
   useEffect(() => {
-    console.log("manage");
     dispatch(userActions.loading(true));
     if (isAuth) {
       setTimeout(() => {
@@ -198,49 +204,83 @@ const Manage = () => {
       }, 1500);
     }
   }, [dispatch, isAuth]);
+  useEffect(() => {
+    if (path.includes("record")) {
+      setSelectNav("record");
+    }
+  }, [path]);
 
   const showCarsHandler = () => {
     if (isNav) return;
     setShowCars((pre) => !pre);
   };
 
-  const navToPage = (path: string) => {
-    // if(path.includes("record")){
-    //   navigate(path),{state:};
-    // }
-
-    navigate(path);
-  };
-
   const navHandler = () => {
     if (isNav) {
       setShowCars(false);
     }
-
     dispatch(userActions.showNav(!isNav));
   };
   const recordCategoryHandler = useCallback((category: string) => {
     setRecordCategory(category);
   }, []);
 
+  const navBarHandler = (str: string) => {
+    if (!recordPage.current) return;
+    const isMobile = recordPage.current.clientWidth <= 701;
+
+    if (str === "profile") {
+      navigate("/profile");
+      navHandler();
+    } else if (str === "status") {
+      navigate("/status");
+      setSelectNav("status");
+      navHandler();
+    } else if (str === "record") {
+      navigate("/car_manage/record");
+      setSelectNav("record");
+      setRecordCategory("record");
+      if (isMobile) {
+        navHandler();
+      }
+    } else if (str === "chart") {
+      navigate("/car_manage/chart");
+      setSelectNav("chart");
+      if (isMobile) {
+        navHandler();
+      }
+    } else if (str === "edit") {
+      navigate("/car_manage/edit");
+      setSelectNav("edit");
+      if (isMobile) {
+        navHandler();
+      }
+    } else if (str === "add") {
+      navigate("/car_manage/add");
+      setSelectNav("add");
+      if (isMobile) {
+        navHandler();
+      }
+    }
+  };
+
   return (
     <>
       {isLoading && <Loading />}
-      <RecordContainer>
+      <RecordContainer ref={recordPage}>
         <Navigation $isNav={isNav}>
           <UserImg
             src={user.userImg}
             $isNav={isNav}
             onClick={() => {
-              navToPage("/profile");
+              navBarHandler("profile");
             }}
           />
           <NavWrapper>
             <Nav
               $selected={selectNav === "status"}
               onClick={() => {
-                navToPage("/status");
-                setSelectNav("status");
+                navBarHandler("status");
               }}
             >
               <ImgBx>
@@ -251,53 +291,46 @@ const Manage = () => {
             <Nav
               $selected={selectNav === "record"}
               onClick={() => {
-                navToPage("/car_manage/record");
-                setSelectNav("record");
-                setRecordCategory("record");
+                navBarHandler("record");
               }}
             >
-              <ImgBx
-                onClick={() => {
-                  navToPage("/car_manage/record");
-                }}
-              >
-                <Img src={recordIcon} />
+              <ImgBx>
+                <Img
+                  src={selectNav === "record" ? recordWhiteIcon : recordIcon}
+                />
               </ImgBx>
               <RecordLink>車輛紀錄表</RecordLink>
             </Nav>
             <Nav
               $selected={selectNav === "chart"}
               onClick={() => {
-                navToPage("/car_manage/chart");
-                setSelectNav("chart");
+                navBarHandler("chart");
               }}
             >
               <ImgBx>
-                <Img src={chartIcon} />
+                <Img src={selectNav === "chart" ? chartWhiteIcon : chartIcon} />
               </ImgBx>
               <RecordLink>費用統計圖</RecordLink>
             </Nav>
             <Nav
               $selected={selectNav === "edit"}
               onClick={() => {
-                navToPage("/car_manage/edit");
-                setSelectNav("edit");
+                navBarHandler("edit");
               }}
             >
               <ImgBx>
-                <Img src={setIcon} />
+                <Img src={selectNav === "edit" ? setWhiteIcon : setIcon} />
               </ImgBx>
               <RecordLink>車輛設定</RecordLink>
             </Nav>
             <Nav
               $selected={selectNav === "add"}
               onClick={() => {
-                navToPage("/car_manage/add");
-                setSelectNav("add");
+                navBarHandler("add");
               }}
             >
               <ImgBx>
-                <Img src={addIcon} />
+                <Img src={selectNav === "add" ? addWhiteIcon : addIcon} />
               </ImgBx>
               <RecordLink>新增車輛</RecordLink>
             </Nav>
@@ -320,7 +353,11 @@ const Manage = () => {
           </NavWrapper>
         </Navigation>
         {!isNav && (
-          <SubCarsBox showCars={showCars} onSelect={selectCartHandler} />
+          <SubCarsBox
+            showCars={showCars}
+            onSelect={selectCartHandler}
+            onShow={showCarsHandler}
+          />
         )}
         {isNav && <Mask $isNav={isNav} onClick={navHandler} />}
         <MainWrapper $isNav={isNav}>

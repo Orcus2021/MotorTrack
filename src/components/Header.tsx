@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../store/index";
 import styled from "styled-components/macro";
 import { useAppDispatch } from "../store/index";
 import { userActions } from "../store/user/userReducer";
-
+import { createMessage } from "../utils/calcFunc";
 import logoImg from "../assets/logo_white.png";
 import { Img } from "../components/style";
 import PersonIcon from "../assets/icon/person.png";
@@ -84,11 +84,12 @@ const NavRightBx = styled.div`
   }
 `;
 
-const MemberBox = styled.div`
+const MemberBox = styled.div<{ $isOffline: boolean }>`
   /* width: 90px; */
   padding: 2px 10px;
   cursor: pointer;
-  background-color: var(--mainColor);
+  background-color: ${(props) =>
+    props.$isOffline ? "#ff5555" : "var(--mainColor)"};
   border-radius: 50px;
   display: flex;
   flex-direction: row;
@@ -138,18 +139,21 @@ const MenuImg = styled.img`
     width: 40px;
   }
 `;
+const Offline = styled.p`
+  font-size: 16px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+`;
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const isAuth = useAppSelector((state) => state.user.isAuth);
-  const isNav = useAppSelector((state) => state.user.isNav);
+  const user = useAppSelector((state) => state.user);
+  const { isAuth, isNav, isOffline } = user;
   const [scrollShow, setScrollShow] = useState<boolean>(false);
   const isModify = location.pathname.includes("car_manage");
-
   const scrollScreen = useCallback(() => {
     const lastScrollY = window.scrollY;
-
     if (lastScrollY > 0) {
       setScrollShow(true);
     } else if (lastScrollY === 0) {
@@ -178,7 +182,9 @@ const Header = () => {
   const goProfile = () => {
     if (isAuth) {
       navigate("/profile");
-    } else {
+    } else if (!isAuth && isOffline) {
+      createMessage("error", dispatch, "離線狀態無法登入");
+    } else if (!isOffline) {
       navigate("/login");
     }
   };
@@ -194,11 +200,14 @@ const Header = () => {
       <NavRightBx>
         {isAuth && <Nav onClick={goCarRecord}>摩特日誌</Nav>}
 
-        <MemberBox onClick={goProfile}>
+        <MemberBox onClick={goProfile} $isOffline={isOffline}>
           <NavProfile>
             <Img src={PersonIcon} />
           </NavProfile>
-          {!isAuth && <LoginMessage hideOnMobile>登入</LoginMessage>}
+          {isOffline && <Offline>離線</Offline>}
+          {!isAuth && !isOffline && (
+            <LoginMessage hideOnMobile>登入</LoginMessage>
+          )}
         </MemberBox>
       </NavRightBx>
     </HeaderWrapper>

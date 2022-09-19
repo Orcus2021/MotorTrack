@@ -18,7 +18,6 @@ this.addEventListener("install", (event) => {
 });
 
 this.addEventListener("activate", (event) => {
-  console.log("now ready to handle fetches!");
   event.waitUntil(
     caches.keys().then(function (cacheNames) {
       let promiseArr = cacheNames.map((item) => {

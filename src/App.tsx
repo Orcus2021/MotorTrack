@@ -10,6 +10,7 @@ import { createMessage } from "./utils/calcFunc";
 import { Reset } from "styled-reset";
 import { createGlobalStyle } from "styled-components/macro";
 import SlideMessage from "./components/SlideMessage";
+import { userActions } from "./store/user/userReducer";
 
 export const GlobalStyle = createGlobalStyle`
 
@@ -93,14 +94,11 @@ const App = () => {
   useEffect(() => {
     const auth = async () => {
       const userId = await firebase.onAuth().catch((msg) => {
-        navigate("/");
+        navigate("/login");
         createMessage("error", dispatch, "尚未登入");
       });
       if (userId) {
         dispatch(asyncUserAction.signIn(userId));
-        //  if(navigator.onLine){
-
-        //  }
       }
     };
     const pathName = location.pathname;
@@ -117,6 +115,14 @@ const App = () => {
     };
     onPWA();
   }, []);
+
+  useEffect(() => {
+    if (navigator.onLine) {
+      dispatch(userActions.setOffline(false));
+    } else {
+      dispatch(userActions.setOffline(true));
+    }
+  }, [navigator.onLine, dispatch]);
 
   return (
     <>

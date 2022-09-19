@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import HomeLoading from "../../components/Loading/HomeLoading";
 
 import bikeImg from "../../assets/img/bike_blue_1.png";
+import { useAppSelector } from "../../store";
 
 const Container = styled.div`
   display: flex;
@@ -147,6 +148,7 @@ const Text = styled.span`
 const Home = () => {
   const navigate = useNavigate();
   const home = useRef<HTMLDivElement>(null);
+  const isAuth = useAppSelector((statue) => statue.user.isAuth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imgDeg, setImgDeg] = useState<number>(0);
 
@@ -158,7 +160,7 @@ const Home = () => {
   }, []);
 
   const goLoginHandler = () => {
-    navigate("/login");
+    navigate("/car_manage/record");
   };
   const detectMouse = (e: React.MouseEvent) => {
     if (home.current) {

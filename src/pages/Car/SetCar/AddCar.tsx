@@ -211,6 +211,7 @@ const AddCar = () => {
                 content="行照發照日"
                 error={typeof errors?.licenseDate?.type === "string"}
                 require={{ required: true }}
+                calendarPosition={"top"}
                 type="date"
                 message={errors.licenseDate && "尚未填寫"}
               />

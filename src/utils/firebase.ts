@@ -264,7 +264,6 @@ const firebase = {
     return new Promise((resolve, reject) => {
       enableIndexedDbPersistence(db)
         .then((res) => {
-          console.log(res);
           resolve("success");
         })
         .catch((err) => {

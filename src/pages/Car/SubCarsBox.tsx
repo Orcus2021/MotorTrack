@@ -12,15 +12,16 @@ const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
   backdrop-filter: blur(5px);
   border-radius: 0 8px 8px 0;
   /* background: rgba(255, 255, 255, 0.15); */
-  background: var(--mainColor);
+  background: var(--deepColor);
   overflow: overlay;
   z-index: 2;
   transition: all 0.5s;
 `;
-const SubCarWrapper = styled.div`
+const SubCarWrapper = styled.div<{ $isSelect: boolean }>`
   width: 100%;
   padding: 5px;
   cursor: pointer;
+  background-color: ${(props) => props.$isSelect && "var(--mainColor)"};
   &:hover {
     background-color: var(--mainColor);
   }
@@ -55,16 +56,23 @@ const SubCarInfo = styled.p`
 const SubCarsBox: FC<{
   showCars: boolean;
   onSelect: (id: string, ownerId: string) => Promise<void>;
+  onShow: () => void;
 }> = (props) => {
-  const { showCars, onSelect } = props;
+  const { showCars, onSelect, onShow } = props;
   const cars = useAppSelector((status) => status.car.cars);
+
+  const carID = useAppSelector((state) => state.car.car?.id);
 
   return (
     <SubCarsWrapper $isShow={showCars}>
       {cars.map((car) => (
         <SubCarWrapper
+          $isSelect={car.id === carID}
           key={car.id}
-          onClick={() => onSelect(car.id, car.ownerId)}
+          onClick={() => {
+            onSelect(car.id, car.ownerId);
+            onShow();
+          }}
         >
           <CarInfoBx>
             <SubImgBx>
