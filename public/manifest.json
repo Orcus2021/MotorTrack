@@ -38,5 +38,31 @@
       "sizes": "512x512"
     }
   ],
-  "background_color": "#16181d"
+  "background_color": "#16181d",
+  "shortcuts": [
+    {
+      "name": "車輛狀態",
+      "short_name": "車輛狀態",
+      "url": "/status",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "車輛紀錄",
+      "short_name": "車輛紀錄",
+      "url": "/car_manage/record",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
 }

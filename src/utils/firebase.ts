@@ -106,28 +106,44 @@ const firebase = {
   async getDoc(url: string): Promise<DocumentData | undefined> {
     return new Promise(async (resolve) => {
       const docRef = doc(db, url);
-      const docSnap = await getDoc(docRef);
-      const data = docSnap.data();
-      resolve(data);
+      try {
+        const docSnap = await getDoc(docRef);
+        const data = docSnap.data();
+        resolve(data);
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async setDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {
-      await setDoc(doc(db, url), data);
-      resolve("Set doc already");
+      try {
+        await setDoc(doc(db, url), data);
+        resolve("Set doc already");
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async updateDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {
       const ref = doc(db, url);
-      await updateDoc(ref, data);
-      resolve("Update doc already");
+      try {
+        await updateDoc(ref, data);
+        resolve("Update doc already");
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async delete(url: string): Promise<string> {
     return new Promise(async (resolve) => {
-      await deleteDoc(doc(db, url));
-      resolve("Delete it successfully");
+      try {
+        await deleteDoc(doc(db, url));
+        resolve("Delete it successfully");
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async setRecordDoc(url: string, data: dataType): Promise<dataType> {
@@ -135,30 +151,46 @@ const firebase = {
       const newId = doc(collection(db, url));
       data.id = newId.id;
       data.records.forEach((part: partType) => (part.recordID = newId.id));
-      await setDoc(newId, data);
-      resolve(data);
+      try {
+        resolve(data);
+        await setDoc(newId, data);
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async setExpenseDoc(url: string, data: feeType): Promise<dataType> {
     return new Promise(async (resolve) => {
       const newId = doc(collection(db, url));
       data.id = newId.id;
-      await setDoc(newId, data);
-      resolve(data);
+      try {
+        await setDoc(newId, data);
+        resolve(data);
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
 
   async setMergeDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {
-      await setDoc(doc(db, url), data, { merge: true });
-      resolve("Set doc already");
+      try {
+        await setDoc(doc(db, url), data, { merge: true });
+        resolve("Set doc already");
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async deleteParts(url: string, data: partType): Promise<string> {
     return new Promise(async (resolve) => {
       const ref = doc(db, url);
-      await updateDoc(ref, { records: arrayRemove(data) });
-      resolve("Delete it successfully");
+      try {
+        await updateDoc(ref, { records: arrayRemove(data) });
+        resolve("Delete it successfully");
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async getAllRecords(id: string): Promise<{
@@ -221,9 +253,12 @@ const firebase = {
     return new Promise(async (resolve) => {
       const newCrtId = doc(collection(db, "carsRecords"));
       data.id = newCrtId.id;
-
-      await setDoc(newCrtId, data);
-      resolve(data);
+      try {
+        resolve(data);
+        await setDoc(newCrtId, data);
+      } catch (e) {
+        console.log(e);
+      }
     });
   },
   async getCars(id: string): Promise<carType[]> {

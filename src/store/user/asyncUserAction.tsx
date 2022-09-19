@@ -93,7 +93,7 @@ const asyncUserAction = {
 
       try {
         const user = (await signIn()) as userType;
-        console.log(user);
+
         dispatch(userActions.signIn(user));
 
         if (user.selectCar.length > 0) {

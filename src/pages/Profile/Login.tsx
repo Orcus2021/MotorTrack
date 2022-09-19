@@ -118,11 +118,17 @@ const Login = () => {
     navigate("/");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.keyCode === 13 || e.key === "Enter") {
+      handleSubmit(signIn)();
+    }
+  };
+
   return (
     <>
       {isLoading && <Loading />}
       <FormProvider {...methods}>
-        <LoginContainer>
+        <LoginContainer onKeyDown={handleKeyDown}>
           <Card width={300} boxShadow={true}>
             <SignInWrapper>
               <Title>{isSignUp ? "註冊" : "登入"}</Title>

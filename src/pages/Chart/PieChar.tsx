@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactECharts from "echarts-for-react";
-import { useAppSelector, useAppDispatch } from "../../store";
-import { recordActions } from "../../store/record/recordReducer";
+import { useAppSelector } from "../../store";
 
 const PieChar = () => {
   const expense = useAppSelector((state) => state.record.expenses);

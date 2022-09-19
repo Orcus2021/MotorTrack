@@ -95,8 +95,8 @@ const asyncRecordAction = {
         }
       };
       try {
-        await remove();
         dispatch(recordActions.deleteRepair(recordID));
+        await remove();
       } catch (e) {
         console.log(e);
       }

@@ -160,7 +160,11 @@ const Home = () => {
   }, []);
 
   const goLoginHandler = () => {
-    navigate("/car_manage/record");
+    if (isAuth) {
+      navigate("/car_manage/record");
+    } else {
+      navigate("/login");
+    }
   };
   const detectMouse = (e: React.MouseEvent) => {
     if (home.current) {

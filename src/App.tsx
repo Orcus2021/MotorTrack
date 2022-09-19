@@ -93,17 +93,20 @@ const App = () => {
   const location = useLocation();
   useEffect(() => {
     const auth = async () => {
-      const userId = await firebase.onAuth().catch((msg) => {
-        navigate("/login");
-        createMessage("error", dispatch, "尚未登入");
-      });
+      const userId = await firebase.onAuth().catch((msg) => {});
       if (userId) {
         dispatch(asyncUserAction.signIn(userId));
       }
     };
     const pathName = location.pathname;
-    if (isAuth || pathName === "/" || pathName === "/login") return;
+    if (pathName === "/") {
+      auth();
+      return;
+    }
+    if (isAuth || pathName === "/login") return;
     auth();
+    navigate("/login");
+    createMessage("error", dispatch, "尚未登入");
   }, [isAuth, dispatch, navigate, location]);
 
   useEffect(() => {
