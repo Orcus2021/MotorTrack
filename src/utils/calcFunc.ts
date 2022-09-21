@@ -89,7 +89,7 @@ export const mileagePercent = (part: partType, car: carType) => {
   }
 
   if (diffMileage <= 0) {
-    message = `超過${diffMileage}公里`;
+    message = `超過${diffMileage * -1}公里`;
   } else {
     message = `可用${diffMileage}公里`;
   }
@@ -170,6 +170,7 @@ export const compareDateAndMileage = (
 ): messageType => {
   const mileage = mileagePercent(part, car);
   const date = datePercent(part);
+
   if (!date && !mileage) {
     return {
       percent: 0,

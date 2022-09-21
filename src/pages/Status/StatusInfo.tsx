@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FC } from "react";
 import PartDetail from "./PartDetail";
 import brands from "../../utils/brands";
 import { Img } from "../../components/style";
@@ -14,7 +14,7 @@ import { carActions } from "../../store/car/carReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import asyncRecordAction from "../../store/record/asyncRecordAction";
 import { useNavigate } from "react-router-dom";
-import Skeleton from "../../components/Skeleton";
+import Skeleton from "../../components/Skeleton/Skeleton";
 
 import returnIcon from "../../assets/icon/return.png";
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
@@ -25,17 +25,18 @@ const Container = styled.div`
   height: 100%;
   /* margin-right: 30px; */
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.15);
+
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(5px);
-  background: rgba(1, 0, 44, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
   /* background-color: var(--thirdBack); */
   border-radius: 8px;
   @media screen and (max-width: 701px) {
     width: 322px;
     max-width: 322px;
+    margin-bottom: 80px;
   }
 `;
 
@@ -99,7 +100,7 @@ const MileageIcon = styled.img`
   object-fit: cover;
 `;
 const MileageMsg = styled.p`
-  font-size: 1.1rem;
+  font-size: 16px;
 `;
 const MessageBx = styled.div`
   display: flex;
@@ -108,9 +109,10 @@ const MessageBx = styled.div`
   justify-content: space-between;
   padding-left: 20px;
   padding-right: 20px;
+  margin-bottom: 5px;
 `;
 const Message = styled.p`
-  font-size: 0.8rem;
+  font-size: 14px;
 `;
 const PartsWrapper = styled.div`
   /* background-color: var(--thirdBack); */
@@ -126,7 +128,7 @@ const PartsWrapper = styled.div`
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 50px;
-    background-color: rgba(68, 68, 68, 0.3);
+    background-color: rgba(161, 161, 161, 0.5);
   }
   &::-webkit-scrollbar-thumb:hover {
     background-color: var(--mainColor);
@@ -161,7 +163,7 @@ const DisplayName = styled.div`
 
   justify-content: flex-start;
 `;
-const BrandBx = styled.div`
+const UserBx = styled.div`
   height: 25px;
   width: 25px;
   position: relative;
@@ -169,7 +171,7 @@ const BrandBx = styled.div`
 `;
 const CarName = styled.p`
   width: 65px;
-  font-size: 12px;
+  font-size: 14px;
   flex-grow: 1;
   color: #fff;
   padding: 0;
@@ -214,8 +216,8 @@ const SelectWrapper = styled.div`
 `;
 
 const PlateNum = styled.p`
-  font-size: 12px;
-  width: 70px;
+  font-size: 14px;
+  width: 75px;
   margin-left: 5px;
   line-height: 17px;
   color: #fff;
@@ -301,7 +303,12 @@ type progressDetailType = {
   message: string;
 };
 
-const StatusInfo = () => {
+const StatusInfo: FC<{
+  showContent: boolean;
+  onShowSelectContent: (e: React.MouseEvent) => void;
+  onCloseSelectContent: () => void;
+}> = (props) => {
+  const { showContent, onShowSelectContent, onCloseSelectContent } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const car = useAppSelector((state) => state.car.car);
@@ -309,7 +316,7 @@ const StatusInfo = () => {
   const userImg = useAppSelector((state) => state.user.user.userImg);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [showContent, setShowContent] = useState<boolean>(false);
+  // const [showContent, setShowContent] = useState<boolean>(false);
   const [isBoxLoading, setIsBoxLoading] = useState<boolean>(false);
   const parts = useAppSelector((state) => state.record.parts);
   const [progressDetail, setProgressDetail] = useState<progressDetailType>();
@@ -333,6 +340,7 @@ const StatusInfo = () => {
   const showDetailHandler = () => {
     setShowDetail((pre) => !pre);
   };
+
   const selectPartHandler = (
     index: number,
     percent: number,
@@ -351,13 +359,10 @@ const StatusInfo = () => {
     dispatch(carActions.selectCar(id));
     dispatch(asyncUserAction.updateUser(ownerId, { selectCar: id }));
     await dispatch(asyncRecordAction.getAllRecords(id));
-    setShowContent(false);
+    onCloseSelectContent();
     setTimeout(() => {
       setIsBoxLoading(false);
     }, 1000);
-  };
-  const showContentHandler = () => {
-    setShowContent((pre) => !pre);
   };
 
   const setOptions = () => {
@@ -416,16 +421,16 @@ const StatusInfo = () => {
                 <SelectWrapper>
                   <SelectBox
                     options={setOptions()}
-                    onShow={showContentHandler}
+                    onShow={onShowSelectContent}
                     icon={arrowImg}
                     showContent={showContent}
                     width="200px"
                     border={false}
                   >
-                    <DisplayName onClick={showContentHandler}>
-                      <BrandBx>
+                    <DisplayName>
+                      <UserBx>
                         {car?.brand && <Img src={brands.get(car.brand)?.img} />}
-                      </BrandBx>
+                      </UserBx>
                       <PlateNum>{car?.plateNum}:</PlateNum>
                       <CarName>{car?.name}</CarName>
                     </DisplayName>

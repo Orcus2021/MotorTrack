@@ -40,8 +40,9 @@ const AddWrapper = styled.div`
 const BrandWrapper = styled.div`
   flex-grow: 1;
   margin-right: 17px;
-  /* background-color: var(--mainColor); */
-  /* height: 400px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 const RightBx = styled.div`
   display: flex;
@@ -88,6 +89,12 @@ const LogoImg = styled.img`
 const SubTitle = styled.p<{ $isError?: boolean }>`
   text-align: center;
   font-size: 16px;
+  display: inline-block;
+  min-width: 150px;
+  padding: 5px 10px;
+  background-color: var(--mainColor);
+  border-radius: 50px;
+  margin-left: 10px;
   ${(props) => {
     if (props.$isError) {
       return "text-shadow: 0 0 10px var(--errorColor), 0 0 20px var(--errorColor), 0 0 40px var(--errorColor), 0 0 80px var(--errorColor), 0 0 120px var(--errorColor);";

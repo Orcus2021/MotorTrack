@@ -98,8 +98,8 @@ const RepairItem: React.FC<Props> = (props) => {
   return (
     <ContentWrapper onClick={showPartFormHandler}>
       {!rwd &&
-        tableContent.map((content) => (
-          <Content key={content.content} $width={content.width}>
+        tableContent.map((content, index) => (
+          <Content key={content.content + `${index}`} $width={content.width}>
             {content.content}
           </Content>
         ))}

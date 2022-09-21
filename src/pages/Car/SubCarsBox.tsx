@@ -57,14 +57,15 @@ const SubCarsBox: FC<{
   showCars: boolean;
   onSelect: (id: string, ownerId: string) => Promise<void>;
   onShow: () => void;
+  onClose: () => void;
 }> = (props) => {
-  const { showCars, onSelect, onShow } = props;
+  const { showCars, onSelect, onShow, onClose } = props;
   const cars = useAppSelector((status) => status.car.cars);
 
   const carID = useAppSelector((state) => state.car.car?.id);
 
   return (
-    <SubCarsWrapper $isShow={showCars}>
+    <SubCarsWrapper $isShow={showCars} onMouseLeave={onClose}>
       {cars.map((car) => (
         <SubCarWrapper
           $isSelect={car.id === carID}

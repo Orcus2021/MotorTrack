@@ -32,6 +32,7 @@ const EditWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   padding: 10px;
+
   border-radius: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
@@ -54,12 +55,17 @@ const RightBx = styled.div`
 `;
 
 const CarInfo = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   margin-right: 10px;
+  margin-left: 5px;
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
   margin-right: 17px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 const InputBx = styled.div`
   display: flex;
@@ -102,15 +108,21 @@ const LogoImg = styled.img`
   height: 100%;
 `;
 const CarInfoBx = styled.div`
-  width: 250px;
+  width: 260px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+  background: var(--mainColor);
+  padding: 5px 10px;
+  border-radius: 50px;
+  /* @media screen and (max-width: 701px) {
+    width: 100%;
+  } */
 `;
 const SubTitle = styled.span`
-  font-size: 12px;
-  color: var(--mainColor);
+  font-size: 14px;
+  color: #fff;
 `;
 
 const BrandInputBx = styled.div`
@@ -121,6 +133,12 @@ const BrandInputBx = styled.div`
 const BrandTitle = styled.p`
   text-align: center;
   font-size: 16px;
+  display: inline-block;
+  min-width: 150px;
+  padding: 5px 10px;
+  background-color: var(--mainColor);
+  border-radius: 50px;
+  margin-left: 10px;
 `;
 const Title = styled(NeonText)`
   font-size: 20px;
@@ -230,7 +248,7 @@ const EditCar = () => {
           <Title>編輯車輛</Title>
           <EditWrapper>
             <BrandWrapper>
-              <BrandTitle>{watch("brand")}</BrandTitle>
+              <BrandTitle>{brandName.name}</BrandTitle>
               <BrandInputBx>
                 <Input
                   name="brand"
@@ -249,6 +267,12 @@ const EditCar = () => {
                   <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
                 </LogoBx>
               </LogoWrapper>
+              <CarInfoBx>
+                <SubTitle>車齡 :</SubTitle>
+                <CarInfo>{carAge}</CarInfo>
+                <SubTitle>驗車日期:</SubTitle>
+                <CarInfo>{inspectionDay}</CarInfo>
+              </CarInfoBx>
 
               <InputBx>
                 <InputBox
@@ -292,13 +316,6 @@ const EditCar = () => {
                   message={errors.licenseDate && "尚未填寫"}
                 />
               </InputBx>
-
-              <CarInfoBx>
-                <SubTitle>車齡:</SubTitle>
-                <CarInfo>{carAge}</CarInfo>
-                <SubTitle>驗車日期:</SubTitle>
-                <CarInfo>{inspectionDay}</CarInfo>
-              </CarInfoBx>
 
               <InputBx>
                 <InputBox

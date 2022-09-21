@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useAppSelector, useAppDispatch } from "../../../store";
+import { useAppSelector } from "../../../store";
 
 import { Img } from "../../../components/style";
 import Repair from "./Repair/Repair";
 import Expenses from "./Expenses/Expenses";
 import RecordList from "./RecordList";
 import styled from "styled-components/macro";
-import Motor from "../../../components/Loading/Motor";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { NeonText } from "../../../components/style";
-import { userActions } from "../../../store/user/userReducer";
 import TableBox from "../../../components/TableBox";
 import IconButton from "../../../components/Button/IconButton";
-import SkeletonForm from "../../../components/SkeletonForm";
+import SkeletonForm from "../../../components/Skeleton/SkeletonForm";
 import TableBoxRecord from "../../../components/TableBoxRecord";
 
 import allIcon from "../../../assets/icon/chart-white.png";
@@ -178,7 +176,6 @@ const Record = () => {
 
   const [updateId, setUpdate] = useState<string>("");
   const location = useLocation().state as string;
-  const dispatch = useAppDispatch();
   const outletProps =
     useOutletContext<{
       isFormLoading: boolean;
@@ -186,10 +183,8 @@ const Record = () => {
       onRecord: (str: string) => void;
     }>();
   const { isFormLoading, recordCategory, onRecord } = outletProps;
-  const isLoading = useAppSelector((state) => state.user.isLoading);
 
   const expenses = useAppSelector((state) => state.record.expenses);
-  const isNav = useAppSelector((state) => state.user.isNav);
 
   useEffect(() => {
     if (location === "repair") {
@@ -224,10 +219,6 @@ const Record = () => {
 
   const clearUpdateId = () => {
     setUpdate("");
-  };
-
-  const navHandler = () => {
-    dispatch(userActions.showNav(!isNav));
   };
 
   const CardInfo = [

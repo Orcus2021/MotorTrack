@@ -9,11 +9,11 @@ const BrandBx = styled.div`
   width: 100%;
   height: 400px;
   border-radius: 8px;
-  display: flex;
-  flex-direction: row;
   margin: 10px;
-  justify-content: space-around;
-  flex-wrap: wrap;
+  display: grid;
+  justify-content: space-evenly;
+  grid-template-columns: repeat(auto-fill, 100px);
+  grid-auto-rows: 125px;
   overflow-y: scroll;
   gap: 10px;
   padding: 10px;
@@ -60,7 +60,7 @@ const BrandImg = styled(Img)`
   object-fit: contain;
 `;
 const Name = styled.p`
-  font-size: 10px;
+  font-size: 12px;
 `;
 
 // const CardWrapper=styled.div`

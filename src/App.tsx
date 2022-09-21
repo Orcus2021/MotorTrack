@@ -23,15 +23,10 @@ export const GlobalStyle = createGlobalStyle`
   :root{
    
     --thirdColor:#2196f3;
-    --deepColor:#02697f;
-    /* --lightColor:#93f1f9;    */
-     /* --secondColor:#0ac3cf; */
-
-     /* --deepColor:#24334d; */
+    --deepColor:#02697f;     
      --deepColor:rgb(29, 53, 87);
 
-     /* --mainColor:#457b9d; */
-     /* --mainColor:#548ae6; */
+    
      --mainColor:#4581ea;
      --lightColor:#a9c7fa;
 
@@ -93,7 +88,10 @@ const App = () => {
   const location = useLocation();
   useEffect(() => {
     const auth = async () => {
-      const userId = await firebase.onAuth().catch((msg) => {});
+      const userId = await firebase.onAuth().catch((msg) => {
+        createMessage("error", dispatch, "尚未登入");
+        dispatch(userActions.loading(false));
+      });
       if (userId) {
         dispatch(asyncUserAction.signIn(userId));
       }
@@ -105,8 +103,7 @@ const App = () => {
     }
     if (isAuth || pathName === "/login") return;
     auth();
-    navigate("/login");
-    createMessage("error", dispatch, "尚未登入");
+    // navigate("/login");
   }, [isAuth, dispatch, navigate, location]);
 
   useEffect(() => {
@@ -114,7 +111,6 @@ const App = () => {
       const response = await firebase.onOffline().catch((msg) => {
         console.log(msg);
       });
-      console.log(response);
     };
     onPWA();
   }, []);
@@ -126,6 +122,26 @@ const App = () => {
       dispatch(userActions.setOffline(true));
     }
   }, [navigator.onLine, dispatch]);
+
+  // useEffect(() => {
+  //   const getMessageToken = async () => {
+  //     const response = await firebase.getMessageToken().catch((msg) => {
+  //       console.log(msg);
+  //     });
+  //   };
+
+  //   const requestPermission = () => {
+  //     console.log("Requesting permission...");
+  //     Notification.requestPermission().then((permission: string) => {
+  //       if (permission === "granted") {
+  //         console.log("Notification permission granted.");
+  //         getMessageToken();
+  //       }
+  //     });
+  //   };
+
+  //   requestPermission();
+  // }, []);
 
   return (
     <>

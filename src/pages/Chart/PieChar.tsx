@@ -4,8 +4,6 @@ import { useAppSelector } from "../../store";
 
 const PieChar = () => {
   const expense = useAppSelector((state) => state.record.expenses);
-  // const dispatch = useAppDispatch();
-  // const car = useAppSelector((state) => state.car.car);
 
   const {
     allExpenses,
@@ -28,10 +26,10 @@ const PieChar = () => {
     title: {
       text: `${
         selectYear === "all" ? "全年度" : selectYear
-      }\n總花費:${allExpenses}`,
+      }\n\n總花費:${allExpenses}`,
       left: "center",
       top: "center",
-      textStyle: { fontSize: 18, fontWeight: "bolder", color: "#ffffff" },
+      textStyle: { fontSize: 22, fontWeight: "bolder", color: "#ffffff" },
     },
     tooltip: {
       trigger: "item",
@@ -53,11 +51,12 @@ const PieChar = () => {
       data: ["維修", "加油/充電", "費用"],
       textStyle: {
         color: "#fff",
+        fontSize: 16,
       },
     },
     series: [
       {
-        name: `${selectYear}花費`,
+        name: `${selectYear === "all" ? "全年度" : selectYear}花費`,
         type: "pie",
         radius: ["40%", "70%"],
         center: ["50%", "50%"],
@@ -69,6 +68,13 @@ const PieChar = () => {
             rich: {
               title: {
                 color: "#fff",
+                fontSize: 16,
+                align: "left",
+                padding: [0, 0, 5, 0],
+              },
+              value: {
+                color: "#fff",
+                fontSize: 16,
                 align: "left",
                 padding: [0, 0, 5, 0],
               },

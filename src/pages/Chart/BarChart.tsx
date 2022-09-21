@@ -44,6 +44,7 @@ const BarChart = () => {
       bottom: 0,
       textStyle: {
         color: "#fff",
+        fontSize: 16,
       },
     },
     grid: {
@@ -57,6 +58,11 @@ const BarChart = () => {
     },
     yAxis: {
       type: "category",
+      axisLabel: {
+        show: true,
+        fontSize: 16,
+        color: "#fff",
+      },
       data: [
         "1月",
         "2月",
@@ -84,6 +90,7 @@ const BarChart = () => {
           focus: "series",
         },
         data: perMonthExpense(repair, expenses.selectYear),
+        textStyle: { fontSize: 14, color: "#fff" },
       },
       {
         name: "充電/加油",
@@ -96,6 +103,7 @@ const BarChart = () => {
           focus: "series",
         },
         data: perMonthExpense(refuel, expenses.selectYear),
+        textStyle: { fontSize: 14, color: "#fff" },
       },
       {
         name: "費用",
@@ -108,6 +116,7 @@ const BarChart = () => {
           focus: "series",
         },
         data: perMonthExpense(fee, expenses.selectYear),
+        textStyle: { fontSize: 14, color: "#fff" },
       },
     ],
   };

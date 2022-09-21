@@ -19,7 +19,7 @@ const HeaderWrapper = styled.div<{
   top: 0;
   left: 0;
   width: 100%;
-  transition: 0.5s;
+  transition: 0.3s;
 
   background-color: ${(props) =>
     props.$isScroll ? "rgba(255, 255, 255, 0.15)" : "transparent"};

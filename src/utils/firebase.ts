@@ -30,6 +30,7 @@ import {
   arrayRemove,
   enableIndexedDbPersistence,
 } from "firebase/firestore";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
@@ -39,12 +40,15 @@ const firebaseConfig = {
   messagingSenderId: "899173634521",
   appId: "1:899173634521:web:24142760923e9cddfe09c8",
 };
+const messageKey =
+  "BMfPfF3tRqWFQxHBkwVfqa3-4xipfWPrTlq5Jo4CfQI-Z_egT-Cz16CCXKL_7njrfewWi5g_t5crdSfI2V06TwE";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+export const messaging = getMessaging(app);
 type dataType = {
   id: string;
   [index: string]: any;
@@ -275,7 +279,7 @@ const firebase = {
       resolve(carArr);
     });
   },
-  async uploadImage(url: string, file: File) {
+  async uploadImage(url: string, file: File): Promise<string> {
     return new Promise((resolve) => {
       const storageRef = ref(storage, url);
       const uploadTask = uploadBytesResumable(storageRef, file);
@@ -314,6 +318,41 @@ const firebase = {
             reject("The current browser does not support");
           }
         });
+    });
+  },
+  async getMessageToken() {
+    return new Promise((resolve) => {
+      getToken(messaging, { vapidKey: messageKey })
+        .then((currentToken) => {
+          if (currentToken) {
+            // Send the token to your server and update the UI if necessary
+            console.log(currentToken);
+            resolve(currentToken);
+          } else {
+            // Show permission request UI
+            console.log(
+              "No registration token available. Request permission to generate one."
+            );
+            // ...
+          }
+        })
+        .catch((err) => {
+          console.log("An error occurred while retrieving token. ", err);
+          // ...
+        });
+    });
+  },
+  async onMessageFromFCM() {
+    return new Promise((resolve) => {
+      onMessage(messaging, (payload) => {
+        console.log("Message received. ", payload);
+        resolve(payload);
+        const notificationTitle = "Message Title";
+        const notificationOptions = {
+          body: "Message body.",
+        };
+        new Notification(notificationTitle, notificationOptions);
+      });
     });
   },
 };

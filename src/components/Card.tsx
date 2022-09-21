@@ -15,7 +15,7 @@ const Wrapper = styled.div<{
   border-radius: 8px;
   backdrop-filter: blur(5px);
 
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(70, 70, 70, 0.263);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   border-right: 3px solid transparent;

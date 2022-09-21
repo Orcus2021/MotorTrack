@@ -17,5 +17,10 @@
     "jsx": "react-jsx",
     "outDir": "./dist/"
   },
-  "include": ["src", "react-app-env.d.ts", "custom.d.ts"]
+  "include": [
+    "src",
+    "react-app-env.d.ts",
+    "custom.d.ts",
+    "public/firebase-messaging-sw.js"
+  ]
 }

@@ -42,7 +42,7 @@ const InputFloat = styled.input<{
   outline: none;
   color: #fff;
   font-size: 14px;
-  background-color: transparent;
+  background-color: #00000074;
   transition: 0.5s;
 
   &:valid ~ span,

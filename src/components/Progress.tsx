@@ -3,8 +3,6 @@ import parts from "../utils/parts";
 import { Img } from "../components/style";
 import styled from "styled-components/macro";
 
-import returnIcon from "../../assets/icon/return.png";
-
 const PartsBx = styled.div`
   position: relative;
   display: flex;
@@ -13,11 +11,12 @@ const PartsBx = styled.div`
   margin: 10px 0;
   padding: 5px 10px;
 
-  background-color: #20232a;
+  background-color: var(--secondBack);
   border-radius: 8px;
   overflow: hidden;
   transition: 0.5s;
   cursor: pointer;
+  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
 `;
 
 const IconBx = styled.span`
@@ -72,9 +71,9 @@ const ProgressBar = styled.div<{
   }
   &::after {
     content: "";
-    background-color: #ffffff86;
+    background-color: #ffffff7b;
     box-shadow: 0px 0px 12px 4px #ffffff;
-    width: 1px;
+    width: 0px;
     height: 100%;
     position: absolute;
     top: 0;
@@ -125,6 +124,8 @@ const Return = styled.div<{ $direction: string }>`
   width: 15px;
   height: 15px;
   position: relative;
+  margin-top: 2px;
+  margin-left: 3px;
   transform: ${(props) => (props.$direction === "go" ? "rotate(180deg)" : "")};
   cursor: pointer;
 `;

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components/macro";
 import { useAppSelector } from "../../store";
 import { partType } from "../../types/recordType";
-import { compareDateAndMileage } from "../../utils/calcFunc";
 import { mileagePercent, datePercent } from "../../utils/calcFunc";
 import { carType } from "../../types/carType";
 import { useNavigate } from "react-router-dom";
@@ -64,18 +63,19 @@ const MessageBx = styled.div`
   align-items: center;
 `;
 const Title = styled.p`
-  font-size: 12px;
-  width: 60px;
+  font-size: 14px;
+  width: 70px;
   color: var(--lightColor);
 `;
 const ListTitle = styled.p`
-  font-size: 12px;
+  font-size: 14px;
 
   padding: 10px;
-  color: var(--lightColor);
+  padding-left: 20px;
+  color: #fff;
 `;
 const MessageDetail = styled.p`
-  font-size: 12px;
+  font-size: 14px;
 `;
 
 const PartList = styled.div`
@@ -92,7 +92,7 @@ const ListTitleBox = styled.div`
 const Line = styled.div`
   height: 1.8px;
   background-color: #ffffff76;
-  width: 80%;
+  width: 75%;
   border-radius: 5px;
   @media screen and (max-width: 701px) {
     width: 75%;

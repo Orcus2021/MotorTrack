@@ -43,7 +43,7 @@ const Navigation = styled.div<{ $isNav: boolean }>`
   flex-direction: column;
   align-items: center;
   background: var(--deepColor);
-  transition: 0.5s;
+  transition: 0.3s;
   overflow: hidden;
   z-index: 6;
   @media screen and (max-width: 701px) {
@@ -96,12 +96,13 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
     props.$isNav ? "calc(100% - 256px)" : "calc(100% - 65px)"};
   margin-left: ${(props) => (props.$isNav ? "256px" : "65px")};
   /* background: #f5f5f5; */
-  transition: 0.5s;
+  transition: 0.3s;
   display: flex;
   flex-direction: column;
   align-items: center;
   height: fit-content;
   min-height: 100vh;
+  padding: 0 10px;
 
   background: url(${backImg}) no-repeat;
   padding-top: 68px;
@@ -121,8 +122,10 @@ const UserImg = styled.img<{ $isNav: boolean }>`
   width: ${(props) => (props.$isNav ? "50%" : "80%")};
   object-fit: cover;
   position: relative;
+  aspect-ratio: 1;
   border-radius: 50%;
   margin: 30px 0 10px 0;
+  transition: 0.3s;
   cursor: pointer;
 `;
 const ImgBx = styled.div`
@@ -132,6 +135,7 @@ const ImgBx = styled.div`
   position: relative;
   margin-right: 20px;
   cursor: pointer;
+  pointer-events: none;
 `;
 
 const BikeNav = styled(Nav)<{ $isNav: boolean }>`
@@ -151,7 +155,7 @@ const Title = styled(NeonText)`
   color: #fff;
   width: 100%;
 `;
-const NavIcon = styled.li<{ $isNav: boolean }>`
+const OpenNavBar = styled.li<{ $isNav: boolean }>`
   position: relative;
   width: 100%;
   list-style: none;
@@ -161,7 +165,6 @@ const NavIcon = styled.li<{ $isNav: boolean }>`
   margin-bottom: 5px;
   overflow: hidden;
   cursor: pointer;
-  /* transition: 0.5s; */
 
   padding: ${(props) => (props.$isNav ? "5px 20px 5px 210px" : "5px 20px")};
   &:hover {
@@ -197,22 +200,27 @@ const Manage = () => {
     }, 1000);
   };
   useEffect(() => {
-    dispatch(userActions.loading(true));
     if (isAuth) {
       setTimeout(() => {
         dispatch(userActions.loading(false));
-      }, 1500);
+      }, 1000);
+    } else {
+      dispatch(userActions.loading(true));
+      navigate("/login", { state: "/car_manage/record" });
     }
-  }, [dispatch, isAuth]);
+  }, [dispatch, isAuth, navigate]);
   useEffect(() => {
     if (path.includes("record")) {
       setSelectNav("record");
     }
   }, [path]);
 
-  const showCarsHandler = () => {
+  const showSlideCarsBoxHandler = () => {
     if (isNav) return;
     setShowCars((pre) => !pre);
+  };
+  const closeSlideCarsBoxHandler = () => {
+    setShowCars(false);
   };
 
   const navHandler = () => {
@@ -334,7 +342,11 @@ const Manage = () => {
               </ImgBx>
               <RecordLink>新增車輛</RecordLink>
             </Nav>
-            <BikeNav $isNav={isNav} onClick={showCarsHandler} $selected={false}>
+            <BikeNav
+              $isNav={isNav}
+              $selected={false}
+              onMouseEnter={showSlideCarsBoxHandler}
+            >
               {isNav ? (
                 <Title>My Motors</Title>
               ) : (
@@ -345,18 +357,19 @@ const Manage = () => {
             </BikeNav>
 
             {isNav && <CarsBox onSelect={selectCartHandler} />}
-            <NavIcon onClick={navHandler} $isNav={isNav}>
+            <OpenNavBar onClick={navHandler} $isNav={isNav}>
               <ImgBx>
                 <NavImg src={navIcon} $isNav={isNav} />
               </ImgBx>
-            </NavIcon>
+            </OpenNavBar>
           </NavWrapper>
         </Navigation>
         {!isNav && (
           <SubCarsBox
             showCars={showCars}
             onSelect={selectCartHandler}
-            onShow={showCarsHandler}
+            onShow={showSlideCarsBoxHandler}
+            onClose={closeSlideCarsBoxHandler}
           />
         )}
         {isNav && <Mask $isNav={isNav} onClick={navHandler} />}

@@ -102,10 +102,10 @@ const Select = () => {
         showContent={showContent}
         width="50%"
       >
-        <DisplayBrandBx onClick={showContentHandler}>
+        <DisplayBrandBx>
           <Img src={parts.get(watch("category"))?.icon} />
         </DisplayBrandBx>
-        <DisplayName onClick={showContentHandler}>{partName}</DisplayName>
+        <DisplayName>{partName}</DisplayName>
         <PartInput readOnly {...register("category", { required: true })} />
       </SelectBox>
     </>

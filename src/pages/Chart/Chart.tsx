@@ -62,7 +62,7 @@ const TitleBox = styled.div`
   margin-top: 10px;
   background-color: var(--deepColor);
   border-radius: 10px 10px 0 0;
-  padding: 0px 10px 2px 10px;
+  padding: 5px 10px 2px 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
 
@@ -181,7 +181,7 @@ const Chart = () => {
           icon={arrowIcon}
           border={false}
         >
-          <SelectTitle onClick={showContentHandler}>{select}</SelectTitle>
+          <SelectTitle>{select}</SelectTitle>
         </SelectBox>
       </TitleBox>
       <DetailWrapper>

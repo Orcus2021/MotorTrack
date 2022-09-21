@@ -12,28 +12,32 @@ import { carType } from "../../types/carType";
 import { carAgeAndInspectionDay } from "../../utils/calcFunc";
 import { getTodayMs } from "../../utils/calcFunc";
 import Loading from "../../components/Loading/Loading";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import HomeBack from "../Home/HomeBack";
-// import LogoFlicker from "../../components/Loading/LogoFlicker";
 
 import backImg from "../../assets/img/status-back.jpg";
 
 const Container = styled.div`
   position: relative;
   width: 100%;
-  /* height: calc(100vh - 68px); */
+
   min-height: calc(100vh - 68px);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding-bottom: 20px;
+  @media screen and (max-width: 701px) {
+    padding-bottom: 0;
+  }
 `;
 
 const BackView = styled.div`
-  position: absolute;
+  position: fixed;
   width: 100%;
-  height: 100vh;
-  top: -68px;
+  min-height: 100vh;
+  height: 100%;
+  top: 0;
   left: 0;
   filter: brightness(0.4);
   background: no-repeat url(${backImg});
@@ -76,13 +80,25 @@ const Status = () => {
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const isLoading = useAppSelector((state) => state.user.isLoading);
   const isMounted = useRef<boolean>(true);
+  const firstLogin = useLocation().state;
+  const navigate = useNavigate();
 
-  let firstLogin = useLocation().state;
-
+  const [showContent, setShowContent] = useState<boolean>(false);
   const [showRemind, setShowRemind] = useState<boolean>(false);
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [remindMessages, setRemindMessages] = useState<resultType>([]);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(userActions.loading(true));
+    if (isAuth) {
+      setTimeout(() => {
+        dispatch(userActions.loading(false));
+      }, 1000);
+    } else {
+      navigate("/login", { state: "/status" });
+    }
+  }, [dispatch, isAuth, navigate]);
 
   useEffect(() => {
     if (isAuth) {
@@ -136,12 +152,24 @@ const Status = () => {
     }, 600);
   };
 
+  const showContentHandler = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowContent((pre) => !pre);
+  };
+  const closeDetailHandler = () => {
+    setShowContent(false);
+  };
+
   return (
     <>
-      <Container>
+      <Container onClick={closeDetailHandler}>
         <BackView />
         <HomeBack />
-        <StatusInfo />
+        <StatusInfo
+          showContent={showContent}
+          onShowSelectContent={showContentHandler}
+          onCloseSelectContent={closeDetailHandler}
+        />
       </Container>
       {isLoading && <Loading />}
       {!isLoading && showRemind && (

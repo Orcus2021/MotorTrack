@@ -72,7 +72,7 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
   options: JSX.Element[];
   icon: string;
   showContent: boolean;
-  onShow: () => void;
+  onShow: (e: React.MouseEvent) => void;
   width: string;
   border?: boolean;
 }
@@ -86,9 +86,9 @@ const SelectBox: FC<Props> = ({
   border = true,
 }) => {
   return (
-    <Container $width={width} $isBorder={border}>
+    <Container $width={width} $isBorder={border} onClick={onShow}>
       <Name $isBorder={border}>{children}</Name>
-      <DownBx onClick={onShow}>
+      <DownBx>
         <Img src={icon} />
       </DownBx>
       <ContentBx $isShow={showContent}>{options}</ContentBx>

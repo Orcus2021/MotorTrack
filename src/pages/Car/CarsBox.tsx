@@ -10,7 +10,7 @@ const CarsWrapper = styled.div`
   border-radius: 8px;
   padding: 10px 20px;
   min-width: 256px;
-  height: calc(100% - 275px);
+  height: calc(100% - 285px);
   /* background-color: red; */
   &::-webkit-scrollbar {
     width: 7px;

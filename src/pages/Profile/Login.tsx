@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Card from "../../components/Card";
 import InputBox from "../../components/Input/InputBox";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button/Button";
+import { userActions } from "../../store/user/userReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { useAppDispatch, useAppSelector } from "../../store/index";
 import styled from "styled-components";
@@ -40,10 +41,11 @@ const Title = styled.p`
 `;
 
 const SignUpTxt = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 15px;
 `;
 const SignUpSpan = styled.span`
+  font-size: 14px;
   color: var(--mainColor);
   cursor: pointer;
 `;
@@ -59,7 +61,7 @@ const NameBox = styled.div<{ $isShow: boolean }>`
   position: relative;
   max-height: ${(props) => (props.$isShow ? "63px" : "0")};
   width: 100%;
-  overflow: hidden;
+  overflow: ${(props) => (props.$isShow ? "unset" : "hidden")};
   transition: 0.5s;
 `;
 
@@ -72,10 +74,13 @@ type userInfo = {
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [signUpEffect, setSignEffect] = useState<boolean>(false);
+  const [closeLoading, setCloseLoading] = useState<boolean>(false);
   const isLoading = useAppSelector((state) => state.user.isLoading);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const fromPage = useLocation().state;
+
   const methods = useForm<userInfo>({ mode: "onBlur" });
   const {
     handleSubmit,
@@ -102,12 +107,25 @@ const Login = () => {
   useEffect(() => {
     if (isSignUp && isAuth) {
       navigate("/profile");
+    } else if (!isSignUp && isAuth && fromPage === "/status") {
+      navigate("/status", { state: "first" });
+    } else if (!isSignUp && isAuth && fromPage) {
+      navigate(fromPage);
     } else if (!isSignUp && isAuth) {
       navigate("/status", { state: "first" });
     }
-  }, [isSignUp, isAuth, navigate]);
+  }, [isSignUp, isAuth, navigate, fromPage]);
 
+  useEffect(() => {
+    if (isLoading && !closeLoading) {
+      setTimeout(() => {
+        dispatch(userActions.loading(false));
+      }, 1000);
+    }
+  }, [isLoading, dispatch, closeLoading]);
+  console.log(closeLoading);
   const signIn = async (user: userInfo) => {
+    setCloseLoading(true);
     if (user.name) {
       await dispatch(asyncUserAction.signUp(user));
     } else {
