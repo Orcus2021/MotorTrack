@@ -21,6 +21,6 @@
     "src",
     "react-app-env.d.ts",
     "custom.d.ts",
-    "public/firebase-messaging-sw.js"
+    "../../../../FrontEnd/2.React/pwa-app/public/firebase-messaging-sw.js"
   ]
 }

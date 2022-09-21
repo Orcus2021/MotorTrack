@@ -347,9 +347,9 @@ const firebase = {
       onMessage(messaging, (payload) => {
         console.log("Message received. ", payload);
         resolve(payload);
-        const notificationTitle = "Message Title";
+        const notificationTitle = "front Title";
         const notificationOptions = {
-          body: "Message body.",
+          body: "front body.",
         };
         new Notification(notificationTitle, notificationOptions);
       });
