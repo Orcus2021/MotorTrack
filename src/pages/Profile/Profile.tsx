@@ -178,7 +178,6 @@ const Profile = () => {
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  console.log(user.pushToken);
 
   useEffect(() => {
     dispatch(userActions.loading(true));
