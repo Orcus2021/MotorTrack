@@ -209,6 +209,8 @@ const Profile = () => {
     } else {
       update = { insuranceRemind: e.target.checked };
     }
+    if (e.target.checked) {
+    }
 
     dispatch(asyncUserAction.updateUser(user.id, update));
   };

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { userLogin } from "../types/userType";
 import { carType } from "../types/carType";
+import logoIcon from "../assets/icon/logo192.png";
 import { partsType, partType, repairType, feeType } from "../types/recordType";
 import {
   getAuth,
@@ -86,6 +87,7 @@ const firebase = {
     return new Promise((resolve) => {
       signOut(auth)
         .then(() => {
+          console.log("out");
           resolve("Logout");
         })
         .catch((error) => {
@@ -347,11 +349,14 @@ const firebase = {
       onMessage(messaging, (payload) => {
         console.log("Message received. ", payload);
         resolve(payload);
-        const notificationTitle = "front Title";
-        const notificationOptions = {
-          body: "front body.",
-        };
-        new Notification(notificationTitle, notificationOptions);
+        if (payload.notification) {
+          const notificationTitle = payload.notification.title;
+          const notificationOptions = {
+            body: payload.notification.body,
+            icon: logoIcon,
+          };
+          new Notification(notificationTitle as string, notificationOptions);
+        }
       });
     });
   },

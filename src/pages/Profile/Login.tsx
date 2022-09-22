@@ -123,7 +123,7 @@ const Login = () => {
       }, 1000);
     }
   }, [isLoading, dispatch, closeLoading]);
-  console.log(closeLoading);
+
   const signIn = async (user: userInfo) => {
     setCloseLoading(true);
     if (user.name) {
