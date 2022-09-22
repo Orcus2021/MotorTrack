@@ -8,9 +8,8 @@ const initUser: userType = {
   cars: 0,
   bannerImg: "",
   selectCar: "",
-  insuranceRemind: false,
-  inspectionRemind: false,
   continueRemind: false,
+  pushToken: [],
 };
 
 const initialUserState = {

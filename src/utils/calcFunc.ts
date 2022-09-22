@@ -2,6 +2,7 @@ import { repairType, feeType, partType } from "../types/recordType";
 import { carType } from "../types/carType";
 import { userActions } from "../store/user/userReducer";
 import { AppDispatch } from "../store";
+import firebase from "./firebase";
 
 export const formatDate = (date: Date) => {
   const padTo2Digits = (num: number) => {
@@ -185,4 +186,18 @@ export const compareDateAndMileage = (
   } else {
     return mileage;
   }
+};
+
+export const requestPermission = async () => {
+  const permission = await Notification.requestPermission();
+  // if (permission === "granted") {
+  //   console.log("Notification permission granted.");
+  // }
+  return permission;
+};
+export const getMessageToken = async () => {
+  const response = await firebase.getMessageToken().catch((msg) => {
+    console.log(msg);
+  });
+  return response;
 };

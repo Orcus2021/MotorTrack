@@ -8,6 +8,7 @@ import firebase from "../../utils/firebase";
 import { userLogin } from "../../types/userType";
 import { userType } from "../../types/userType";
 import { createMessage } from "../../utils/calcFunc";
+import { arrayUnion } from "firebase/firestore";
 
 const asyncUserAction = {
   signUp(data: userLogin) {
@@ -34,9 +35,7 @@ const asyncUserAction = {
             cars: 0,
             bannerImg: "",
             selectCar: "",
-            insuranceRemind: false,
-            inspectionRemind: false,
-            continueRemind: true,
+            continueRemind: false,
           };
           await firebase.setDoc(`/users/${userID}`, initUser);
 
@@ -49,35 +48,15 @@ const asyncUserAction = {
 
         dispatch(userActions.signUp(user));
         dispatch(userActions.loading(false));
-        // dispatch(
-        //   userActions.showNotification({
-        //     status: "success",
-        //     title: "Success",
-        //     message: "Sign up successfully!",
-        //   })
-        // );
       } catch (e) {
         console.log(e);
-        // dispatch(
-        //   userActions.showNotification({
-        //     status: "error",
-        //     title: "Error",
-        //     message: "Sign up is failed!",
-        //   })
-        // );
       }
     };
   },
   signIn(data: userLogin | string) {
     return async (dispatch: AppDispatch) => {
       dispatch(userActions.loading(true));
-      // dispatch(
-      //   userActions.showNotification({
-      //     status: "pending",
-      //     title: "Sending...",
-      //     message: "Sending user data!",
-      //   })
-      // );
+
       const signIn = async () => {
         let userID = data;
         if (typeof data !== "string") {
@@ -100,14 +79,6 @@ const asyncUserAction = {
           dispatch(carActions.selectCar(user.selectCar));
           await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
-        // dispatch(userActions.loading(false));
-        // dispatch(
-        //   userActions.showNotification({
-        //     status: "success",
-        //     title: "Success",
-        //     message: "Sign in successfully!",
-        //   })
-        // );
       } catch (e: any) {
         console.log(e.message);
         if (
@@ -117,26 +88,11 @@ const asyncUserAction = {
           createMessage("error", dispatch, "帳號或密碼錯誤");
         }
         dispatch(userActions.loading(false));
-
-        // dispatch(
-        //   userActions.showNotification({
-        //     status: "error",
-        //     title: "Error",
-        //     message: "Sign in is failed!",
-        //   })
-        // );
       }
     };
   },
   logout() {
     return (dispatch: AppDispatch) => {
-      // dispatch(
-      //   userActions.showNotification({
-      //     status: "pending",
-      //     title: "Sending...",
-      //     message: "Logging out",
-      //   })
-      // );
       const logout = () => {
         firebase.logout();
       };

@@ -36,24 +36,24 @@ const Remind: React.FC<{ onClose: () => void; remindMessages: resultType }> = (
   const [rejectRemind, setRejectRemind] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    let messages: string[] = [];
-    if (user.insuranceRemind) {
-      remindMessages.forEach((data) => {
-        if (data?.insurance) {
-          messages.push(`車牌:${data.plateNum}，${data.insuranceMsg}`);
-        }
-      });
-    }
-    if (user.inspectionRemind) {
-      remindMessages.forEach((data) => {
-        if (data?.inspection) {
-          messages.push(`車牌:${data.plateNum}，驗車即將到期`);
-        }
-      });
-    }
-    setMessages(messages);
-  }, [remindMessages, user]);
+  // useEffect(() => {
+  //   let messages: string[] = [];
+  //   if (user.insuranceRemind) {
+  //     remindMessages.forEach((data) => {
+  //       if (data?.insurance) {
+  //         messages.push(`車牌:${data.plateNum}，${data.insuranceMsg}`);
+  //       }
+  //     });
+  //   }
+  //   if (user.inspectionRemind) {
+  //     remindMessages.forEach((data) => {
+  //       if (data?.inspection) {
+  //         messages.push(`車牌:${data.plateNum}，驗車即將到期`);
+  //       }
+  //     });
+  //   }
+  //   setMessages(messages);
+  // }, [remindMessages, user]);
 
   const closeRemindHandler = () => {
     if (rejectRemind) {

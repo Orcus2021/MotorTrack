@@ -6,8 +6,7 @@ export type userType = {
   cars: number;
   bannerImg: string;
   selectCar: string;
-  insuranceRemind: boolean;
-  inspectionRemind: boolean;
+  pushToken: string[];
   continueRemind: boolean;
 };
 

@@ -10,6 +10,7 @@ import Modal from "../../components/Modal/Modal";
 import Upload from "./Upload";
 import { userActions } from "../../store/user/userReducer";
 import Loading from "../../components/Loading/Loading";
+import { requestPermission, getMessageToken } from "../../utils/calcFunc";
 
 import banner from "../../assets/img/banner.JPG";
 import camera from "../../assets/icon/camera.png";
@@ -32,6 +33,9 @@ const ProfileWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: var(--secondBack);
+  @media screen and (max-width: 701px) {
+    height: calc(100vh + 60px);
+  }
 `;
 
 const Banner = styled.div`
@@ -174,6 +178,7 @@ const Profile = () => {
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  console.log(user.pushToken);
 
   useEffect(() => {
     dispatch(userActions.loading(true));
@@ -202,17 +207,33 @@ const Profile = () => {
     }, 600);
   };
 
-  const remindHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let update;
-    if (e.target.id === "inspection") {
-      update = { inspectionRemind: e.target.checked };
-    } else {
-      update = { insuranceRemind: e.target.checked };
-    }
+  const remindHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-    }
+      const permission = await requestPermission();
 
-    dispatch(asyncUserAction.updateUser(user.id, update));
+      if (permission === "granted") {
+        // const token = await getMessageToken();
+        const token = "token";
+        console.log("profile token", token);
+        const newTokenArr = [...user.pushToken, token];
+        const update = {
+          continueRemind: e.target.checked,
+          pushToken: newTokenArr,
+        };
+        console.log("granted");
+        dispatch(asyncUserAction.updateUser(user.id, update));
+      } else if (permission === "denied") {
+        // FIXME filter token
+        const update = { continueRemind: false };
+        console.log("denied");
+        dispatch(asyncUserAction.updateUser(user.id, update));
+      } else if (permission === "default") {
+        console.log("notification default");
+      }
+    } else {
+      const update = { continueRemind: false };
+      dispatch(asyncUserAction.updateUser(user.id, update));
+    }
   };
   return (
     <>
@@ -271,17 +292,16 @@ const Profile = () => {
             <UserInfo>
               <Title>開啟提醒</Title>
               <CheckBox
-                id="inspection"
                 onChange={remindHandler}
-                checked={user.inspectionRemind}
+                checked={user.continueRemind}
               />
-              <UserAccount>驗車到期</UserAccount>
-              <CheckBox
+              <UserAccount>保險及驗車到期通知</UserAccount>
+              {/* <CheckBox
                 id="insurance"
                 onChange={remindHandler}
                 checked={user.insuranceRemind}
               />
-              <UserAccount>保險到期</UserAccount>
+              <UserAccount></UserAccount> */}
             </UserInfo>
           </InfoWrapper>
         </ProfileWrapper>

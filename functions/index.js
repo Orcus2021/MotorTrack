@@ -28,11 +28,7 @@ exports.scheduledFunction = functions.pubsub
       querySnapshot.forEach((doc) => {
         const user = doc.data();
 
-        if (
-          user.pushToken &&
-          user.continueRemind &&
-          (user.inspectionRemind || user.insuranceRemind)
-        ) {
+        if (user.pushToken && user.continueRemind) {
           users.push({ userId: doc.id, token: user.pushToken });
         }
       });
@@ -47,7 +43,9 @@ exports.scheduledFunction = functions.pubsub
         const carMessage = inspectCarDate(doc.data());
         if (carMessage.length > 0) {
           carMessage.forEach((msg) => {
-            sendFcmMessage(buildCommonMessage(msg, user.token));
+            user.token.forEach((token) => {
+              sendFcmMessage(buildCommonMessage(msg, token));
+            });
           });
         }
       });
@@ -75,11 +73,7 @@ exports.checkCarNotification = functions.https.onRequest(
       querySnapshot.forEach((doc) => {
         const user = doc.data();
 
-        if (
-          user.pushToken &&
-          user.continueRemind &&
-          (user.inspectionRemind || user.insuranceRemind)
-        ) {
+        if (user.pushToken && user.continueRemind) {
           users.push({ userId: doc.id, token: user.pushToken });
         }
       });
@@ -94,7 +88,9 @@ exports.checkCarNotification = functions.https.onRequest(
         const carMessage = inspectCarDate(doc.data());
         if (carMessage.length > 0) {
           carMessage.forEach((msg) => {
-            sendFcmMessage(buildCommonMessage(msg, user.token));
+            user.token.forEach((token) => {
+              sendFcmMessage(buildCommonMessage(msg, token));
+            });
           });
         }
       });
@@ -107,7 +103,7 @@ exports.checkCarNotification = functions.https.onRequest(
       }
       users = [];
     } catch (e) {
-      functions.logger(e);
+      functions.logger.info(e);
     }
     return;
   }

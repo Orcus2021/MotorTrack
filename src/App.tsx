@@ -6,7 +6,11 @@ import asyncUserAction from "./store/user/asyncUserAction";
 import { Outlet } from "react-router-dom";
 import firebase from "./utils/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
-import { createMessage } from "./utils/calcFunc";
+import {
+  createMessage,
+  requestPermission,
+  getMessageToken,
+} from "./utils/calcFunc";
 import { Reset } from "styled-reset";
 import { createGlobalStyle } from "styled-components/macro";
 import SlideMessage from "./components/SlideMessage";
@@ -83,6 +87,7 @@ export const GlobalStyle = createGlobalStyle`
 
 const App = () => {
   const isAuth = useAppSelector((state) => state.user.isAuth);
+  const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -123,25 +128,42 @@ const App = () => {
     }
   }, [navigator.onLine, dispatch]);
 
-  // useEffect(() => {
-  //   const getMessageToken = async () => {
-  //     const response = await firebase.getMessageToken().catch((msg) => {
-  //       console.log(msg);
-  //     });
-  //   };
+  useEffect(() => {
+    const getNotification = async () => {
+      if (Notification.permission === "default") {
+        const permission = await requestPermission();
+        if (permission === "granted") {
+          const token = await getMessageToken();
+          console.log(token, "Token");
+          const newTokenArr = [...user.pushToken, token];
+          const update = {
+            continueRemind: true,
+            pushToken: newTokenArr,
+          };
+          console.log("granted");
+          dispatch(asyncUserAction.updateUser(user.id, update));
+        } else if (permission === "denied") {
+          // FIXME filter token
+          const token = await getMessageToken();
+          console.log(token, "Token");
+          const update = { continueRemind: false };
+          console.log("denied");
+          dispatch(asyncUserAction.updateUser(user.id, update));
+        } else if (permission === "default") {
+          console.log("notification default");
+        }
+      }
+    };
+    if (isAuth) {
+      getNotification();
+    }
+  }, [dispatch, user, isAuth]);
 
-  //   const requestPermission = () => {
-  //     console.log("Requesting permission...");
-  //     Notification.requestPermission().then((permission: string) => {
-  //       if (permission === "granted") {
-  //         console.log("Notification permission granted.");
-  //         getMessageToken();
-  //       }
-  //     });
-  //   };
-
-  //   requestPermission();
-  // }, []);
+  useEffect(() => {
+    if (isAuth) {
+      firebase.onMessageFromFCM();
+    }
+  }, [dispatch, isAuth]);
 
   return (
     <>

@@ -81,11 +81,11 @@ const Test = () => {
 
   // requestPermission();
   // }, []);
-  useEffect(() => {
-    firebase.onMessageFromFCM().then((payload) => {
-      createMessage("remind", dispatch, payload.notification.title);
-    });
-  }, [dispatch]);
+  // useEffect(() => {
+  //   firebase.onMessageFromFCM().then((payload) => {
+  //     createMessage("remind", dispatch, payload.notification.title);
+  //   });
+  // }, [dispatch]);
 
   return <div>TEST</div>;
 };

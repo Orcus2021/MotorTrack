@@ -5,7 +5,7 @@ import { userActions } from "../../store/user/userReducer";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import asyncCarAction from "../../store/car/asyncCarAction";
 import StatusInfo from "./StatusInfo";
-import Remind from "../../components/Remind";
+// import Remind from "../../components/Remind";
 import Modal from "../../components/Modal/Modal";
 import { resultType } from "../../types/recordType";
 import { carType } from "../../types/carType";
@@ -110,12 +110,7 @@ const Status = () => {
   }, [dispatch, isAuth]);
 
   useEffect(() => {
-    if (
-      firstLogin === "first" &&
-      isMounted.current &&
-      user.continueRemind &&
-      (user.insuranceRemind || user.inspectionRemind)
-    ) {
+    if (firstLogin === "first" && isMounted.current && user.continueRemind) {
       const result = compareDate(cars);
 
       const found = result.every((result) => result === null);
@@ -172,7 +167,7 @@ const Status = () => {
         />
       </Container>
       {isLoading && <Loading />}
-      {!isLoading && showRemind && (
+      {/* {!isLoading && showRemind && (
         <Modal
           onClose={closeRemindHandler}
           closeEffect={closeEffect}
@@ -183,7 +178,7 @@ const Status = () => {
             remindMessages={remindMessages}
           />
         </Modal>
-      )}
+      )} */}
     </>
   );
 };
