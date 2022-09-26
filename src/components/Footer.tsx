@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components/macro";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../store";
@@ -8,8 +8,12 @@ import recordIcon from "../assets/icon/paper-white.png";
 import repairIcon from "../assets/icon/repair-plus.png";
 import feeIcon from "../assets/icon/moneyBag-plus.png";
 import refuelIcon from "../assets/icon/refuel-plus.png";
+import mapIcon from "../assets/icon/map.png";
+import stopWatchIcon from "../assets/icon/stopwatch.png";
+import addRecordIcon from "../assets/icon/add-record.png";
 
 const Container = styled.div<{ $isAuth: boolean }>`
+  position: relative;
   display: none;
   position: fixed;
   bottom: 0;
@@ -31,6 +35,7 @@ const NavWrapper = styled.ul`
   justify-content: space-around;
 `;
 const Nav = styled.li<{ $isSelect: boolean }>`
+  position: relative;
   height: 35px;
   z-index: 2;
   width: ${(props) => (props.$isSelect ? "120px" : "30px")};
@@ -52,9 +57,24 @@ const IconBox = styled.span`
   height: 30px;
   width: 30px;
   margin-right: 10px;
-
   position: relative;
+  &:hover {
+    animation: iconJump 1s infinite;
+  }
+  @keyframes iconJump {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    30% {
+      transform: rotate(-15deg);
+    }
+    60% {
+      transform: rotate(15deg);
+    }
+  }
 `;
+
 const IconText = styled.p`
   white-space: nowrap;
   display: flex;
@@ -69,33 +89,91 @@ const Img = styled.img`
   height: 100%;
   object-fit: contain;
 `;
+const EditWrapper = styled.div<{ $isShow: boolean }>`
+  position: absolute;
+  /* width: 100px; */
+  /* height: 100px; */
+  /* background-color: red; */
+  right: 20px;
+  bottom: 60px;
+  transition: 0.3s;
+  overflow: hidden;
+  max-height: 0;
+  max-height: ${(props) => props.$isShow && "102px"};
+`;
+const EditBox = styled.div`
+  display: flex;
+  align-items: center;
+  background-color: var(--deepColor);
+  border-radius: 20px;
+  margin-bottom: 5px;
+  padding: 2px 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #3464a5;
+  }
+`;
+const EditIconBox = styled.span`
+  display: block;
+  flex-shrink: 0;
+  height: 25px;
+  width: 25px;
+  margin-left: 10px;
+  position: relative;
+`;
 
 const Footer = () => {
   const [selectPage, setSelectPage] = useState<string>("status");
+  const [showEdit, setShowEdit] = useState<boolean>(false);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const navigate = useNavigate();
   const path = useLocation().pathname;
 
-  useEffect(() => {
+  const onPathSelect = useCallback((path: string) => {
     if (path.includes("status")) {
       setSelectPage("status");
     } else if (path.includes("car_manage")) {
       setSelectPage("record");
+    } else if (path.includes("store")) {
+      setSelectPage("store");
+    } else if (path.includes("mileage")) {
+      setSelectPage("mileage");
     }
-  }, [path]);
+  }, []);
+
+  useEffect(() => {
+    onPathSelect(path);
+  }, [onPathSelect, path]);
   const selectHandler = (str: string) => {
     setSelectPage(str);
     if (str === "status") {
       navigate("/status");
     } else if (str === "record") {
       navigate("/car_manage/record");
-    } else if (str === "repair") {
-      navigate("/car_manage/record", { state: "repair" });
-    } else if (str === "refuel") {
-      navigate("/car_manage/record", { state: "fee" });
-    } else if (str === "fee") {
-      navigate("/car_manage/record", { state: "fee" });
+    } else if (str === "store") {
+      navigate("/store");
+    } else if (str === "mileage") {
+      navigate("/mileage");
     }
+  };
+
+  const selectCategoryHandler = (category: string) => {
+    if (category === "fee") {
+      navigate("/car_manage/record", { state: "fee" });
+    } else if (category === "repair") {
+      navigate("/car_manage/record", { state: "repair" });
+    }
+    setShowEdit(false);
+  };
+
+  const selectRecordHandler = () => {
+    selectHandler("addRecord");
+    setShowEdit((pre) => {
+      if (pre) {
+        onPathSelect(path);
+      }
+      return !pre;
+    });
   };
   return (
     <Container $isAuth={isAuth}>
@@ -104,6 +182,7 @@ const Footer = () => {
           $isSelect={selectPage === "status"}
           onClick={() => {
             selectHandler("status");
+            setShowEdit(false);
           }}
         >
           <IconBox>
@@ -115,46 +194,80 @@ const Footer = () => {
           $isSelect={selectPage === "record"}
           onClick={() => {
             selectHandler("record");
+            setShowEdit(false);
           }}
         >
           <IconBox>
             <Img src={recordIcon} />
           </IconBox>
-          <IconText>摩特日誌</IconText>
+          <IconText>摩托日誌</IconText>
         </Nav>
         <Nav
-          $isSelect={selectPage === "repair"}
+          $isSelect={selectPage === "store"}
           onClick={() => {
-            selectHandler("repair");
+            selectHandler("store");
+            setShowEdit(false);
           }}
         >
           <IconBox>
-            <Img src={repairIcon} />
+            <Img src={mapIcon} />
           </IconBox>
-          <IconText>維修新增</IconText>
+          <IconText>商家地圖</IconText>
         </Nav>
         <Nav
-          $isSelect={selectPage === "refuel"}
+          $isSelect={selectPage === "mileage"}
           onClick={() => {
-            selectHandler("refuel");
+            selectHandler("mileage");
+            setShowEdit(false);
           }}
         >
           <IconBox>
-            <Img src={refuelIcon} />
+            <Img src={stopWatchIcon} />
           </IconBox>
-          <IconText>加油新增</IconText>
+          <IconText>里程紀錄</IconText>
         </Nav>
         <Nav
-          $isSelect={selectPage === "fee"}
-          onClick={() => {
-            selectHandler("fee");
-          }}
+          $isSelect={selectPage === "addRecord"}
+          onClick={selectRecordHandler}
         >
           <IconBox>
-            <Img src={feeIcon} />
+            <Img src={addRecordIcon} />
           </IconBox>
-          <IconText>費用新增</IconText>
+          <IconText>新增紀錄</IconText>
         </Nav>
+
+        <EditWrapper $isShow={showEdit}>
+          <EditBox
+            onClick={() => {
+              selectCategoryHandler("repair");
+            }}
+          >
+            <IconText>新增維修</IconText>
+            <EditIconBox>
+              <Img src={repairIcon} />
+            </EditIconBox>
+          </EditBox>
+          <EditBox
+            onClick={() => {
+              selectCategoryHandler("fee");
+            }}
+          >
+            <IconText>新增加油</IconText>
+            <EditIconBox>
+              <Img src={refuelIcon} />
+            </EditIconBox>
+          </EditBox>
+          <EditBox
+            onClick={() => {
+              selectCategoryHandler("fee");
+            }}
+          >
+            <IconText>新增費用</IconText>
+            <EditIconBox>
+              <Img src={feeIcon} />
+            </EditIconBox>
+          </EditBox>
+        </EditWrapper>
       </NavWrapper>
     </Container>
   );

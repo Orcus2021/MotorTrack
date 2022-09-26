@@ -151,12 +151,16 @@ const Home = () => {
   const isAuth = useAppSelector((statue) => statue.user.isAuth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imgDeg, setImgDeg] = useState<number>(0);
+  const [showHomePage, setShowHomePage] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, 4200);
+    setTimeout(() => {
+      setShowHomePage(true);
+    }, 500);
   }, []);
 
   const goLoginHandler = () => {
@@ -182,25 +186,27 @@ const Home = () => {
   return (
     <>
       {isLoading && <HomeLoading />}
-      <Container ref={home} onMouseMove={detectMouse}>
-        <BackTextBox>
-          <Text>M</Text>
-          <Text>o</Text>
-          <Text>t</Text>
-          <Text>o</Text>
-          <Text>r</Text>
-          <Text>T</Text>
-          <Text>r</Text>
-          <Text>a</Text>
-          <Text>c</Text>
-          <Text>K</Text>
-        </BackTextBox>
-        <Content>
-          <Title>READY TO TRACK</Title>
-          <Button onClick={goLoginHandler}>開始記錄</Button>
-          <BackImg src={bikeImg} $deg={imgDeg} />
-        </Content>
-      </Container>
+      {showHomePage && (
+        <Container ref={home} onMouseMove={detectMouse}>
+          <BackTextBox>
+            <Text>M</Text>
+            <Text>o</Text>
+            <Text>t</Text>
+            <Text>o</Text>
+            <Text>r</Text>
+            <Text>T</Text>
+            <Text>r</Text>
+            <Text>a</Text>
+            <Text>c</Text>
+            <Text>K</Text>
+          </BackTextBox>
+          <Content>
+            <Title>READY TO TRACK</Title>
+            <Button onClick={goLoginHandler}>開始記錄</Button>
+            <BackImg src={bikeImg} $deg={imgDeg} />
+          </Content>
+        </Container>
+      )}
     </>
   );
 };

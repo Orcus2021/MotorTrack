@@ -23,12 +23,14 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding:0;
     font-family: 'Noto Sans TC',  'Poppins', "sans-serif";
+    user-select: none;
   }
   :root{
    
     --thirdColor:#2196f3;
-    --deepColor:#02697f;     
-     --deepColor:rgb(29, 53, 87);
+    /* --deepColor:#02697f;      */
+     --deepColor:#1d3557;
+     /* --deepColor:#051e34; */
 
     
      --mainColor:#4581ea;
@@ -56,7 +58,7 @@ export const GlobalStyle = createGlobalStyle`
   }
   body{
    color:#fff;
-   &::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     width: 7px;
   }
   &::-webkit-scrollbar-thumb {

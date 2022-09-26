@@ -10,6 +10,8 @@ import Record from "./pages/Car/Record/Record";
 import AddCar from "./pages/Car/SetCar/AddCar";
 import EditCar from "./pages/Car/SetCar/EditCar";
 import Status from "./pages/Status/Status";
+import StoreMap from "./pages/Map/StoreMap";
+import Mileage from "./pages/Mileage/Mileage";
 import Test from "./Test";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -30,6 +32,8 @@ root.render(
           <Route path="profile" element={<Profile />} />
           <Route path="status" element={<Status />} />
           <Route path="test" element={<Test />} />
+          <Route path="store" element={<StoreMap />} />
+          <Route path="mileage" element={<Mileage />} />
           <Route path="car_manage" element={<Manage />}>
             <Route path="record" element={<Record />} />
             <Route path="add" element={<AddCar />} />

@@ -61,7 +61,7 @@ const CarInfo = styled.p`
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
-  margin-right: 17px;
+  /* margin-right: 17px; */
   width: 100%;
   display: flex;
   flex-direction: column;

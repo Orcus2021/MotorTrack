@@ -217,7 +217,7 @@ const SelectWrapper = styled.div`
 
 const PlateNum = styled.p`
   font-size: 14px;
-  width: 75px;
+  width: 85px;
   margin-left: 5px;
   line-height: 17px;
   color: #fff;

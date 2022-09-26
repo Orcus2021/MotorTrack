@@ -82,10 +82,12 @@ const NavRightBx = styled.div`
   @media screen and (max-width: 701px) {
     right: 20px;
   }
+  @media screen and (max-width: 400px) {
+    right: 5px;
+  }
 `;
 
 const MemberBox = styled.div<{ $isOffline: boolean }>`
-  /* width: 90px; */
   padding: 2px 10px;
   cursor: pointer;
   background-color: ${(props) =>
@@ -143,6 +145,35 @@ const Offline = styled.p`
   font-size: 16px;
   border-radius: 20px;
   letter-spacing: 1px;
+  @media screen and (max-width: 701px) {
+    font-size: 14px;
+  }
+`;
+const UserImg = styled.img<{ $isOffline: boolean }>`
+  position: relative;
+  z-index: 1;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 2px;
+  background-color: ${(props) =>
+    props.$isOffline ? "#ff5555" : "transparent"};
+  @media screen and (max-width: 701px) {
+    height: 40px;
+    width: 40px;
+  }
+`;
+
+const UserOffline = styled.div`
+  background-color: #ff5555;
+  border-radius: 0 20px 20px 0;
+  padding: 2px 5px;
+  transform: translateX(-4px);
+  @media screen and (max-width: 701px) {
+    transform: translateX(-5px);
+  }
 `;
 const Header = () => {
   const navigate = useNavigate();
@@ -176,8 +207,8 @@ const Header = () => {
       navigate("/");
     }
   };
-  const goCarRecord = () => {
-    navigate(`/car_manage/record`);
+  const goOtherPage = (url: string) => {
+    navigate(url);
   };
   const goProfile = () => {
     if (isAuth) {
@@ -198,17 +229,36 @@ const Header = () => {
       <Logo src={logoImg} onClick={goHomePage} />
 
       <NavRightBx>
-        {isAuth && <Nav onClick={goCarRecord}>摩特日誌</Nav>}
-
-        <MemberBox onClick={goProfile} $isOffline={isOffline}>
-          <NavProfile>
-            <Img src={PersonIcon} />
-          </NavProfile>
-          {isOffline && <Offline>離線</Offline>}
-          {!isAuth && !isOffline && (
-            <LoginMessage hideOnMobile>登入</LoginMessage>
-          )}
-        </MemberBox>
+        {isAuth && (
+          <Nav onClick={() => goOtherPage(`/car_manage/record`)}>摩特日誌</Nav>
+        )}
+        <Nav onClick={() => goOtherPage(`/store`)}>商家地圖</Nav>
+        {isAuth && <Nav onClick={() => goOtherPage(`/mileage`)}>里程紀錄</Nav>}
+        {isAuth && (
+          <>
+            <UserImg
+              src={user.user.userImg}
+              onClick={goProfile}
+              $isOffline={isOffline}
+            />
+            {isOffline && (
+              <UserOffline>
+                <Offline>離線</Offline>
+              </UserOffline>
+            )}
+          </>
+        )}
+        {!isAuth && (
+          <MemberBox onClick={goProfile} $isOffline={isOffline}>
+            <NavProfile>
+              <Img src={PersonIcon} />
+            </NavProfile>
+            {isOffline && <Offline>離線</Offline>}
+            {!isAuth && !isOffline && (
+              <LoginMessage hideOnMobile>登入</LoginMessage>
+            )}
+          </MemberBox>
+        )}
       </NavRightBx>
     </HeaderWrapper>
   );

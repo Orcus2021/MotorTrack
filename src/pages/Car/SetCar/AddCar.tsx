@@ -39,7 +39,7 @@ const AddWrapper = styled.div`
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
-  margin-right: 17px;
+  /* margin-right: 17px; */
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-import firebase from "./utils/firebase";
+import React, { useState, useEffect, useRef } from "react";
+import MyMap from "./Map";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { createMessage } from "./utils/calcFunc";
-import moment from "moment";
-import { useAppSelector, useAppDispatch } from "./store";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
   authDomain: "motortrack-97569.firebaseapp.com",
@@ -21,73 +19,148 @@ const messaging = getMessaging(app);
 // };
 
 const Test = () => {
-  const cars = useAppSelector((state) => state.car.cars);
-  const dispatch = useAppDispatch();
-  let messages = [];
-  cars.forEach((car) => {
-    const today = moment().format("YYYY-MM-DD");
-
-    const insuranceTwoDays = moment(car.insuranceDate)
-      .subtract(3, "days")
-      .format("YYYY-MM-DD");
-    const inspectTwoDays = moment(car.inspectionDay)
-      .subtract(3, "days")
-      .format("YYYY-MM-DD");
-
-    const isTwoDaysInsurance = moment(today).isAfter(insuranceTwoDays);
-    const isTwoDaysInspect = moment(today).isAfter(inspectTwoDays);
-
-    const isSameInsurance = moment(today).isSame(car.insuranceDate);
-    const isSameInspect = moment(today).isSame(car.inspectionDay);
-
-    const isAfterInsurance = moment(today).isAfter(car.insuranceDate);
-    const isAfterInspect = moment(today).isAfter(car.inspectionDay);
-
-    let insuranceMsg = "保險即將到期";
-    let inspectionMsg = "驗車時間即將到期";
-
-    if (isSameInsurance || isAfterInsurance) insuranceMsg = "保險已到期";
-    if (isSameInspect >= isAfterInspect) inspectionMsg = "驗車時間已到期";
-
-    if (isTwoDaysInsurance) {
-      messages.push(`${car.plateNum}: ${insuranceMsg}`);
-    } else if (isTwoDaysInspect) {
-      messages.push(`${car.plateNum}: ${inspectionMsg}`);
-    }
+  const [count, setCount] = useState(0);
+  const [distance, setDistance] = useState(0);
+  const timerID = useRef("");
+  const timerGPS = useRef("");
+  const gpsID = useRef("");
+  const LonAndLat = useRef({
+    latBefore: "",
+    lonBefore: "",
   });
 
-  console.log(messages);
-  // 今天    驗車-3
-  // console.log("today", moment().format("YYYY-MM-DD"));
-  // console.log(moment("2022-09-21").isAfter("2022-09-20"));
-  // console.log("same", moment("2022-09-21").isSame("2022-09-21"));
+  function calcDistance(lat1, lon1, lat2, lon2, unit) {
+    if (lat1 === lat2 && lon1 === lon2) {
+      return 0;
+    } else {
+      var radlat1 = (Math.PI * lat1) / 180;
+      var radlat2 = (Math.PI * lat2) / 180;
+      var theta = lon1 - lon2;
+      var radtheta = (Math.PI * theta) / 180;
+      var dist =
+        Math.sin(radlat1) * Math.sin(radlat2) +
+        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+      if (dist > 1) {
+        dist = 1;
+      }
+      dist = Math.acos(dist);
+      dist = (dist * 180) / Math.PI;
+      dist = dist * 60 * 1.1515;
+      if (unit === "K") {
+        dist = dist * 1.609344;
+      }
+      if (unit === "N") {
+        dist = dist * 0.8684;
+      }
+      return dist;
+    }
+  }
+  function successHandler(position) {
+    const { latitude, longitude } = position;
+    if (LonAndLat.current?.latBefore && LonAndLat.current?.lonBefore) {
+      const dist = calcDistance(
+        LonAndLat.current.latBefore,
+        LonAndLat.current.lonBefore,
+        latitude,
+        longitude,
+        "K"
+      );
+      setDistance((pre) => pre + dist);
+    }
+    LonAndLat.current.latBefore = latitude;
+    LonAndLat.current.lonBefore = longitude;
+  }
 
-  // useEffect(() => {
-  //   const getMessageToken = async () => {
-  //     const response = await firebase.getMessageToken().catch((msg) => {
-  //       console.log(msg);
-  //     });
-  //   };
+  function errorHandler(err) {
+    console.log(err);
+  }
 
-  // const requestPermission = () => {
-  //   console.log("Requesting permission...");
-  //   Notification.requestPermission().then((permission) => {
-  //     if (permission === "granted") {
-  //       console.log("Notification permission granted.");
-  //       getMessageToken();
-  //     }
-  //   });
-  // };
+  useEffect(() => {
+    // if (navigator.geolocation) {
+    //   console.log("Geolocation is supported!");
+    //   const options = {
+    //     enableHighAccuracy: false,
+    //     timeout: 5000,
+    //     maximumAge: 0,
+    //   };
+    //   function success(pos) {
+    //     const crd = pos.coords;
+    //     console.log("Your current position is:");
+    //     console.log(`Latitude : ${crd.latitude}`);
+    //     console.log(`Longitude: ${crd.longitude}`);
+    //     console.log(`More or less ${crd.accuracy} meters.`);
+    //   }
+    //   function error(err) {
+    //     console.warn(`ERROR(${err.code}): ${err.message}`);
+    //   }
+    //   navigator.geolocation.getCurrentPosition(success, error, options);
+    // } else {
+    //   console.log("Geolocation is not supported for this Browser/OS.");
+    // }
+    // watchPosition 執行後會回傳一個獨一的 ID
+  }, []);
+  const startHandler = () => {
+    timerID.current = setInterval(() => {
+      setCount((pre) => pre + 1);
+    }, 1000);
+  };
+  const stopHandler = () => {
+    clearInterval(timerID.current);
+    setCount(0);
+  };
+  const startGPS = () => {
+    // if (navigator.geolocation) {
+    //   gpsID.current = navigator.geolocation.watchPosition(
+    //     successHandler,
+    //     errorHandler
+    //   );
+    // }
+    if (navigator.geolocation) {
+      const options = {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+      function success(pos) {
+        const crd = pos.coords;
+        console.log(crd);
+        successHandler(crd);
+        // console.log("Your current position is:");
+        // console.log(`Latitude : ${crd.latitude}`);
+        // console.log(`Longitude: ${crd.longitude}`);
+        // console.log(`More or less ${crd.accuracy} meters.`);
+      }
+      function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+      }
+      timerGPS.current = setInterval(() => {
+        console.log("test");
+        navigator.geolocation.getCurrentPosition(success, error, options);
+      }, 15000);
+    } else {
+      console.log("Geolocation is not supported for this Browser/OS.");
+    }
+  };
+  const stopGPS = () => {
+    // navigator.geolocation.clearWatch(gpsID.current);
+    clearInterval(timerGPS.current);
+    setDistance(0);
+  };
 
-  // requestPermission();
-  // }, []);
-  // useEffect(() => {
-  //   firebase.onMessageFromFCM().then((payload) => {
-  //     createMessage("remind", dispatch, payload.notification.title);
-  //   });
-  // }, [dispatch]);
-
-  return <div>TEST</div>;
+  return (
+    <>
+      <div>
+        <p>{count}</p>
+        <button onClick={startHandler}>Start</button>
+        <button onClick={stopHandler}>Stop</button>
+        <button onClick={startGPS}>StartGPS</button>
+        <button onClick={stopGPS}>StopGPS</button>
+        <button>Get Map</button>
+        <p>GPS:{distance}</p>
+      </div>
+      <MyMap />
+    </>
+  );
 };
 
 export default Test;

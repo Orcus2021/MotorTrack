@@ -9,7 +9,7 @@ const firebaseConfig = {
   messagingSenderId: "899173634521",
   appId: "1:899173634521:web:24142760923e9cddfe09c8",
 };
-
+const self = this;
 firebase.initializeApp(firebaseConfig);
 
 // Retrieve firebase messaging
@@ -71,7 +71,9 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function (payload) {
   console.log("Received background message ", payload);
-  self.registration.showNotification("Background Message Title", {
-    body: "Background Message body.",
+
+  self.registration.showNotification(payload.notification.title, {
+    body: payload.notification.body,
+    icon: "logo192.png",
   });
 });

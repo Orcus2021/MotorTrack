@@ -1,8 +1,11 @@
 const functions = require("firebase-functions");
 const https = require("https");
+// const express = require("express");
+// const app = express();
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
-const cors = require("cors")();
+const cors = require("cors")({ origin: true });
+const axios = require("axios");
 const { google } = require("googleapis");
 const moment = require("moment");
 
@@ -108,6 +111,24 @@ exports.checkCarNotification = functions.https.onRequest(
     return;
   }
 );
+
+exports.getUserNearby = functions.https.onRequest((request, response) => {
+  console.log(request.query);
+  cors(request, response, () => {
+    axios(
+      encodeURI(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${request.query.lat},${request.query.lng}&language=zh-TW&opennow=true&radius=1500&keyword=機車店&key=AIzaSyA4Xik7PsmlsZ4UPc154GTLZjxL4aVEBSM`
+      )
+    )
+      .then((res) => {
+        return JSON.parse(JSON.stringify(res.data));
+      })
+      .then((json) => response.json(json))
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+});
 
 function inspectCarDate(car) {
   let messages = [];
