@@ -7,8 +7,11 @@ import {
   Marker,
 } from "@react-google-maps/api";
 import { NeonText } from "../../components/style";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
 import Circle from "../../components/Loading/Circle";
+import { useAppSelector, useAppDispatch } from "../../store";
+import { createMessage } from "../../utils/calcFunc";
 
 import personIcon from "../../assets/icon/marker-person.png";
 
@@ -29,7 +32,7 @@ const SearchButton = styled.div`
   transform: translateX(-50%);
   font-size: 16px;
   padding: 5px 10px;
-  background-color: var(--deepColor);
+  background-color: var(--mainColor);
   border-radius: 8px;
   z-index: 1;
   box-shadow: 0px 0px 5px rgb(0, 0, 0);
@@ -41,6 +44,7 @@ const SearchButton = styled.div`
   }
 `;
 const MapWrapper = styled.div`
+  /* max-width: 1200px; */
   width: 90%;
   height: calc(100vh - 141px);
   border-radius: 8px;
@@ -48,7 +52,7 @@ const MapWrapper = styled.div`
   & .gm-style .gm-style-iw-c {
     background-color: transparent;
     padding: 0;
-    top: 10px;
+    top: -27px;
   }
   & .gm-ui-hover-effect {
     display: none !important;
@@ -62,49 +66,29 @@ const MapWrapper = styled.div`
     width: 95%;
   }
 `;
-const ListWrapper = styled.div`
-  position: absolute;
-  width: 176px;
-  max-height: calc(100% - 143px);
-  border-radius: 8px;
-  padding: 10px;
-  /* background-color: var(--deepColor); */
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(5px);
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
-  top: 113px;
-  left: calc(5% + 20px);
-  &::-webkit-scrollbar {
-    width: 7px;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 50px;
-    background-color: rgba(82, 82, 82, 0.5);
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--mainColor);
-  }
-  overflow: overlay;
-`;
+
 const List = styled.div<{ $isSelected: boolean }>`
-  width: 100%;
-  padding: 5px;
-  height: 63px;
+  position: absolute;
+  /* padding: 5px; */
   margin-bottom: 10px;
-  /* background-color: var(--lightColor); */
-  background: ${(props) =>
-    props.$isSelected
-      ? "rgba(125, 124, 124, 0.4)"
-      : "rgba(125, 124, 124, 0.2)"};
+  top: 60px;
+  left: calc(5% + 20px);
+
+  /* border-top: 1px solid rgba(255, 255, 255, 0.3); */
+  /* border-left: 1px solid rgba(255, 255, 255, 0.3); */
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(5px);
   border-radius: 8px;
   letter-spacing: 1px;
+  overflow: hidden;
+  box-shadow: 3px 3px 15px rgb(0, 0, 0);
   cursor: pointer;
 
   &:hover {
-    background: rgba(125, 124, 124, 0.4);
+    background: rgb(255, 255, 255);
+  }
+  @media screen and (max-width: 701px) {
+    left: calc(2.5% + 20px);
   }
 `;
 
@@ -120,26 +104,33 @@ const Title = styled.p`
   white-space: nowrap;
   text-overflow: ellipsis;
 `;
+const SelectTitle = styled.p`
+  font-size: 16px;
+  width: 100%;
+  max-width: 182.26px;
+  background-color: var(--deepColor);
+
+  padding: 2px 5px;
+  text-align: center;
+`;
 const OpenStore = styled.p`
-  font-size: 12px;
+  font-size: 14px;
+  padding: 2px 5px;
   color: var(--thirdBack);
 `;
 
 const NavToGoogle = styled.div`
-  font-size: 10px;
+  font-size: 14px;
   color: var(--mainColor);
   white-space: nowrap;
+  padding: 2px 5px;
   cursor: pointer;
 `;
 const PageTitle = styled(NeonText)`
   font-size: 22px;
   margin-bottom: 10px;
 `;
-const NoStoreContent = styled.p`
-  font-size: 16px;
-  text-align: center;
-  color: var(--deepColor);
-`;
+
 const LoadingWrapper = styled.div`
   width: 22px;
   height: 22px;
@@ -164,6 +155,9 @@ type locationMap = {
 
 const StoreMap = () => {
   const mapRef = useRef();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const isOffline = useAppSelector((state) => state.user.isOffline);
   const [location, setLocation] = useState<locationMap | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [markers, setMarkers] = useState<{ [index: string]: any }>([]);
@@ -179,12 +173,15 @@ const StoreMap = () => {
     libraries,
   });
   useEffect(() => {
-    if (isLoaded) {
+    if (isLoaded && !isOffline) {
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
+    } else if (isOffline) {
+      createMessage("error", dispatch, "無網路無法使用地圖功能");
+      navigate(-1);
     }
-  }, [isLoaded]);
+  }, [isLoaded, dispatch, isOffline]);
   const getUserLocation = () => {
     if (navigator.geolocation) {
       const options = {
@@ -242,14 +239,14 @@ const StoreMap = () => {
     <>
       {isLoading && <Loading />}
       <Container>
-        <PageTitle>機車維修店地圖</PageTitle>
+        <PageTitle>商家地圖</PageTitle>
         <SearchButton onClick={searchStoreHandler}>
           {searchLoading ? (
             <LoadingWrapper>
               <Circle />
             </LoadingWrapper>
           ) : (
-            "搜尋附近營業中店家"
+            "搜尋附近營業中商家"
           )}
         </SearchButton>
         <MapWrapper>
@@ -262,7 +259,7 @@ const StoreMap = () => {
                   lng: 121.5324,
                 }
               }
-              zoom={14}
+              zoom={15}
               onLoad={onMapLoad}
               options={{
                 fullscreenControl: false,
@@ -291,11 +288,10 @@ const StoreMap = () => {
                   }}
                 />
               )}
-
               {markers.length > 0 &&
                 markers.map((marker: { [index: string]: any }) => {
                   if (marker?.place_id) {
-                    const { place_id, geometry, name, vicinity } = marker;
+                    const { place_id, geometry, name } = marker;
                     return (
                       <Marker
                         key={place_id}
@@ -310,23 +306,6 @@ const StoreMap = () => {
                         <InfoWindow position={geometry.location}>
                           <Title>{name}</Title>
                         </InfoWindow>
-                        {/* {selected === place_id ? (
-                          <InfoWindow
-                            onCloseClick={() => selectMarkerHandler(null)}
-                            position={geometry.location}
-                          >
-                            <>
-                              <Title>{name}</Title>
-                              <NavToGoogle
-                                onClick={() => {
-                                  goGoogleMap(vicinity + name);
-                                }}
-                              >
-                                開啟Google地圖導航路線
-                              </NavToGoogle>
-                            </>
-                          </InfoWindow>
-                        ) : null} */}
                       </Marker>
                     );
                   } else {
@@ -336,40 +315,34 @@ const StoreMap = () => {
             </GoogleMap>
           )}
         </MapWrapper>
-        {markers.length > 0 && (
-          <ListWrapper>
-            {markers.map((marker: { [index: string]: any }) => {
-              if (marker?.place_id) {
-                const { name, place_id, vicinity } = marker;
-                return (
-                  <List
-                    key={place_id}
-                    $isSelected={place_id === selected}
+
+        {markers.length > 0 &&
+          markers
+            .filter(
+              (marker: { [index: string]: any }) => marker.place_id === selected
+            )
+            .map((marker: { [index: string]: any }) => {
+              const { name, place_id, vicinity } = marker;
+              return (
+                <List
+                  key={place_id}
+                  $isSelected={place_id === selected}
+                  onClick={() => {
+                    selectMarkerHandler(place_id);
+                  }}
+                >
+                  <SelectTitle>{name}</SelectTitle>
+                  <OpenStore>營業中</OpenStore>
+                  <NavToGoogle
                     onClick={() => {
-                      selectMarkerHandler(place_id);
+                      goGoogleMap(`${vicinity}${name}`);
                     }}
                   >
-                    <Title>{name}</Title>
-                    <OpenStore>營業中</OpenStore>
-                    <NavToGoogle
-                      onClick={() => {
-                        goGoogleMap(`${vicinity}${name}`);
-                      }}
-                    >
-                      開啟Google地圖導航路線
-                    </NavToGoogle>
-                  </List>
-                );
-              } else {
-                return (
-                  <List $isSelected={false}>
-                    <NoStoreContent>{marker.name}</NoStoreContent>
-                  </List>
-                );
-              }
+                    開啟Google地圖導航路線
+                  </NavToGoogle>
+                </List>
+              );
             })}
-          </ListWrapper>
-        )}
       </Container>
     </>
   );

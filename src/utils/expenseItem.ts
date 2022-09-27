@@ -1,4 +1,4 @@
-import refuelIcon from "../assets/icon/refuel.png";
+import refuelIcon from "../assets/icon/fuel-black.png";
 import washIcon from "../assets/expense/shower.png";
 import parkIcon from "../assets/expense/parking.png";
 import taxesIcon from "../assets/expense/taxes.png";

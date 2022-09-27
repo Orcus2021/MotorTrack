@@ -229,8 +229,9 @@ const Header = () => {
       <Logo src={logoImg} onClick={goHomePage} />
 
       <NavRightBx>
+        {isAuth && <Nav onClick={() => goOtherPage(`/status`)}>儀錶板</Nav>}
         {isAuth && (
-          <Nav onClick={() => goOtherPage(`/car_manage/record`)}>摩特日誌</Nav>
+          <Nav onClick={() => goOtherPage(`/car_manage/record`)}>摩托日誌</Nav>
         )}
         <Nav onClick={() => goOtherPage(`/store`)}>商家地圖</Nav>
         {isAuth && <Nav onClick={() => goOtherPage(`/mileage`)}>里程紀錄</Nav>}

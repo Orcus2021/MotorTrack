@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, ChangeEvent } from "react";
 import styled from "styled-components/macro";
 import { NeonText } from "../../components/style";
+import { createMessage } from "../../utils/calcFunc";
 import Button from "../../components/Button/Button";
 import Modal from "../../components/Modal/Modal";
 import MessageBox from "../../components/Modal/MessageBox";
@@ -58,7 +59,7 @@ const Unit = styled.p`
   font-size: 22px;
   text-align: center;
   margin-bottom: 10px;
-  color: var(--thirdBack);
+  color: #777777;
 `;
 const BtnBx = styled.div`
   display: flex;
@@ -73,6 +74,29 @@ const Message = styled.p`
   text-align: center;
   margin-top: 30px;
 `;
+const InitMileageBox = styled.div`
+  display: flex;
+  align-items: center;
+  width: 130px;
+`;
+const InitMileageTitle = styled.label`
+  font-size: 16px;
+  min-width: 53px;
+`;
+const InitMileage = styled.input`
+  outline: none;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  width: 77px;
+  background-color: transparent;
+  color: #fff;
+  padding: 0 5px;
+  font-size: 16px;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+`;
 
 type positionType = {
   latitude: number;
@@ -81,17 +105,20 @@ type positionType = {
 
 const Mileage = () => {
   const car = useAppSelector((state) => state.car.car);
+  const carMileage = car?.mileage || 0;
   const dispatch = useAppDispatch();
   const [mileages, setMileages] = useState<number>(0);
   const [startRecord, setStartRecord] = useState<boolean>(false);
   const timerGPS = useRef<any>("");
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
+
   const LonAndLat = useRef<{ latBefore: number; lonBefore: number }>({
     latBefore: NaN,
     lonBefore: NaN,
   });
 
+  const [initMileage, setInitMileage] = useState<number>(carMileage);
   const calcDistance = (
     lat1: number,
     lon1: number,
@@ -140,6 +167,11 @@ const Mileage = () => {
     LonAndLat.current.lonBefore = longitude;
   };
 
+  const initMileageHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const changeMileage = Number(e.target.value);
+    setInitMileage(changeMileage);
+  };
+
   const success = (pos: any) => {
     const crd = pos.coords;
     console.log(pos);
@@ -151,21 +183,26 @@ const Mileage = () => {
   };
 
   const startRecordHandler = () => {
+    if (car && initMileage < car.mileage) {
+      createMessage("error", dispatch, "低於原里程數");
+      return;
+    }
+
     if (navigator.geolocation) {
       const options = {
         enableHighAccuracy: false,
-        timeout: 5000,
+        timeout: 4000,
         maximumAge: 0,
       };
       if (timerGPS.current) clearTimeout(timerGPS.current);
       navigator.geolocation.getCurrentPosition(success, error, options);
       timerGPS.current = setInterval(() => {
         navigator.geolocation.getCurrentPosition(success, error, options);
-      }, 10000);
+      }, 5000);
+      setStartRecord(true);
     } else {
-      console.log("Geolocation is not supported for this Browser/OS.");
+      createMessage("error", dispatch, "GPS不支援");
     }
-    setStartRecord(true);
   };
   const endRecordHandler = () => {
     setShowConfirm(true);
@@ -183,11 +220,9 @@ const Mileage = () => {
   };
   const updateMileageHandler = () => {
     if (car?.id) {
-      const newMileage = car.mileage + Math.round(mileages);
-      // dispatch(
-      //   asyncCarAction.updateCar(car.id, { mileage: newMileage })
-      // );
-      console.log(newMileage);
+      const newMileage = initMileage + Math.round(mileages);
+      dispatch(asyncCarAction.updateCar(car.id, { mileage: newMileage }));
+      setInitMileage(newMileage);
     }
 
     LonAndLat.current = {
@@ -211,6 +246,15 @@ const Mileage = () => {
         <MileageWrapper>
           <Title>紀錄里程數</Title>
           <CarNumTitle>車牌 : {car?.plateNum}</CarNumTitle>
+          <InitMileageBox>
+            <InitMileageTitle>里程數:</InitMileageTitle>
+            <InitMileage
+              type="number"
+              value={initMileage}
+              onChange={initMileageHandler}
+            />
+          </InitMileageBox>
+
           <MileagesContentWrapper>
             <MileagesContent>{mileages.toFixed(2)}</MileagesContent>
             <Unit>公里(Kilometer)</Unit>
@@ -218,7 +262,7 @@ const Mileage = () => {
 
           {startRecord ? (
             <Button
-              label="結束"
+              label="完成"
               type="reject"
               size="large"
               handleClick={endRecordHandler}

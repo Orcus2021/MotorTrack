@@ -71,6 +71,12 @@ export const GlobalStyle = createGlobalStyle`
   overflow: overlay;
 
   }
+  input{
+    -webkit-user-select:auto; /*webkit瀏覽器*/  
+    user-select:auto;
+    -o-user-select:auto;
+    -ms-user-select:auto; 
+  }
 
   #root{
     background:var(--mainBack);  
@@ -100,17 +106,17 @@ const App = () => {
         dispatch(userActions.loading(false));
       });
       if (userId) {
+        console.log("onAuth App");
         dispatch(asyncUserAction.signIn(userId));
       }
     };
     const pathName = location.pathname;
-    if (pathName === "/") {
+    if (pathName === "/" && !isAuth) {
       auth();
       return;
     }
     if (isAuth || pathName === "/login") return;
     auth();
-    // navigate("/login");
   }, [isAuth, dispatch, navigate, location]);
 
   useEffect(() => {

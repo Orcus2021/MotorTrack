@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+// import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from "./App";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Profile/Login";
@@ -13,7 +13,7 @@ import Status from "./pages/Status/Status";
 import StoreMap from "./pages/Map/StoreMap";
 import Mileage from "./pages/Mileage/Mileage";
 import Test from "./Test";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import Chart from "./pages/Chart/Chart";
@@ -40,6 +40,7 @@ root.render(
             <Route path="edit" element={<EditCar />} />
             <Route path="chart" element={<Chart />} />
           </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </Provider>
@@ -49,4 +50,4 @@ root.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
-serviceWorkerRegistration.register();
+// serviceWorkerRegistration.register();

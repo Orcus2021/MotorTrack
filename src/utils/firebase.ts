@@ -135,8 +135,9 @@ const firebase = {
     return new Promise(async (resolve) => {
       const ref = doc(db, url);
       try {
-        await updateDoc(ref, data);
+        // FIXME
         resolve("Update doc already");
+        await updateDoc(ref, data);
       } catch (e) {
         console.log(e);
       }
@@ -170,8 +171,8 @@ const firebase = {
       const newId = doc(collection(db, url));
       data.id = newId.id;
       try {
-        await setDoc(newId, data);
         resolve(data);
+        await setDoc(newId, data);
       } catch (e) {
         console.log(e);
       }

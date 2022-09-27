@@ -37,15 +37,16 @@ const Btn = styled.button<{ $type: string; $size: string }>`
   letter-spacing: 1px;
 
   border-radius: 8px;
-  ${(props) => props.$type === "cancel" && "color: #fff;"}
+  /* ${(props) => props.$type === "cancel" && "color: #fff;"} */
   color: #fff;
   border: ${(props) =>
     props.$type === "cancel" ? "2px solid var(--mainColor)" : "none"};
 
   cursor: pointer;
   &:hover {
-    color: ${(props) =>
-      props.$type === "cancel" ? "#fff" : "var(--mainBack)"};
+    /* color: ${(props) =>
+      props.$type === "cancel" ? "#fff" : "var(--mainBack)"}; */
+    color: #fff;
     ${(props) => {
       if (props.$type === "primary") {
         return "box-shadow: 0px 0px 10px 2px rgba(224, 195, 252,0.5), 0px 0px 10px 2px rgba(110, 155, 233,0.5);";

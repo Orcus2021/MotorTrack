@@ -294,7 +294,7 @@ const Manage = () => {
               <ImgBx>
                 <Img src={barIcon} />
               </ImgBx>
-              <RecordLink>車輛狀態表</RecordLink>
+              <RecordLink>儀表板</RecordLink>
             </Nav>
             <Nav
               $selected={selectNav === "record"}
@@ -307,7 +307,7 @@ const Manage = () => {
                   src={selectNav === "record" ? recordWhiteIcon : recordIcon}
                 />
               </ImgBx>
-              <RecordLink>車輛紀錄表</RecordLink>
+              <RecordLink>摩托紀錄表</RecordLink>
             </Nav>
             <Nav
               $selected={selectNav === "chart"}

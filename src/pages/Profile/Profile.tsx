@@ -188,7 +188,7 @@ const Profile = () => {
     }
   }, [dispatch, isAuth]);
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     dispatch(asyncUserAction.logout());
     dispatch(carActions.clear());
     dispatch(recordActions.clearAllRecord());

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../../components/Card";
 import InputBox from "../../components/Input/InputBox";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,13 +16,20 @@ const LoginContainer = styled.div`
   height: 100vh;
   position: absolute;
   top: 0;
-  background-image: url(${backImg});
+  /* background-image: url(${backImg});
   background-size: cover;
-  background-position: center center;
+  background-position: center center; */
 
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+const BackImg = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  filter: brightness(0.7);
 `;
 
 const SignInWrapper = styled.div`
@@ -129,6 +136,7 @@ const Login = () => {
     if (user.name) {
       await dispatch(asyncUserAction.signUp(user));
     } else {
+      console.log("sign Login");
       await dispatch(asyncUserAction.signIn(user));
     }
   };
@@ -147,6 +155,7 @@ const Login = () => {
       {isLoading && <Loading />}
       <FormProvider {...methods}>
         <LoginContainer onKeyDown={handleKeyDown}>
+          <BackImg src={backImg} />
           <Card width={300} boxShadow={true}>
             <SignInWrapper>
               <Title>{isSignUp ? "註冊" : "登入"}</Title>

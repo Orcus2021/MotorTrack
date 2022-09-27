@@ -126,9 +126,11 @@ const Repair: React.FC<{
     if (parts.length > 0) {
       const partsArr = parts as partType[];
       const amount: number = partsArr.reduce(
-        (total: number, { subtotal }: { subtotal: number }) => total + subtotal,
+        (total: number, { subtotal }: { subtotal: number }) =>
+          total + Number(subtotal),
         0
       );
+
       setValue("amount", amount);
       setAmountValue(amount);
     } else {

@@ -152,7 +152,7 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [imgDeg, setImgDeg] = useState<number>(0);
   const [showHomePage, setShowHomePage] = useState<boolean>(false);
-
+  console.log(isAuth);
   useEffect(() => {
     setIsLoading(true);
     setTimeout(() => {

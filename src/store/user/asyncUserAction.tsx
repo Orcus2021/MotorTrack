@@ -92,13 +92,13 @@ const asyncUserAction = {
     };
   },
   logout() {
-    return (dispatch: AppDispatch) => {
-      const logout = () => {
-        firebase.logout();
+    return async (dispatch: AppDispatch) => {
+      const logout = async () => {
+        const response = await firebase.logout();
       };
 
       try {
-        logout();
+        await logout();
         dispatch(userActions.logout());
         createMessage("success", dispatch, "已成功登出");
       } catch (e) {

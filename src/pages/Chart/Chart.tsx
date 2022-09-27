@@ -149,7 +149,6 @@ const Chart = () => {
     <Option
       onClick={() => {
         selectAnnualHandler("all");
-        showContentHandler();
       }}
     >
       全部
@@ -161,7 +160,6 @@ const Chart = () => {
         key={year}
         onClick={() => {
           selectAnnualHandler(year);
-          showContentHandler();
         }}
       >
         {year}年

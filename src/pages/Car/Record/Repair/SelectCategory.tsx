@@ -76,7 +76,6 @@ const Select = () => {
     setValue("mileage", parts.get(key)?.mileage as number);
     setValue("month", parts.get(key)?.expirationMonth as number);
     setValue("year", parts.get(key)?.expirationYear as number);
-    showContentHandler();
   };
 
   const options: JSX.Element[] = [];

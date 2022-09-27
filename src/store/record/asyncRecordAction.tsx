@@ -35,6 +35,7 @@ const asyncRecordAction = {
       };
       try {
         const record = await add();
+
         dispatch(recordActions.addRepair(record));
       } catch (e) {
         console.log(e);
@@ -47,16 +48,15 @@ const asyncRecordAction = {
         const url = `/carsRecords/${carId}/repairRecords/${data.id}`;
         const response = await firebase.setDoc(url, data);
         const parts = { ...oldParts };
-        if (response) {
-          data.records.forEach((newPart: partType) => {
-            const partIndex = parts[newPart.category].findIndex(
-              (part) => part.recordID === data.id
-            );
-            parts[newPart.category][partIndex] = newPart;
-            const url = `/carsRecords/${carId}/parts/${newPart.category}`;
-            firebase.setDoc(url, { records: parts[newPart.category] });
-          });
-        }
+        // if (response) {} FIXME
+        data.records.forEach((newPart: partType) => {
+          const partIndex = parts[newPart.category].findIndex(
+            (part) => part.recordID === data.id
+          );
+          parts[newPart.category][partIndex] = newPart;
+          const url = `/carsRecords/${carId}/parts/${newPart.category}`;
+          firebase.setDoc(url, { records: parts[newPart.category] });
+        });
       };
       try {
         await update();
@@ -142,6 +142,7 @@ const asyncRecordAction = {
       };
       try {
         const record = await add();
+        console.log(record);
         dispatch(recordActions.addExpense(record));
       } catch (e) {
         console.log(e);
