@@ -16,6 +16,7 @@ const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
   overflow: overlay;
   z-index: 2;
   transition: all 0.5s;
+  box-shadow: 0px 2px 8px rgb(0, 0, 0);
 `;
 const SubCarWrapper = styled.div<{ $isSelect: boolean }>`
   width: 100%;
@@ -32,22 +33,24 @@ const CarInfoBx = styled.div`
   width: 100%;
 `;
 const SubImgBx = styled.div`
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   position: relative;
   margin-right: 5px;
-  min-width: 20px;
+  min-width: 22px;
 `;
 
 const SubCarNum = styled.p`
-  font-size: 12px;
-  min-width: 61px;
+  font-size: 14px;
+  min-width: 71px;
+  width: 71px;
 `;
 
 const SubCarInfo = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   flex-grow: 1;
-  text-align: center;
+  padding-left: 5px;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/macro";
 import expenseCategory from "../../../../utils/expenseItem";
 import { carType } from "../../../../types/carType";
@@ -13,7 +13,6 @@ import InputBox from "../../../../components/Input/InputBox";
 import { NeonText } from "../../../../components/style";
 import FormNoteBox from "../FormNoteBox";
 
-import trashIcon from "../../../../assets/trash.png";
 const Container = styled.div`
   width: 100%;
   max-width: 1280px;
@@ -196,7 +195,12 @@ const Expenses: React.FC<{
               name="title"
               content="標題"
               error={typeof errors?.title?.type === "string"}
-              require={{ required: true }}
+              require={{
+                required: true,
+                onBlur: (e: { target: { value: string } }) => {
+                  setValue("title", e.target.value.trim());
+                },
+              }}
               type="text"
             />
             <DetailBX>
@@ -239,7 +243,11 @@ const Expenses: React.FC<{
                   name="amount"
                   content="總金額"
                   error={typeof errors?.amount?.type === "string"}
-                  require={{ required: true, min: 0 }}
+                  require={{
+                    required: true,
+                    min: 0,
+                    max: 999999,
+                  }}
                   type="number"
                 />
               </Detail>

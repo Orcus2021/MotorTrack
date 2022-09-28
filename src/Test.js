@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import MyMap from "./Map";
+
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
@@ -158,7 +158,6 @@ const Test = () => {
         <button>Get Map</button>
         <p>GPS:{distance}</p>
       </div>
-      <MyMap />
     </>
   );
 };

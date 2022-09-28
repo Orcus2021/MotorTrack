@@ -147,6 +147,7 @@ const Chart = () => {
 
   const options: JSX.Element[] = [
     <Option
+      key="all"
       onClick={() => {
         selectAnnualHandler("all");
       }}

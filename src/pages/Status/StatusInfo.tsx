@@ -316,7 +316,6 @@ const StatusInfo: FC<{
   const userImg = useAppSelector((state) => state.user.user.userImg);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  // const [showContent, setShowContent] = useState<boolean>(false);
   const [isBoxLoading, setIsBoxLoading] = useState<boolean>(false);
   const parts = useAppSelector((state) => state.record.parts);
   const [progressDetail, setProgressDetail] = useState<progressDetailType>();

@@ -118,7 +118,7 @@ const Mileage = () => {
     lonBefore: NaN,
   });
 
-  const [initMileage, setInitMileage] = useState<number>(carMileage);
+  const [initMileage, setInitMileage] = useState<number | "">(carMileage);
   const calcDistance = (
     lat1: number,
     lon1: number,
@@ -219,7 +219,7 @@ const Mileage = () => {
     }, 600);
   };
   const updateMileageHandler = () => {
-    if (car?.id) {
+    if (car?.id && initMileage !== "") {
       const newMileage = initMileage + Math.round(mileages);
       dispatch(asyncCarAction.updateCar(car.id, { mileage: newMileage }));
       setInitMileage(newMileage);
@@ -240,6 +240,15 @@ const Mileage = () => {
     setMileages(0);
     closePartForm();
   };
+  const clearZeroHandler = () => {
+    setInitMileage((pre: number | "") => {
+      if (pre === 0) {
+        return "";
+      } else {
+        return pre;
+      }
+    });
+  };
   return (
     <>
       <Container>
@@ -252,6 +261,7 @@ const Mileage = () => {
               type="number"
               value={initMileage}
               onChange={initMileageHandler}
+              onFocus={clearZeroHandler}
             />
           </InitMileageBox>
 

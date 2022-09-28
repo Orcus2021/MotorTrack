@@ -1,21 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// const Container = styled.div`
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   min-height: calc(100vh - 68px);
-//   background: linear-gradient(var(--mainBack), var(--secondBack));
-//   padding: 10px 100px 30px 100px;
-//   flex-direction: column;
-//   z-index: 9990;
-//   @media screen and (max-width: 701px) {
-//     min-height: 500px;
-//     height: calc(100vh - 68px);
-//   }
-// `;
-
 const Text = styled.span`
   position: relative;
   font-size: 50px;

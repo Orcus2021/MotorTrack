@@ -88,7 +88,9 @@ const List = styled.div<{ $isSelected: boolean }>`
     background: rgb(255, 255, 255);
   }
   @media screen and (max-width: 701px) {
-    left: calc(2.5% + 20px);
+    left: 50%;
+    transform: translateX(-50%);
+    top: 104px;
   }
 `;
 
@@ -117,6 +119,13 @@ const OpenStore = styled.p`
   font-size: 14px;
   padding: 2px 5px;
   color: var(--thirdBack);
+`;
+const CloseStore = styled.p`
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--errorColor);
+  padding: 20px;
 `;
 
 const NavToGoogle = styled.div`
@@ -163,6 +172,7 @@ const StoreMap = () => {
   const [markers, setMarkers] = useState<{ [index: string]: any }>([]);
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showNotify, setShowNotify] = useState<boolean>(false);
   const onMapLoad = useCallback((map: any) => {
     mapRef.current = map;
   }, []);
@@ -181,7 +191,7 @@ const StoreMap = () => {
       createMessage("error", dispatch, "無網路無法使用地圖功能");
       navigate(-1);
     }
-  }, [isLoaded, dispatch, isOffline]);
+  }, [isLoaded, dispatch, isOffline, navigate]);
   const getUserLocation = () => {
     if (navigator.geolocation) {
       const options = {
@@ -219,8 +229,9 @@ const StoreMap = () => {
 
     if (result.results.length > 0) {
       setMarkers(result.results);
+      setShowNotify(false);
     } else {
-      setMarkers([{ name: "無店家營業" }]);
+      setShowNotify(true);
     }
     setSearchLoading(false);
   };
@@ -343,6 +354,11 @@ const StoreMap = () => {
                 </List>
               );
             })}
+        {showNotify && (
+          <List $isSelected={false}>
+            <CloseStore>附近店家尚未營業</CloseStore>
+          </List>
+        )}
       </Container>
     </>
   );

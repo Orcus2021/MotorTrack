@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/Layout/Header";
+import Footer from "./components/Layout/Footer";
 import { useAppDispatch, useAppSelector } from "./store";
 import asyncUserAction from "./store/user/asyncUserAction";
 import { Outlet } from "react-router-dom";
@@ -71,7 +71,7 @@ export const GlobalStyle = createGlobalStyle`
   overflow: overlay;
 
   }
-  input{
+  input,textarea{
     -webkit-user-select:auto; /*webkit瀏覽器*/  
     user-select:auto;
     -o-user-select:auto;
@@ -142,20 +142,26 @@ const App = () => {
         const permission = await requestPermission();
         if (permission === "granted") {
           const token = await getMessageToken();
-          console.log(token, "Token");
-          const newTokenArr = [...user.pushToken, token];
-          const update = {
-            continueRemind: true,
-            pushToken: newTokenArr,
-          };
-          console.log("granted");
+          console.log(token);
+          const found = user.pushToken.find((initToken) => initToken === token);
+          let update;
+          if (found) {
+            update = { continueRemind: true };
+          } else {
+            const newTokenArr = [...user.pushToken, token];
+            update = {
+              continueRemind: true,
+              pushToken: newTokenArr,
+            };
+          }
+
           dispatch(asyncUserAction.updateUser(user.id, update));
         } else if (permission === "denied") {
           // FIXME filter token
-          const token = await getMessageToken();
-          console.log(token, "Token");
+          // const token = await getMessageToken();
+
           const update = { continueRemind: false };
-          console.log("denied");
+
           dispatch(asyncUserAction.updateUser(user.id, update));
         } else if (permission === "default") {
           console.log("notification default");

@@ -17,9 +17,12 @@ const Text = styled.span`
   font-size: 16vw;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.25);
-  text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
+  /* text-shadow: 0 0 10px var(--lightColor), 0 0 20px var(--lightColor),
     0 0 40px var(--lightColor), 0 0 60px var(--lightColor),
-    0 0 80px var(--lightColor), 0 0 120px var(--lightColor);
+    0 0 80px var(--lightColor), 0 0 120px var(--lightColor); */
+  text-shadow: 0 0 10px #82a0d3, 0 0 20px #82a0d3, 0 0 40px #82a0d3,
+    0 0 60px #82a0d3, 0 0 80px #82a0d3;
+
   font-family: "Kanit", sans-serif;
 
   @keyframes spark {

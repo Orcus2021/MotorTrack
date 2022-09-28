@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components/macro";
-import Motor from "./Motor";
 
 import upLogo from "../../assets/img/logo_white-up.png";
 import downLogo from "../../assets/img/logo_white-down.png";

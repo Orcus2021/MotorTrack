@@ -92,7 +92,8 @@ const SubTitle = styled.p<{ $isError?: boolean }>`
   display: inline-block;
   min-width: 150px;
   padding: 5px 10px;
-  background-color: var(--mainColor);
+  background-color: ${(props) =>
+    props.$isError ? "var(--errorColor)" : " var(--mainColor)"};
   border-radius: 50px;
   margin-left: 10px;
   ${(props) => {
@@ -187,7 +188,12 @@ const AddCar = () => {
                 name="name"
                 content="暱稱"
                 error={typeof errors?.name?.type === "string"}
-                require={{ required: true }}
+                require={{
+                  required: true,
+                  onBlur: (e: { target: { value: string } }) => {
+                    setValue("name", e.target.value.trim());
+                  },
+                }}
                 type="text"
                 message={errors.name && "車輛名稱尚未填寫"}
               />

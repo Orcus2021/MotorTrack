@@ -1,6 +1,5 @@
 import React, { HTMLAttributes } from "react";
 import styled from "styled-components/macro";
-import { Img } from "../style";
 
 const Btn = styled.button<{ $type: string; $size: string }>`
   margin: 0 10px;

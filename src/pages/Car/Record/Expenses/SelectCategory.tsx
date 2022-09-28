@@ -53,7 +53,7 @@ const Icon = styled.img`
 `;
 const Category = styled.p`
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 14px;
   color: #fff;
 `;
 

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styled from "styled-components/macro";
-import Card from "../../components/Card";
+import Card from "../../components/Layout/Card";
 import { Img } from "../../components/style";
 import { useAppSelector } from "../../store";
 import brands from "../../utils/brands";

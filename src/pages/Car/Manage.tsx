@@ -172,7 +172,6 @@ const OpenNavBar = styled.li<{ $isNav: boolean }>`
   }
 `;
 const NavImg = styled(Img)<{ $isNav: boolean }>`
-  /* transition: 0.5s; */
   transform: ${(props) => (props.$isNav ? "rotate(-90deg)" : "rotate(90deg)")};
 `;
 

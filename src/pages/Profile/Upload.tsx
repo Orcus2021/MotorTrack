@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../../components/style";
 import asyncUserAction from "../../store/user/asyncUserAction";
@@ -6,6 +6,7 @@ import { createMessage } from "../../utils/calcFunc";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 import cancelIcon from "../../assets/icon/cancel.png";
+import plusIcon from "../../assets/icon/plus-blue.png";
 
 const Container = styled.div`
   width: 400px;
@@ -100,6 +101,14 @@ const CancelIcon = styled(Img)<{ $isBanner: boolean }>`
   z-index: 2;
   cursor: pointer;
 `;
+const UploadIcon = styled.img`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+`;
 
 const Upload: React.FC<{ imageType: string; onClose: () => void }> = (
   props
@@ -154,6 +163,7 @@ const Upload: React.FC<{ imageType: string; onClose: () => void }> = (
             {imageType === "user" && <Mask />}
           </>
         )}
+        {!imageUrl && <UploadIcon src={plusIcon} />}
       </FileBx>
       <BtnBx>
         <Cancel onClick={onClose}>取消</Cancel>

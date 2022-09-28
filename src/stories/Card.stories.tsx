@@ -1,4 +1,4 @@
-import Card, { Props } from "../components/Card";
+import Card, { Props } from "../components/Layout/Card";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { GlobalStyle } from "../App";
 

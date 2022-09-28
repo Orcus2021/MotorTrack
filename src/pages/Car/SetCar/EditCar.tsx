@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components/macro";
 import brands from "../../../utils/brands";
 import Brands from "./Brands";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store/index";
 import { createMessage } from "../../../utils/calcFunc";
 import { useForm, FormProvider } from "react-hook-form";
@@ -12,7 +12,7 @@ import Input from "../../../components/Input/Input";
 import InputBox from "../../../components/Input/InputBox";
 import { carType } from "../../../types/carType";
 import Modal from "../../../components/Modal/Modal";
-import Confirm from "./Confirm";
+import Confirm from "../../../components/Modal/Confirm";
 import Button from "../../../components/Button/Button";
 import { NeonText } from "../../../components/style";
 
@@ -116,9 +116,6 @@ const CarInfoBx = styled.div`
   background: var(--mainColor);
   padding: 5px 10px;
   border-radius: 50px;
-  /* @media screen and (max-width: 701px) {
-    width: 100%;
-  } */
 `;
 const SubTitle = styled.span`
   font-size: 14px;
@@ -279,7 +276,12 @@ const EditCar = () => {
                   name="name"
                   content="暱稱"
                   error={typeof errors?.name?.type === "string"}
-                  require={{ required: true }}
+                  require={{
+                    required: true,
+                    onBlur: (e: { target: { value: string } }) => {
+                      setValue("name", e.target.value.trim());
+                    },
+                  }}
                   type="text"
                   message={errors.name && "車輛名稱尚未填寫"}
                 />
@@ -293,6 +295,9 @@ const EditCar = () => {
                   require={{
                     required: true,
                     pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                    onBlur: (e: { target: { value: string } }) => {
+                      setValue("plateNum", e.target.value.trim());
+                    },
                   }}
                   type="text"
                   message={

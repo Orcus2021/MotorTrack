@@ -4,7 +4,6 @@ import cancelIcon from "../assets/icon/cancel-black.png";
 import { Img } from "./style";
 import { userActions } from "../store/user/userReducer";
 import { useAppSelector, useAppDispatch } from "../store";
-import { useDispatch } from "react-redux";
 
 const Container = styled.div<{
   $isShow: boolean | undefined;

@@ -18,11 +18,13 @@ const InputFloat = styled.input<{
   $isError: undefined | boolean;
 
   $isWatch: boolean;
+  $isReadOnly: undefined | boolean;
 }>`
   width: 100%;
 
   padding: 8px 10px;
 
+  cursor: ${(props) => props.$isReadOnly && "no-drop"};
   border: 1px solid
     ${(props) => {
       if (props.$isError) {
@@ -248,11 +250,6 @@ const Input: React.FC<Props> = ({
       setShowDate((pre) => !pre);
     }
   };
-  const closeCalendarHandler = () => {
-    if (type === "date") {
-      setShowDate(false);
-    }
-  };
 
   const clearValueHandler = () => {
     if (type === "number" && watch(name) * 10 < 10) {
@@ -269,6 +266,7 @@ const Input: React.FC<Props> = ({
         <InputFloat
           $isWatch={isValue}
           $isError={error}
+          $isReadOnly={readOnly && type !== "date"}
           type={newType}
           {...register(name, require)}
           required

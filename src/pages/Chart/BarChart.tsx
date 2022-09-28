@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+
 import { repairType, feeType } from "../../types/recordType";
 import ReactECharts from "echarts-for-react";
 import { useAppSelector } from "../../store";

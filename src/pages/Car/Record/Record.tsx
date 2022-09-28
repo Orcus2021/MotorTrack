@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppSelector } from "../../../store";
 
 import { Img } from "../../../components/style";
@@ -8,13 +8,12 @@ import RecordList from "./RecordList";
 import styled from "styled-components/macro";
 import { useLocation, useOutletContext } from "react-router-dom";
 import { NeonText } from "../../../components/style";
-import TableBox from "../../../components/TableBox";
+import TableBox from "../../../components/Table/TableBox";
 import IconButton from "../../../components/Button/IconButton";
 import SkeletonForm from "../../../components/Skeleton/SkeletonForm";
-import TableBoxRecord from "../../../components/TableBoxRecord";
+import TableBoxRecord from "../../../components/Table/TableBoxRecord";
 
 import allIcon from "../../../assets/icon/chart-white.png";
-import plusIcon from "../../../assets/icon/plus.png";
 import whitePlusIcon from "../../../assets/icon/plus-white.png";
 import repairIcon from "../../../assets/icon/repair.png";
 import refuelIcon from "../../../assets/icon/refuel.png";
@@ -58,11 +57,9 @@ const RecordDetail = styled.div`
   @media screen and (max-width: 701px) {
     padding: 10px;
   }
-
-  /* min-height: 500px; */
 `;
 const ExpenseText = styled.p`
-  font-size: 12px;
+  font-size: 14px;
 `;
 const DetailHeader = styled.div`
   display: flex;

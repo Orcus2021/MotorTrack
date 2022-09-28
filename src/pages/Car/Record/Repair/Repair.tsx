@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import RepairList from "./RepairList";
 import styled from "styled-components/macro";
 import { partsType, partType, repairType } from "../../../../types/recordType";
@@ -18,6 +12,8 @@ import moment from "moment";
 import { NeonText } from "../../../../components/style";
 import FormNoteBox from "../FormNoteBox";
 import InputBox from "../../../../components/Input/InputBox";
+import Modal from "../../../../components/Modal/Modal";
+import Confirm from "../../../../components/Modal/Confirm";
 
 const RepairContainer = styled.div`
   width: 100%;
@@ -97,6 +93,7 @@ const Repair: React.FC<{
   );
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
   const [amountValue, setAmountValue] = useState<number>();
+
   const deletePart = useRef<partType[]>([]);
   const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
   const { parts: initParts } = initRecord;
@@ -248,7 +245,12 @@ const Repair: React.FC<{
             name="title"
             content="標題"
             error={typeof errors?.title?.type === "string"}
-            require={{ required: true }}
+            require={{
+              required: true,
+              onBlur: (e: { target: { value: string } }) => {
+                setValue("title", e.target.value.trim());
+              },
+            }}
             type="text"
             message={errors.title && "標題尚未填寫"}
           />

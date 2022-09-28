@@ -324,24 +324,30 @@ const firebase = {
     });
   },
   async getMessageToken() {
-    return new Promise((resolve) => {
-      getToken(messaging, { vapidKey: messageKey })
-        .then((currentToken) => {
-          if (currentToken) {
-            // Send the token to your server and update the UI if necessary
-            resolve(currentToken);
-          } else {
-            // Show permission request UI
-            console.log(
-              "No registration token available. Request permission to generate one."
-            );
-            // ...
-          }
-        })
-        .catch((err) => {
-          console.log("An error occurred while retrieving token. ", err);
-          // ...
-        });
+    return new Promise(async (resolve) => {
+      const token = await getToken(messaging, { vapidKey: messageKey }).catch(
+        (err) => console.log(err)
+      );
+      if (token) {
+        resolve(token);
+      }
+      // getToken(messaging, { vapidKey: messageKey })
+      //   .then((currentToken) => {
+      //     if (currentToken) {
+      //       // Send the token to your server and update the UI if necessary
+      //       resolve(currentToken);
+      //     } else {
+      //       // Show permission request UI
+      //       console.log(
+      //         "No registration token available. Request permission to generate one."
+      //       );
+      //       // ...
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log("An error occurred while retrieving token. ", err);
+      //     // ...
+      //   });
     });
   },
   async onMessageFromFCM() {

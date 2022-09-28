@@ -14,8 +14,8 @@ import { requestPermission, getMessageToken } from "../../utils/calcFunc";
 
 import banner from "../../assets/img/banner.JPG";
 import camera from "../../assets/icon/camera.png";
-import userImg from "../../assets/img/dog.jpg";
 import logout from "../../assets/icon/logout.png";
+import logoIcon from "../../assets/icon/logo192.png";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -81,9 +81,13 @@ const NameWrapper = styled.div`
 `;
 const NameText = styled.p`
   font-size: 20px;
+  width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 const CarText = styled.p`
-  font-size: 10px;
+  font-size: 14px;
 `;
 const Logout = styled.p`
   font-size: 16px;
@@ -111,7 +115,7 @@ const BannerEdit = styled.p`
   margin: 10px;
   align-items: center;
   flex-direction: row;
-  font-size: 12px;
+  font-size: 14px;
   background-color: #fff;
   cursor: pointer;
 `;
@@ -130,8 +134,9 @@ const CameraIcon = styled.img`
 `;
 const EditCameraBx = styled.span`
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
+  top: 1px;
 `;
 
 const UserPic = styled.img`
@@ -178,6 +183,7 @@ const Profile = () => {
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  console.log(user.continueRemind);
 
   useEffect(() => {
     dispatch(userActions.loading(true));
@@ -211,20 +217,23 @@ const Profile = () => {
       const permission = await requestPermission();
 
       if (permission === "granted") {
-        // const token = await getMessageToken();
-        const token = "token";
-        console.log("profile token", token);
-        const newTokenArr = [...user.pushToken, token];
-        const update = {
-          continueRemind: e.target.checked,
-          pushToken: newTokenArr,
-        };
-        console.log("granted");
+        const token = await getMessageToken();
+        const found = user.pushToken.find((initToken) => initToken === token);
+        let update;
+        if (found) {
+          update = { continueRemind: true };
+        } else {
+          const newTokenArr = [...user.pushToken, token];
+          update = {
+            continueRemind: true,
+            pushToken: newTokenArr,
+          };
+        }
+
         dispatch(asyncUserAction.updateUser(user.id, update));
       } else if (permission === "denied") {
-        // FIXME filter token
         const update = { continueRemind: false };
-        console.log("denied");
+
         dispatch(asyncUserAction.updateUser(user.id, update));
       } else if (permission === "default") {
         console.log("notification default");
@@ -255,7 +264,7 @@ const Profile = () => {
           <UserWrapper>
             <UserBx>
               <UserImgBx>
-                <UserPic src={user.userImg || userImg} />
+                <UserPic src={user.userImg || logoIcon} />
                 <CameraIcon
                   src={camera}
                   onClick={() => {
@@ -295,12 +304,6 @@ const Profile = () => {
                 checked={user.continueRemind}
               />
               <UserAccount>保險及驗車到期通知</UserAccount>
-              {/* <CheckBox
-                id="insurance"
-                onChange={remindHandler}
-                checked={user.insuranceRemind}
-              />
-              <UserAccount></UserAccount> */}
             </UserInfo>
           </InfoWrapper>
         </ProfileWrapper>

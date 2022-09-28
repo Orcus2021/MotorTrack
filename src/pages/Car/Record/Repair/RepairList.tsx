@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components/macro";
-import TableBox from "../../../../components/TableBox";
+import TableBox from "../../../../components/Table/TableBox";
 import RepairItem from "./RepairItem";
 import MessageBox from "../../../../components/Modal/MessageBox";
 import { partType } from "../../../../types/recordType";
@@ -8,7 +8,7 @@ import Modal from "../../../../components/Modal/Modal";
 import PartForm from "./PartForm";
 import IconButton from "../../../../components/Button/IconButton";
 import { Img } from "../../../../components/style";
-import TableBoxRepair from "../../../../components/TableBoxRepair";
+import TableBoxRepair from "../../../../components/Table/TableBoxRepair";
 
 import circlePlusIcon from "../../../../assets/icon/circle-plus-white.png";
 
@@ -155,7 +155,6 @@ const RepairList: React.FC<{
           </ImgWrapper>
         )}
       </TableBoxRepair>
-
       {showPartForm && (
         <Modal
           closeEffect={closeEffect}

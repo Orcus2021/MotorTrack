@@ -29,9 +29,9 @@ const DisplayName = styled.p`
 `;
 
 const BrandBx = styled.div`
-  flex-basis: 15px;
-  height: 15px;
-  width: 15px;
+  flex-basis: 20px;
+  height: 20px;
+  width: 20px;
   position: relative;
 `;
 const DisplayBrandBx = styled.div`
@@ -42,7 +42,8 @@ const DisplayBrandBx = styled.div`
 `;
 
 const CarName = styled.p`
-  font-size: 12px;
+  font-size: 16px;
+  margin-left: 5px;
   color: #fff;
 `;
 const PartInput = styled.input`

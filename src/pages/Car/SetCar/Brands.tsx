@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styled from "styled-components/macro";
 import brands, { brandsMapType } from "../../../utils/brands";
 import { Img } from "../../../components/style";
-import Card from "../../../components/Card";
+import Card from "../../../components/Layout/Card";
 
 const BrandBx = styled.div`
   border: 2px solid #a9c7fae1;

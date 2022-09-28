@@ -83,6 +83,8 @@ const PartList = styled.div`
   border-radius: 8px;
   margin: 0 0 10px 0;
   padding: 10px;
+  position: relative;
+  cursor: pointer;
 `;
 const ListTitleBox = styled.div`
   display: flex;
@@ -97,6 +99,16 @@ const Line = styled.div`
   @media screen and (max-width: 701px) {
     width: 75%;
   }
+`;
+const ArrowImg = styled.img`
+  width: 15px;
+  height: 15px;
+  top: 50%;
+  right: 10px;
+
+  transform: rotate(180deg) translateY(50%);
+  position: absolute;
+  object-fit: cover;
 `;
 
 const PartDetail: React.FC<{
@@ -190,6 +202,7 @@ const PartDetail: React.FC<{
               <Title>費用</Title>
               <MessageDetail>{part.subtotal}</MessageDetail>
             </MessageBx>
+            <ArrowImg src={returnIcon} />
           </PartList>
         ))}
       </PartsList>

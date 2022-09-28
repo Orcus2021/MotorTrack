@@ -16,7 +16,6 @@ const PartsBx = styled.div`
   overflow: hidden;
   transition: 0.5s;
   cursor: pointer;
-  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
 `;
 
 const IconBx = styled.span`
@@ -111,7 +110,7 @@ const Value = styled.span<{ $isAlert: boolean }>`
   }
 `;
 const Message = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   padding-left: 5px;
   margin-bottom: 5px;
 `;

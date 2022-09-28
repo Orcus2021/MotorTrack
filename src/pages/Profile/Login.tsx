@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Card from "../../components/Card";
+import Card from "../../components/Layout/Card";
 import InputBox from "../../components/Input/InputBox";
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/Button/Button";
@@ -16,10 +16,6 @@ const LoginContainer = styled.div`
   height: 100vh;
   position: absolute;
   top: 0;
-  /* background-image: url(${backImg});
-  background-size: cover;
-  background-position: center center; */
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,12 +159,24 @@ const Login = () => {
               <NameBox $isShow={signUpEffect}>
                 {isSignUp && (
                   <InputBox
-                    message={errors?.password && "尚未填寫姓名"}
+                    message={
+                      errors?.name?.type === "required"
+                        ? "尚未填寫姓名"
+                        : errors?.name?.type === "maxLength"
+                        ? "字數最多20字元"
+                        : ""
+                    }
                     type="text"
                     name="name"
                     content="姓名"
                     error={typeof errors?.name?.type === "string"}
-                    require={{ required: true }}
+                    require={{
+                      required: true,
+                      maxLength: 20,
+                      onBlur: (e: { target: { value: string } }) => {
+                        setValue("name", e.target.value.trim());
+                      },
+                    }}
                   />
                 )}
               </NameBox>
@@ -188,6 +196,9 @@ const Login = () => {
                   required: true,
                   pattern:
                     /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                  onBlur: (e: { target: { value: string } }) => {
+                    setValue("email", e.target.value.trim());
+                  },
                 }}
               />
               <InputBox
@@ -202,7 +213,13 @@ const Login = () => {
                 name="password"
                 content="密碼"
                 error={typeof errors?.password?.type === "string"}
-                require={{ required: true, minLength: 6 }}
+                require={{
+                  required: true,
+                  minLength: 6,
+                  onBlur: (e: { target: { value: string } }) => {
+                    setValue("password", e.target.value.trim());
+                  },
+                }}
               />
 
               <SignUpTxt>

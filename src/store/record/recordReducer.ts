@@ -5,7 +5,6 @@ import {
   partType,
   repairType,
   feeType,
-  expensesType,
 } from "../../types/recordType";
 const initialRecord = {
   fee: [] as feeType[],

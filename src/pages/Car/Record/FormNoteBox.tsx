@@ -1,8 +1,9 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import styled from "styled-components/macro";
-import Textarea from "../../../components/Textarea";
+import Textarea from "../../../components/Input/Textarea";
 import Button from "../../../components/Button/Button";
-
+import Modal from "../../../components/Modal/Modal";
+import Confirm from "../../../components/Modal/Confirm";
 const Container = styled.div`
   position: relative;
   width: 100%;
@@ -39,32 +40,56 @@ const FormNoteBox: FC<Props> = ({
   updateId,
   onSubmit,
 }) => {
+  const [closeEffect, setCloseEffect] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const callConfirm = () => {
+    setShowConfirm(true);
+  };
+  const closePartForm = () => {
+    setCloseEffect(true);
+
+    setTimeout(() => {
+      setShowConfirm(false);
+      setCloseEffect(false);
+    }, 600);
+  };
   return (
-    <Container>
-      <Textarea content="備註" name="note" height={150} />
-      <ButtonBx>
-        <Button
-          label="取消"
-          type="cancel"
-          size="medium"
-          handleClick={onCloseRepair}
-        />
-        {updateId && (
+    <>
+      <Container>
+        <Textarea content="備註" name="note" height={150} />
+        <ButtonBx>
           <Button
-            label="刪除"
-            type="reject"
+            label="取消"
+            type="cancel"
             size="medium"
-            handleClick={onDeleteRepair}
+            handleClick={onCloseRepair}
           />
+          {updateId && (
+            <Button
+              label="刪除"
+              type="reject"
+              size="medium"
+              handleClick={callConfirm}
+            />
+          )}
+          <Button
+            label={updateId ? "更新" : "新增"}
+            type="primary"
+            size="medium"
+            handleClick={onSubmit}
+          />
+        </ButtonBx>
+        {showConfirm && (
+          <Modal
+            closeEffect={closeEffect}
+            onClose={closePartForm}
+            containerWidth={400}
+          >
+            <Confirm onClose={closePartForm} onDelete={onDeleteRepair} />
+          </Modal>
         )}
-        <Button
-          label={updateId ? "更新" : "新增"}
-          type="primary"
-          size="medium"
-          handleClick={onSubmit}
-        />
-      </ButtonBx>
-    </Container>
+      </Container>
+    </>
   );
 };
 

@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "../store/index";
+import { useAppSelector } from "../../store/index";
 import styled from "styled-components/macro";
-import { useAppDispatch } from "../store/index";
-import { userActions } from "../store/user/userReducer";
-import { createMessage } from "../utils/calcFunc";
-import logoImg from "../assets/logo_white.png";
-import { Img } from "../components/style";
-import PersonIcon from "../assets/icon/person.png";
-import menuIcon from "../assets/icon/hamburger.png";
+import { useAppDispatch } from "../../store/index";
+import { userActions } from "../../store/user/userReducer";
+import { createMessage } from "../../utils/calcFunc";
+import { Img } from "../style";
+
+import logoImg from "../../assets/logo_white.png";
+import PersonIcon from "../../assets/icon/person.png";
+import menuIcon from "../../assets/icon/hamburger.png";
+import logoIcon from "../../assets/icon/logo192.png";
 
 const HeaderWrapper = styled.div<{
   $isModify: boolean;
@@ -238,7 +240,7 @@ const Header = () => {
         {isAuth && (
           <>
             <UserImg
-              src={user.user.userImg}
+              src={user.user.userImg || logoIcon}
               onClick={goProfile}
               $isOffline={isOffline}
             />

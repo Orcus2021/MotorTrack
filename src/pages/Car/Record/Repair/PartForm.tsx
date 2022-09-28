@@ -6,7 +6,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import Input from "../../../../components/Input/Input";
 import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
-import Textarea from "../../../../components/Textarea";
+import Textarea from "../../../../components/Input/Textarea";
 import Button from "../../../../components/Button/Button";
 
 const PartContainer = styled.div`

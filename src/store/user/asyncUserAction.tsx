@@ -1,14 +1,12 @@
 import { userActions } from "./userReducer";
 import asyncCarAction from "../car/asyncCarAction";
 import asyncRecordAction from "../record/asyncRecordAction";
-import { recordActions } from "../record/recordReducer";
 import { carActions } from "../car/carReducer";
 import { AppDispatch } from "../index";
 import firebase from "../../utils/firebase";
 import { userLogin } from "../../types/userType";
 import { userType } from "../../types/userType";
 import { createMessage } from "../../utils/calcFunc";
-import { arrayUnion } from "firebase/firestore";
 
 const asyncUserAction = {
   signUp(data: userLogin) {

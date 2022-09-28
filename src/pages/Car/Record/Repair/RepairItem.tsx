@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { partType } from "../../../../types/recordType";
 import parts from "../../../../utils/parts";
+import Modal from "../../../../components/Modal/Modal";
+import Confirm from "../../../../components/Modal/Confirm";
 
 import trashIcon from "../../../../assets/trash.png";
 
@@ -55,6 +57,8 @@ type Props = {
 };
 const RepairItem: React.FC<Props> = (props) => {
   const { record, onShow, onSelect, onDeletePart, rwd } = props;
+  const [closeEffect, setCloseEffect] = useState<boolean>(false);
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
   const { category, spec, year, month, mileage, price, qty, subtotal, note } =
     record;
 
@@ -62,9 +66,13 @@ const RepairItem: React.FC<Props> = (props) => {
     onShow();
     onSelect();
   };
-  const deletePartHandler = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const deletePartHandler = () => {
     onDeletePart(record);
+  };
+
+  const callConfirm = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowConfirm(true);
   };
 
   const deadline = () => {
@@ -94,27 +102,46 @@ const RepairItem: React.FC<Props> = (props) => {
     { content: subtotal, width: "100px" },
     { content: note, width: "auto" },
   ];
+  const closePartForm = () => {
+    setCloseEffect(true);
+
+    setTimeout(() => {
+      setShowConfirm(false);
+      setCloseEffect(false);
+    }, 600);
+  };
 
   return (
-    <ContentWrapper onClick={showPartFormHandler}>
-      {!rwd &&
-        tableContent.map((content, index) => (
-          <Content key={content.content + `${index}`} $width={content.width}>
-            {content.content}
-          </Content>
-        ))}
-      {rwd &&
-        tableContentRwd.map((content) => (
-          <Content key={content.content + "rwd"} $width={content.width}>
-            {content.content}
-          </Content>
-        ))}
-      <IconWrapper onClick={deletePartHandler}>
-        <IconBox>
-          <Icon src={trashIcon} />
-        </IconBox>
-      </IconWrapper>
-    </ContentWrapper>
+    <>
+      <ContentWrapper onClick={showPartFormHandler}>
+        {!rwd &&
+          tableContent.map((content, index) => (
+            <Content key={content.content + `${index}`} $width={content.width}>
+              {content.content}
+            </Content>
+          ))}
+        {rwd &&
+          tableContentRwd.map((content) => (
+            <Content key={content.content + "rwd"} $width={content.width}>
+              {content.content}
+            </Content>
+          ))}
+        <IconWrapper onClick={callConfirm}>
+          <IconBox>
+            <Icon src={trashIcon} />
+          </IconBox>
+        </IconWrapper>
+      </ContentWrapper>
+      {showConfirm && (
+        <Modal
+          closeEffect={closeEffect}
+          onClose={closePartForm}
+          containerWidth={400}
+        >
+          <Confirm onClose={closePartForm} onDelete={deletePartHandler} />
+        </Modal>
+      )}
+    </>
   );
 };
 
