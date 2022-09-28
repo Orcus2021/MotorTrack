@@ -9,14 +9,14 @@ const TitleBx = styled.div`
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
   background-color: var(--deepColor);
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: none;
   }
 `;
-const SubTitle = styled.th<{ $width: string }>`
+const SubTitle = styled.div<{ $width: string }>`
   ${(props) => {
     if (props.$width === "auto") {
-      return "flex-grow:1;";
+      return "flex-grow:1;min-width:65px;";
     } else {
       return `width:${props.$width};`;
     }
@@ -49,7 +49,7 @@ const TableBx = styled.div`
   }
   border-radius: 0 0 8px 8px;
 
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: none;
   }
 `;

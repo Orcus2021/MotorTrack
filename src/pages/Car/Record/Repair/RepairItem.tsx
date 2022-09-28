@@ -22,7 +22,20 @@ const Content = styled.td<{ $width: string }>`
   font-size: 16px;
   text-align: center;
   width: ${(props) => props.$width};
-  max-width: ${(props) => props.$width};
+  max-width: ${(props) => {
+    if (props.$width === "auto") {
+      return "65px";
+    } else {
+      return props.$width;
+    }
+  }};
+  min-width: ${(props) => {
+    if (props.$width === "auto") {
+      return "65px";
+    } else {
+      return props.$width;
+    }
+  }};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -121,8 +134,8 @@ const RepairItem: React.FC<Props> = (props) => {
             </Content>
           ))}
         {rwd &&
-          tableContentRwd.map((content) => (
-            <Content key={content.content + "rwd"} $width={content.width}>
+          tableContentRwd.map((content, index) => (
+            <Content key={`${content.content}${index}`} $width={content.width}>
               {content.content}
             </Content>
           ))}

@@ -6,11 +6,7 @@ import asyncUserAction from "./store/user/asyncUserAction";
 import { Outlet } from "react-router-dom";
 import firebase from "./utils/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  createMessage,
-  requestPermission,
-  getMessageToken,
-} from "./utils/calcFunc";
+import { createMessage, requestPermission } from "./utils/calcFunc";
 import { Reset } from "styled-reset";
 import { createGlobalStyle } from "styled-components/macro";
 import SlideMessage from "./components/SlideMessage";
@@ -141,21 +137,28 @@ const App = () => {
       if (Notification.permission === "default") {
         const permission = await requestPermission();
         if (permission === "granted") {
-          const token = await getMessageToken();
-          console.log(token);
-          const found = user.pushToken.find((initToken) => initToken === token);
-          let update;
-          if (found) {
-            update = { continueRemind: true };
-          } else {
-            const newTokenArr = [...user.pushToken, token];
-            update = {
-              continueRemind: true,
-              pushToken: newTokenArr,
-            };
-          }
+          let token = await firebase.getMessageToken().catch(async (e) => {
+            console.log(e);
+          });
 
-          dispatch(asyncUserAction.updateUser(user.id, update));
+          console.log(token);
+          if (token) {
+            const found = user.pushToken.find(
+              (initToken) => initToken === token
+            );
+            let update;
+            if (found) {
+              update = { continueRemind: true };
+            } else {
+              const newTokenArr = [...user.pushToken, token];
+              update = {
+                continueRemind: true,
+                pushToken: newTokenArr,
+              };
+            }
+
+            dispatch(asyncUserAction.updateUser(user.id, update));
+          }
         } else if (permission === "denied") {
           // FIXME filter token
           // const token = await getMessageToken();
@@ -168,6 +171,7 @@ const App = () => {
         }
       }
     };
+
     if (isAuth) {
       getNotification();
     }

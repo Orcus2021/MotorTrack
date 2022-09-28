@@ -32,7 +32,7 @@ const CartWrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     grid-template-columns: repeat(2, 1fr);
   }
 `;
@@ -54,7 +54,7 @@ const RecordDetail = styled.div`
   width: 100%;
   padding: 20px;
   padding-top: 0;
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     padding: 10px;
   }
 `;

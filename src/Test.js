@@ -1,22 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import styled from "styled-components/macro";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
-  authDomain: "motortrack-97569.firebaseapp.com",
-  projectId: "motortrack-97569",
-  storageBucket: "motortrack-97569.appspot.com",
-  messagingSenderId: "899173634521",
-  appId: "1:899173634521:web:24142760923e9cddfe09c8",
-};
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-// export const ConnectForm = ({ children }) => {
-
-//   return children({ ...kkkkk });
-// };
 
 const Test = () => {
   const [count, setCount] = useState(0);

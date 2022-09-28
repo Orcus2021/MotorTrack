@@ -191,12 +191,19 @@ const Expenses: React.FC<{
           <Title>費用表單</Title>
           <InputsWrapper>
             <InputBox
-              message={errors.title && "標題尚未填寫"}
+              message={
+                errors?.title?.type === "required"
+                  ? "尚未填寫標題"
+                  : errors?.title?.type === "maxLength"
+                  ? "字數最多20字元"
+                  : ""
+              }
               name="title"
               content="標題"
               error={typeof errors?.title?.type === "string"}
               require={{
                 required: true,
+                maxLength: 20,
                 onBlur: (e: { target: { value: string } }) => {
                   setValue("title", e.target.value.trim());
                 },
@@ -218,7 +225,13 @@ const Expenses: React.FC<{
                 <InputWrapper>
                   <InputBox
                     message={
-                      errors.mileage?.type === "min" ? "勿低於目前里程數" : ""
+                      errors.mileage?.type === "min"
+                        ? "勿低於目前里程數"
+                        : errors?.mileage?.type === "required"
+                        ? "尚未填寫里程數"
+                        : errors?.mileage?.type === "max"
+                        ? "最大里程數999999"
+                        : ""
                     }
                     name="mileage"
                     content="里程數"
@@ -226,6 +239,7 @@ const Expenses: React.FC<{
                     require={{
                       required: true,
                       min: updateId ? record?.mileage : carMileage,
+                      max: 999999,
                     }}
                     type="number"
                   />
@@ -238,6 +252,8 @@ const Expenses: React.FC<{
                       ? "總金額錯誤"
                       : errors.amount?.type === "required"
                       ? "總金額尚未填寫"
+                      : errors.amount?.type === "max"
+                      ? "總金額最大9999999"
                       : ""
                   }
                   name="amount"
@@ -246,7 +262,7 @@ const Expenses: React.FC<{
                   require={{
                     required: true,
                     min: 0,
-                    max: 999999,
+                    max: 9999999,
                   }}
                   type="number"
                 />

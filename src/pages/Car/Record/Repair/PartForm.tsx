@@ -133,6 +133,12 @@ const PartForm: React.FC<{
               content="規格"
               error={typeof errors?.spec?.type === "string"}
               type="text"
+              require={{
+                maxLength: 20,
+                onBlur: (e: { target: { value: string } }) => {
+                  setValue("name", e.target.value.trim());
+                },
+              }}
             />
           </SpecBx>
           <SelectCategory />
@@ -148,6 +154,7 @@ const PartForm: React.FC<{
               require={{
                 required: true,
                 min: 1,
+                max: 9999999,
                 onBlur: (e: { target: { value: number } }) => {
                   setValue("subtotal", e.target.value * watch("qty"));
                 },
@@ -162,6 +169,8 @@ const PartForm: React.FC<{
               type="number"
               require={{
                 required: true,
+                min: 1,
+                max: 99,
                 onBlur: (e: { target: { value: number } }) => {
                   setValue("subtotal", e.target.value * watch("price"));
                 },
@@ -177,6 +186,8 @@ const PartForm: React.FC<{
               type="number"
               require={{
                 required: true,
+                min: 1,
+                max: 9999999,
                 onBlur: (e: { target: { value: number } }) => {
                   setValue("price", e.target.value / watch("qty"));
                 },
@@ -191,7 +202,7 @@ const PartForm: React.FC<{
               name="mileage"
               content="使用里程"
               error={typeof errors?.mileage?.type === "string"}
-              require={{ required: true, min: 0 }}
+              require={{ required: true, min: 0, max: 99999 }}
               type="number"
               message={errors.mileage && "里程數錯誤"}
             />
@@ -206,6 +217,7 @@ const PartForm: React.FC<{
                 required: true,
                 valueAsNumber: true,
                 min: 0,
+                max: 10,
                 validate: {
                   positive: (v: number) => v % 1 === 0,
                 },
@@ -224,6 +236,7 @@ const PartForm: React.FC<{
                 required: true,
                 valueAsNumber: true,
                 min: 0,
+                max: 11,
                 validate: {
                   positive: (v: number) => v % 1 === 0,
                 },

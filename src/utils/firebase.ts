@@ -33,6 +33,8 @@ import {
 } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
+import swDev from "../swDev";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
   authDomain: "motortrack-97569.firebaseapp.com",
@@ -310,51 +312,34 @@ const firebase = {
         })
         .catch((err) => {
           if (err.code === "failed-precondition") {
-            // Multiple tabs open, persistence can only be enabled
-            // in one tab at a a time.
-            // ...
             reject("Multiple tabs open");
           } else if (err.code === "unimplemented") {
-            // The current browser does not support all of the
-            // features required to enable persistence
-            // ...
             reject("The current browser does not support");
           }
         });
     });
   },
   async getMessageToken() {
-    return new Promise(async (resolve) => {
-      const token = await getToken(messaging, { vapidKey: messageKey }).catch(
-        (err) => console.log(err)
-      );
-      if (token) {
-        resolve(token);
+    return new Promise(async (resolve, reject) => {
+      try {
+        const sw = await swDev();
+        let token = await getToken(messaging, {
+          vapidKey: messageKey,
+          serviceWorkerRegistration: sw,
+        });
+        if (token) {
+          resolve(token);
+        }
+      } catch (err) {
+        reject(err);
       }
-      // getToken(messaging, { vapidKey: messageKey })
-      //   .then((currentToken) => {
-      //     if (currentToken) {
-      //       // Send the token to your server and update the UI if necessary
-      //       resolve(currentToken);
-      //     } else {
-      //       // Show permission request UI
-      //       console.log(
-      //         "No registration token available. Request permission to generate one."
-      //       );
-      //       // ...
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("An error occurred while retrieving token. ", err);
-      //     // ...
-      //   });
     });
   },
   async onMessageFromFCM() {
     return new Promise((resolve) => {
       onMessage(messaging, (payload) => {
         console.log("Message received. ", payload);
-        resolve(payload);
+
         if (payload.notification) {
           const notificationTitle = payload.notification.title;
           const notificationOptions = {
@@ -362,6 +347,7 @@ const firebase = {
             icon: logoIcon,
           };
           new Notification(notificationTitle as string, notificationOptions);
+          resolve(payload);
         }
       });
     });

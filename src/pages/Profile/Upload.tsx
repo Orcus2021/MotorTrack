@@ -31,6 +31,7 @@ const FileInput = styled.input`
   right: 0;
   width: 100%;
   cursor: pointer;
+
   flex-grow: 1;
   height: 100%;
   font-size: 16px;
@@ -43,7 +44,8 @@ const FileBx = styled.div<{ $isBanner: boolean }>`
   width: ${(props) => (props.$isBanner ? "360px" : "200px")};
   height: ${(props) => (props.$isBanner ? "157.5px" : "200px")};
   border-radius: 4px;
-  background-color: #fff;
+  background-color: transparent;
+  border: 2px solid var(--mainColor);
   position: relative;
   display: flex;
   align-items: center;
@@ -108,6 +110,8 @@ const UploadIcon = styled.img`
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
+  pointer-events: none;
+  cursor: pointer;
 `;
 
 const Upload: React.FC<{ imageType: string; onClose: () => void }> = (

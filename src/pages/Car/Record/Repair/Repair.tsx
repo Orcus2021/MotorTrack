@@ -247,12 +247,19 @@ const Repair: React.FC<{
             error={typeof errors?.title?.type === "string"}
             require={{
               required: true,
+              maxLength: 20,
               onBlur: (e: { target: { value: string } }) => {
                 setValue("title", e.target.value.trim());
               },
             }}
             type="text"
-            message={errors.title && "標題尚未填寫"}
+            message={
+              errors?.title?.type === "required"
+                ? "尚未填寫標題"
+                : errors?.title?.type === "maxLength"
+                ? "字數最多20字元"
+                : ""
+            }
           />
           <DetailBX>
             <Detail>
@@ -274,9 +281,18 @@ const Repair: React.FC<{
                   require={{
                     required: true,
                     min: updateId ? record?.mileage : carMileage,
+                    max: 999999,
                   }}
                   type="number"
-                  message={errors.mileage?.type === "min" && "勿低於目前里程數"}
+                  message={
+                    errors.mileage?.type === "min"
+                      ? "勿低於目前里程數"
+                      : errors?.mileage?.type === "required"
+                      ? "尚未填寫里程數"
+                      : errors?.mileage?.type === "max"
+                      ? "最大里程數999999"
+                      : ""
+                  }
                 />
               </InputWrapper>
             </Detail>

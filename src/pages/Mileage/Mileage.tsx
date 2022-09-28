@@ -7,6 +7,7 @@ import Modal from "../../components/Modal/Modal";
 import MessageBox from "../../components/Modal/MessageBox";
 import asyncCarAction from "../../store/car/asyncCarAction";
 import { useAppDispatch, useAppSelector } from "../../store";
+import Ripple from "../../components/Loading/Ripple";
 
 const Container = styled.div`
   width: 100vw;
@@ -18,17 +19,18 @@ const Container = styled.div`
 `;
 
 const MileageWrapper = styled.div`
+  position: relative;
   max-width: 410px;
   width: 100%;
   height: 500px;
   padding: 20px;
   margin-top: 20px;
   border: var(--lightColor) solid 4px;
-  /* background-color: var(--thirdBack); */
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 `;
 
 const Title = styled(NeonText)`
@@ -39,7 +41,7 @@ const Title = styled(NeonText)`
 const CarNumTitle = styled.p`
   font-size: 16px;
   text-align: center;
-
+  margin-bottom: 5px;
   font-weight: 400;
 `;
 const MileagesContentWrapper = styled.div`
@@ -47,7 +49,8 @@ const MileagesContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
+  margin-bottom: 100px;
+  /* flex-grow: 1; */
 `;
 const MileagesContent = styled(NeonText)`
   font-size: 80px;
@@ -78,10 +81,11 @@ const InitMileageBox = styled.div`
   display: flex;
   align-items: center;
   width: 130px;
+  margin-bottom: 10px;
 `;
 const InitMileageTitle = styled.label`
   font-size: 16px;
-  min-width: 53px;
+  min-width: 60px;
 `;
 const InitMileage = styled.input`
   outline: none;
@@ -96,6 +100,14 @@ const InitMileage = styled.input`
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
+`;
+const LoadingBox = styled.div`
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  top: 310px;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 type positionType = {
@@ -256,7 +268,7 @@ const Mileage = () => {
           <Title>紀錄里程數</Title>
           <CarNumTitle>車牌 : {car?.plateNum}</CarNumTitle>
           <InitMileageBox>
-            <InitMileageTitle>里程數:</InitMileageTitle>
+            <InitMileageTitle>里程數 : </InitMileageTitle>
             <InitMileage
               type="number"
               value={initMileage}
@@ -264,6 +276,11 @@ const Mileage = () => {
               onFocus={clearZeroHandler}
             />
           </InitMileageBox>
+          {startRecord && (
+            <LoadingBox>
+              <Ripple />
+            </LoadingBox>
+          )}
 
           <MileagesContentWrapper>
             <MileagesContent>{mileages.toFixed(2)}</MileagesContent>

@@ -196,8 +196,12 @@ export const requestPermission = async () => {
   return permission;
 };
 export const getMessageToken = async () => {
-  const response = await firebase.getMessageToken().catch((msg) => {
-    console.log(msg);
-  });
-  return response;
+  try {
+    const response = await firebase.getMessageToken().catch((msg) => {
+      console.log(msg);
+    });
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
 };

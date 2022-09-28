@@ -13,7 +13,7 @@ const MessageTable = styled.table`
   background: rgba(1, 0, 44, 0.4);
   backdrop-filter: blur(5px);
   height: fit-content;
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: none;
   }
 `;
@@ -35,7 +35,7 @@ const MessageTableRwd = styled.div`
   background: rgba(1, 0, 44, 0.4);
   backdrop-filter: blur(5px);
   height: fit-content;
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: block;
   }
 `;

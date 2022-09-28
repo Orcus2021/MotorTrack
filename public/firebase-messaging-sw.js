@@ -12,7 +12,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// Retrieve firebase messaging
 const messaging = firebase.messaging();
 
 let cacheData = "appV1";
@@ -51,7 +50,8 @@ this.addEventListener("activate", (event) => {
 this.addEventListener("fetch", (event) => {
   if (
     event.request.url.indexOf("firestore.googleapis.com") === -1 &&
-    event.request.url.indexOf("chrome-extension") === -1
+    event.request.url.indexOf("chrome-extension") === -1 &&
+    event.request.method !== "POST"
   ) {
     event.respondWith(
       caches.match(event.request).then((response) => {

@@ -15,7 +15,7 @@ const ContentWrapper = styled.tr`
     background-color: var(--mainColor);
     color: black;
   }
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: none;
   }
 `;
@@ -31,7 +31,7 @@ const ContentWrapperRwd = styled.div`
     background-color: var(--mainColor);
     color: black;
   }
-  @media screen and (max-width: 701px) {
+  @media screen and (max-width: 801px) {
     display: flex;
   }
 `;

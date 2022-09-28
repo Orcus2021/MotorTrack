@@ -190,12 +190,19 @@ const AddCar = () => {
                 error={typeof errors?.name?.type === "string"}
                 require={{
                   required: true,
+                  maxLength: 20,
                   onBlur: (e: { target: { value: string } }) => {
                     setValue("name", e.target.value.trim());
                   },
                 }}
                 type="text"
-                message={errors.name && "車輛名稱尚未填寫"}
+                message={
+                  errors?.name?.type === "required"
+                    ? "尚未填寫暱稱"
+                    : errors?.name?.type === "maxLength"
+                    ? "字數最多20字元"
+                    : ""
+                }
               />
             </InputBx>
             <InputBx>
@@ -205,7 +212,7 @@ const AddCar = () => {
                 error={typeof errors?.plateNum?.type === "string"}
                 require={{
                   required: true,
-                  pattern: /[A-Z]{0,4}\d{0,4}-[A-Z]{0,4}\d{0,4}/,
+                  pattern: /^[A-Z0-9]{0,4}-[A-Z0-9]{0,4}$/,
                 }}
                 type="text"
                 message={
@@ -235,7 +242,7 @@ const AddCar = () => {
                 content="保險到期日"
                 error={typeof errors?.insuranceDate?.type === "string"}
                 require={{ required: true }}
-                calendarPosition={"top"}
+                calendarPosition="top"
                 type="date"
                 message={errors.insuranceDate && "尚未填寫"}
               />
