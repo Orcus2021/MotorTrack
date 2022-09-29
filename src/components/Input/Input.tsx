@@ -103,7 +103,7 @@ const CalendarWrapper = styled.div<{ $position: boolean }>`
   /* ~~~ container styles ~~~ */
   position: absolute;
   ${(props) => (props.$position ? "bottom: 50px" : " top: 20px")};
-  z-index: 7;
+  z-index: 9;
   left: 0px;
   width: 250px;
   margin: auto;
@@ -190,8 +190,17 @@ const CalendarWrapper = styled.div<{ $position: boolean }>`
     }
   }
 `;
+const CalendarBack = styled.div`
+  position: fixed;
+  width: 200vw;
+  height: 200vh;
+  top: -50vw;
+  left: -50vh;
+  background-color: transparent;
 
-// FIXME
+  z-index: 8;
+`;
+
 export type Props = {
   type: "text" | "number" | "date" | "password";
   name: string;
@@ -289,6 +298,7 @@ const Input: React.FC<Props> = ({
           </>
         )}
       </Container>
+      {showDate && <CalendarBack onClick={showCalendarHandler} />}
     </>
   );
 };

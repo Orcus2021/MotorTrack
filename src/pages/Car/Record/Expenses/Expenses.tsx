@@ -12,6 +12,7 @@ import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
 import { NeonText } from "../../../../components/style";
 import FormNoteBox from "../FormNoteBox";
+import useFindSecond from "../../../../Hook/useFindSecond";
 
 const Container = styled.div`
   width: 100%;
@@ -85,6 +86,7 @@ const Expenses: React.FC<{
 }> = (props) => {
   const { onClose, updateId } = props;
   const dispatch = useAppDispatch();
+  const secondMileage = useFindSecond();
   const record = useAppSelector((state) => {
     const newExpenses = [...state.record.fee, ...state.record.refuel];
     return newExpenses.find((record) => record.id === updateId);
@@ -167,7 +169,11 @@ const Expenses: React.FC<{
 
     onClose("record");
   };
+
   const deleteRepairRecord = () => {
+    if (record?.mileage === carMileage) {
+      dispatch(asyncCarAction.updateCar(carID, { mileage: secondMileage }));
+    }
     dispatch(
       asyncRecordAction.deleteExpense(
         carID as string,
@@ -175,6 +181,7 @@ const Expenses: React.FC<{
         recordAnnual
       )
     );
+
     addMessage("error");
     onClose("record");
   };
@@ -222,6 +229,7 @@ const Expenses: React.FC<{
                     type="date"
                   />
                 </InputWrapper>
+
                 <InputWrapper>
                   <InputBox
                     message={

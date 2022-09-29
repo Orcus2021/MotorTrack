@@ -12,14 +12,13 @@ import moment from "moment";
 import { NeonText } from "../../../../components/style";
 import FormNoteBox from "../FormNoteBox";
 import InputBox from "../../../../components/Input/InputBox";
-import Modal from "../../../../components/Modal/Modal";
-import Confirm from "../../../../components/Modal/Confirm";
+import useFindSecond from "../../../../Hook/useFindSecond";
 
 const RepairContainer = styled.div`
   width: 100%;
   max-width: 1280px;
   padding: 10px;
-  position: relative;
+  /* position: relative; */
 `;
 
 const DetailBX = styled.div`
@@ -86,6 +85,7 @@ const Repair: React.FC<{
 }> = (props) => {
   const { onClose, updateId, onClear } = props;
   const dispatch = useAppDispatch();
+  const secondMileage = useFindSecond();
   const car = useAppSelector((state) => state.car.car);
   const initRecord = useAppSelector((state) => state.record);
   const record = useAppSelector((state) =>
@@ -213,6 +213,9 @@ const Repair: React.FC<{
   };
 
   const deleteRepairRecord = () => {
+    if (record?.mileage === carMileage) {
+      dispatch(asyncCarAction.updateCar(carID, { mileage: secondMileage }));
+    }
     dispatch(
       asyncRecordAction.deleteRepair(
         carID as string,

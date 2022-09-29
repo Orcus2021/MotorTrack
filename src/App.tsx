@@ -53,7 +53,9 @@ export const GlobalStyle = createGlobalStyle`
     --lightBack:#ffffff8b;
   }
   body{
-   color:#fff;
+ 
+  color:#fff;
+
   &::-webkit-scrollbar {
     width: 7px;
   }
@@ -75,7 +77,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   #root{
-    background:var(--mainBack);  
+    background: linear-gradient(var(--mainBack), var(--secondBack)); 
     width: 100%;
     min-height:100vh;
     padding-top:68px ;
@@ -84,9 +86,7 @@ export const GlobalStyle = createGlobalStyle`
 
     
   }
-  #root[data-theme="light"] {
-    background:#fff; 
-}
+
 `;
 
 const App = () => {
@@ -160,11 +160,7 @@ const App = () => {
             dispatch(asyncUserAction.updateUser(user.id, update));
           }
         } else if (permission === "denied") {
-          // FIXME filter token
-          // const token = await getMessageToken();
-
           const update = { continueRemind: false };
-
           dispatch(asyncUserAction.updateUser(user.id, update));
         } else if (permission === "default") {
           console.log("notification default");

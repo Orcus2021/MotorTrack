@@ -165,7 +165,6 @@ type locationMap = {
 type GoogleMapType = google.maps.Map;
 
 const StoreMap = () => {
-  const mapRef = useRef<GoogleMapType>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isOffline = useAppSelector((state) => state.user.isOffline);
@@ -175,9 +174,9 @@ const StoreMap = () => {
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showNotify, setShowNotify] = useState<boolean>(false);
-
+  const [map, setMap] = useState<GoogleMapType>();
   const onMapLoad = useCallback((map: GoogleMapType) => {
-    mapRef.current = map;
+    setMap(map);
   }, []);
 
   const { isLoaded } = useJsApiLoader({
@@ -250,6 +249,19 @@ const StoreMap = () => {
     window.open(url);
   };
 
+  const onMapBoundsChanged = useCallback(() => {
+    // const latlongchange = map.getBounds();
+    // const lat = latlongchange.Ua.i;
+    // const lng = latlongchange.Ua.j;
+
+    // const mapBounds = {
+    //   lat: lat,
+    //   lng: lng,
+    // };
+    const latlongchange = map?.getBounds();
+    console.log(latlongchange);
+  }, [map]);
+
   return (
     <>
       {isLoading && <Loading />}
@@ -276,6 +288,7 @@ const StoreMap = () => {
               }
               zoom={15}
               onLoad={onMapLoad}
+              onBoundsChanged={onMapBoundsChanged}
               options={{
                 fullscreenControl: false,
                 zoomControl: false,

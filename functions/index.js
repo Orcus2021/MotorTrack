@@ -117,7 +117,7 @@ exports.getUserNearby = functions.https.onRequest((request, response) => {
   cors(request, response, () => {
     axios(
       encodeURI(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${request.query.lat},${request.query.lng}&language=zh-TW&opennow=true&radius=1000&keyword=機車店&key=AIzaSyA4Xik7PsmlsZ4UPc154GTLZjxL4aVEBSM`
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${request.query.lat},${request.query.lng}&language=zh-TW&opennow=true&radius=1000&keyword=機車店&key=AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI`
       )
     )
       .then((res) => {

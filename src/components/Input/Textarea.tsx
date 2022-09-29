@@ -92,24 +92,13 @@ const Textarea: React.FC<Props> = ({
 }) => {
   const methods = useFormContext();
   const { register } = methods;
-  //   const [isValue, setIsValue] = useState<boolean>(false);
-
-  //   useEffect(() => {
-  //     if (watch(name)) {
-  //       setIsValue(true);
-  //     } else {
-  //       setIsValue(false);
-  //     }
-  //   }, [watch, name, value]);
 
   return (
     <>
       <Container $width={width}>
         <InputFloat
-          //   $isWatch={isValue}
           $height={height}
           $isError={error}
-          //   type={newType}
           {...register(name, require)}
           required
         />

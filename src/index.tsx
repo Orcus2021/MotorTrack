@@ -12,6 +12,8 @@ import EditCar from "./pages/Car/SetCar/EditCar";
 import Status from "./pages/Status/Status";
 import StoreMap from "./pages/Map/StoreMap";
 import Mileage from "./pages/Mileage/Mileage";
+import MyMap from "./pages/Map/MyMap";
+import NotFound from "./components/Layout/NotFound";
 import Test from "./Test";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -33,6 +35,7 @@ root.render(
           <Route path="status" element={<Status />} />
           <Route path="test" element={<Test />} />
           <Route path="store" element={<StoreMap />} />
+          <Route path="my_map/:userID" element={<MyMap />} />
           <Route path="mileage" element={<Mileage />} />
           <Route path="car_manage" element={<Manage />}>
             <Route path="record" element={<Record />} />
@@ -40,8 +43,8 @@ root.render(
             <Route path="edit" element={<EditCar />} />
             <Route path="chart" element={<Chart />} />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Provider>
   </BrowserRouter>

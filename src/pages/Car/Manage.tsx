@@ -103,7 +103,7 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
   height: fit-content;
   min-height: 100vh;
   padding: 0 10px;
-
+  overflow: hidden;
   background: url(${backImg}) no-repeat;
   padding-top: 68px;
 
