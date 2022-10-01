@@ -3,6 +3,7 @@ import { userLogin } from "../types/userType";
 import { carType } from "../types/carType";
 import logoIcon from "../assets/icon/logo192.png";
 import { partsType, partType, repairType, feeType } from "../types/recordType";
+import { myMapContentType } from "../types/mapType";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -32,6 +33,7 @@ import {
   enableIndexedDbPersistence,
 } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getDatabase, ref as relRef, set } from "firebase/database";
 
 import swDev from "../swDev";
 
@@ -51,6 +53,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const database = getDatabase(app);
 export const messaging = getMessaging(app);
 type dataType = {
   id: string;
@@ -257,7 +260,6 @@ const firebase = {
       resolve(recordObj);
     });
   },
-
   async setCarDoc(data: carType): Promise<carType> {
     return new Promise(async (resolve) => {
       const newCrtId = doc(collection(db, "carsRecords"));
@@ -350,6 +352,41 @@ const firebase = {
           resolve(payload);
         }
       });
+    });
+  },
+  async setMapDoc(data: myMapContentType): Promise<myMapContentType> {
+    return new Promise(async (resolve) => {
+      const newMapId = doc(collection(db, "maps"));
+      data.id = newMapId.id;
+      try {
+        await setDoc(newMapId, data);
+        resolve(data);
+      } catch (e) {
+        console.log(e);
+      }
+    });
+  },
+  async getMapDoc(id: string): Promise<myMapContentType[]> {
+    return new Promise(async (resolve, reject) => {
+      const q = query(collection(db, "maps"), where("ownerID", "==", id));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot && !querySnapshot.empty) {
+        let myMaps = [] as myMapContentType[];
+        querySnapshot.forEach((doc) => {
+          myMaps.push(doc.data() as myMapContentType);
+        });
+        resolve(myMaps);
+      } else {
+        reject("error");
+      }
+    });
+  },
+  async setUserMapRoom(id: string, data): Promise<string> {
+    return new Promise(async (resolve) => {
+      console.log(data);
+      set(relRef(database, "room/" + id + "/users"), data);
+      resolve("submit");
     });
   },
 };

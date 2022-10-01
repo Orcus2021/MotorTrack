@@ -14,7 +14,6 @@ import { useAppSelector, useAppDispatch } from "../../store";
 import { createMessage } from "../../utils/calcFunc";
 
 import personIcon from "../../assets/icon/marker-person.png";
-import { isMap } from "immer/dist/internal";
 
 const Container = styled.div`
   position: relative;
@@ -182,9 +181,10 @@ const StoreMap = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI",
+    googleMapsApiKey: "",
     libraries,
   });
+  // "AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI"
   useEffect(() => {
     if (isLoaded && !isOffline) {
       setTimeout(() => {

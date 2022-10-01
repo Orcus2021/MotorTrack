@@ -5,7 +5,7 @@ import parts from "../../../../utils/parts";
 import Modal from "../../../../components/Modal/Modal";
 import Confirm from "../../../../components/Modal/Confirm";
 
-import trashIcon from "../../../../assets/trash.png";
+import trashIcon from "../../../../assets/icon/trash.png";
 
 const ContentWrapper = styled.tr`
   height: 28px;

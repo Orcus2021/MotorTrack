@@ -6,15 +6,27 @@ import {
   InfoWindow,
   Marker,
 } from "@react-google-maps/api";
-import { NeonText } from "../../components/style";
-import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
+import EditMarker from "./MyMap/EditMarker";
 import Circle from "../../components/Loading/Circle";
+import Confirm from "./MyMap/Confirm";
+import Button from "../../components/Button/Button";
+import IconButton from "../../components/Button/IconButton";
+import InfoContent from "./MyMap/InfoContent";
+import MarkerContent from "./MyMap/MarkerContent";
+import { NeonText } from "../../components/style";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store";
 import { createMessage } from "../../utils/calcFunc";
+import firebase from "../../utils/firebase";
+import {
+  markerType,
+  positionType,
+  myMapContentType,
+} from "../../types/mapType";
 
 import personIcon from "../../assets/icon/marker-person.png";
-import { isMap } from "immer/dist/internal";
+import whitePlusIcon from "../../assets/icon/plus-white.png";
 
 const Container = styled.div`
   position: relative;
@@ -25,42 +37,21 @@ const Container = styled.div`
   align-items: center;
   padding: 10px;
 `;
-const SearchButton = styled.div`
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  width: 164px;
-  transform: translateX(-50%);
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: var(--mainColor);
-  border-radius: 8px;
-  z-index: 1;
-  box-shadow: 0px 0px 5px rgb(0, 0, 0);
+const TitleWrapper = styled.div`
+  width: 90%;
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  &:hover {
-    background-color: #3464a5;
-  }
+  position: relative;
 `;
+
 const MapWrapper = styled.div`
-  /* max-width: 1200px; */
+  position: relative;
   width: 90%;
   height: calc(100vh - 141px);
   border-radius: 8px;
   overflow: hidden;
-  & .gm-style .gm-style-iw-c {
-    background-color: transparent;
-    padding: 0;
-    top: -27px;
-  }
-  & .gm-ui-hover-effect {
-    display: none !important;
-  }
-  & .gm-style .gm-style-iw-tc {
-    display: none;
-  }
 
   @media screen and (max-width: 701px) {
     height: calc(100vh - 201px);
@@ -68,84 +59,19 @@ const MapWrapper = styled.div`
   }
 `;
 
-const List = styled.div<{ $isSelected: boolean }>`
-  position: absolute;
-  /* padding: 5px; */
-  margin-bottom: 10px;
-  top: 60px;
-  left: calc(5% + 20px);
-
-  /* border-top: 1px solid rgba(255, 255, 255, 0.3); */
-  /* border-left: 1px solid rgba(255, 255, 255, 0.3); */
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(5px);
-  border-radius: 8px;
-  letter-spacing: 1px;
-  overflow: hidden;
-  box-shadow: 3px 3px 15px rgb(0, 0, 0);
-  cursor: pointer;
-
-  &:hover {
-    background: rgb(255, 255, 255);
-  }
-  @media screen and (max-width: 701px) {
-    left: 50%;
-    transform: translateX(-50%);
-    top: 104px;
-  }
-`;
-
-const Title = styled.p`
-  font-size: 14px;
-  max-width: 145px;
-  /* color: var(--deepColor); */
-  color: #fff;
-  padding: 0 5px;
-  background-color: var(--deepColor);
-
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`;
-const SelectTitle = styled.p`
-  font-size: 16px;
-  width: 100%;
-  max-width: 182.26px;
-  background-color: var(--deepColor);
-
-  padding: 2px 5px;
-  text-align: center;
-`;
-const OpenStore = styled.p`
-  font-size: 14px;
-  padding: 2px 5px;
-  color: var(--thirdBack);
-`;
-const CloseStore = styled.p`
-  font-size: 16px;
-  letter-spacing: 1px;
-  text-align: center;
-  color: var(--errorColor);
-  padding: 20px;
-`;
-
-const NavToGoogle = styled.div`
-  font-size: 14px;
-  color: var(--mainColor);
-  white-space: nowrap;
-  padding: 2px 5px;
-  cursor: pointer;
-`;
 const PageTitle = styled(NeonText)`
   font-size: 22px;
   margin-bottom: 10px;
 `;
 
-const LoadingWrapper = styled.div`
-  width: 22px;
-  height: 22px;
+const ButtonWrapper = styled.div`
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  right: 0;
 `;
-
 const libraries = ["places", "drawing"] as (
   | "places"
   | "drawing"
@@ -158,30 +84,48 @@ const mapContainerStyle = {
   height: "100%",
   hide: true,
 };
-type locationMap = {
-  lat: number;
-  lng: number;
-};
+
 type GoogleMapType = google.maps.Map;
 
+const dummyData = [
+  { id: "1", name: "TEST1", position: { lat: 25.0385, lng: 121.5324 } },
+  { id: "2", name: "TEST2", position: { lat: 25.0386, lng: 121.5325 } },
+];
+const center = {
+  lat: 25.0385,
+  lng: 121.5324,
+};
 const StoreMap = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isOffline = useAppSelector((state) => state.user.isOffline);
-  const [location, setLocation] = useState<locationMap | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [markers, setMarkers] = useState<{ [index: string]: any }[]>([]);
-  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+  const params = useParams();
+  const userState = useAppSelector((state) => state.user);
+  const { isAuth, isOffline, user } = userState;
+  const [isPassword, setIsPassword] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [selectMarker, setSelectMarker] = useState<positionType | null>(null);
+  const [markers, setMarkers] = useState<markerType[]>([]);
+  const [selectEditMarkerID, setSelectEditMarkerID] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [showNotify, setShowNotify] = useState<boolean>(false);
   const [map, setMap] = useState<GoogleMapType>();
+  const [myMapContent, setMyMapContent] = useState<myMapContentType>({
+    name: user.name,
+    id: "",
+    ownerID: user.id,
+    password: "",
+    markers: [],
+    center: {} as positionType,
+    zoom: 0,
+  });
+  const [isJoin, setIsJoin] = useState<boolean>(false);
+  const isSelf = params.userID === user.id && isAuth;
   const onMapLoad = useCallback((map: GoogleMapType) => {
     setMap(map);
   }, []);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI",
+    googleMapsApiKey: "",
     libraries,
   });
   useEffect(() => {
@@ -194,6 +138,45 @@ const StoreMap = () => {
       navigate(-1);
     }
   }, [isLoaded, dispatch, isOffline, navigate]);
+
+  useEffect(() => {
+    if (!isAuth) navigate("/login", { state: `/my_map/${params.userID}` });
+
+    const getMap = async (id: string) => {
+      const response = await firebase.getMapDoc(id).catch((e) => {
+        console.log(e);
+      });
+
+      if (response && response.length > 0) {
+        return response[0];
+      } else {
+        return null;
+      }
+    };
+
+    const checkId = async () => {
+      if (params.userID && user.id) {
+        const myMap = await getMap(params.userID);
+
+        if (myMap) {
+          setMyMapContent(myMap);
+          setMarkers(myMap.markers);
+          if (params.userID !== user.id && myMap.password) {
+            setIsPassword(true);
+          }
+        } else if (params.userID !== user.id) {
+          navigate(`/my_map/${user.id}`);
+        } else return;
+      }
+    };
+
+    try {
+      checkId();
+    } catch (e) {
+      console.log(e);
+    }
+  }, [params.userID, isAuth, user, navigate, isLoaded, isOffline, dispatch]);
+
   const getUserLocation = () => {
     if (navigator.geolocation) {
       const options = {
@@ -204,11 +187,10 @@ const StoreMap = () => {
       const success = (pos: any) => {
         console.log(pos);
         const crd = pos.coords;
-        setLocation({
-          lat: crd.latitude,
-          lng: crd.longitude,
-        });
-        getNearBy(crd.latitude, crd.longitude);
+        // setLocation({
+        //   lat: crd.latitude,
+        //   lng: crd.longitude,
+        // });
       };
       const error = (err: any) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
@@ -219,162 +201,291 @@ const StoreMap = () => {
     }
   };
 
-  const selectMarkerHandler = (id: string | null) => {
-    setSelected(id);
-  };
-
-  const getNearBy = async (lat: string, lng: string) => {
-    const response = await fetch(
-      `https://us-central1-motortrack-97569.cloudfunctions.net/getUserNearby?lat=${lat}&lng=${lng}`
-    );
-
-    const result = await response.json();
-
-    if (result.results.length > 0) {
-      setMarkers(result.results);
-      setShowNotify(false);
-    } else {
-      setShowNotify(true);
-    }
-    setSearchLoading(false);
-  };
-  const searchStoreHandler = () => {
-    setSearchLoading(true);
-    getUserLocation();
-  };
-
-  const goGoogleMap = (str: string) => {
-    if (!location) return;
-    const url = `https://www.google.com/maps/dir/${location.lat},${location.lng}/${str}`;
-    window.open(url);
-  };
-
   const onMapBoundsChanged = useCallback(() => {
     // const latlongchange = map.getBounds();
     // const lat = latlongchange.Ua.i;
     // const lng = latlongchange.Ua.j;
-
-    // const mapBounds = {
-    //   lat: lat,
-    //   lng: lng,
-    // };
     const latlongchange = map?.getBounds();
-    console.log(latlongchange);
+    const mapBounds = {
+      hLat: latlongchange?.getNorthEast().lat(),
+      lLat: latlongchange?.getSouthWest().lat(),
+      hLng: latlongchange?.getNorthEast().lng(),
+      lLng: latlongchange?.getSouthWest().lng(),
+    };
   }, [map]);
+  const outPosition = (mapBounds: any, user: any, center: any) => {
+    const { hLat, lLat, hLng, lLng } = mapBounds;
+    const { position } = user;
+    const outLat = position.lat > hLat || position.lat < lLat;
+    const outLng = position.lng > hLng || position.lng < lLng;
+    let inDiffLat;
+    let inDiffLng;
+    let totalLat;
+    let totalLng;
 
+    if (outLat) {
+      if (position.lat > hLat) {
+        totalLat = position.lat - center.lat;
+        inDiffLat = hLat - center.lat;
+      } else {
+        totalLat = center.lat - position.lat;
+        inDiffLat = hLat - center.lat;
+      }
+    }
+  };
+  const getEditMarkerPosition = (e: any) => {
+    const position = {
+      lat: e.latLng.lat() as number,
+      lng: e.latLng.lng() as number,
+    };
+
+    setSelectMarker(position);
+    setSelectEditMarkerID("");
+  };
+  const clearEditMarkerHandler = () => {
+    setSelectMarker(null);
+  };
+  const editHandler = () => {
+    setIsEdit((pre) => !pre);
+  };
+
+  const submitHandler = async () => {
+    if (!map) return;
+    const center = {
+      lat: map.getCenter()?.lat(),
+      lng: map.getCenter()?.lng(),
+    };
+    const newMyMap = {
+      ...myMapContent,
+      center: center as positionType,
+      zoom: map.getZoom() as number,
+      markers,
+    };
+    let result;
+    if (myMapContent.id) {
+      const url = `maps/${myMapContent.id}`;
+      firebase.updateDoc(url, newMyMap);
+      result = newMyMap;
+    } else {
+      result = await firebase.setMapDoc(newMyMap);
+    }
+    const data = [
+      { id: user.id, name: user.name, position: "", img: user.userImg },
+    ];
+    if (params.userID) {
+      firebase.setUserMapRoom(params.userID, data);
+    }
+
+    setMyMapContent(result);
+    setIsEdit((pre) => !pre);
+  };
+
+  const myMapContentHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMyMapContent((pre) => {
+      console.log(pre);
+      if (pre?.name) {
+        const newMyMap = { ...pre, password: e.target.value };
+        console.log(newMyMap);
+        return newMyMap;
+      }
+      return pre;
+    });
+  };
+
+  const returnHandler = () => {
+    setIsEdit((pre) => !pre);
+    setMarkers(myMapContent.markers);
+  };
+
+  const setMarkersHandler = (
+    index: number | null,
+    markerContent: markerType
+  ) => {
+    if (index !== null) {
+      setMarkers((pre) => {
+        const newMarkers = [...pre];
+        newMarkers[index] = markerContent;
+        return newMarkers;
+      });
+    } else if (selectMarker) {
+      const marker = { ...markerContent, position: selectMarker };
+
+      setMarkers([...markers, marker]);
+      setSelectMarker(null);
+    }
+  };
+
+  const removeMarkerHandler = (id: string) => {
+    setMarkers((pre) => {
+      const newMarkers = pre.filter((marker) => marker.id !== id);
+
+      return newMarkers;
+    });
+  };
+  const selectEditMarkerIDHandler = (id: string) => {
+    setSelectEditMarkerID(id);
+  };
+
+  const closeConfirmHandler = () => {
+    setIsPassword(false);
+  };
+  const joinMapHandler = () => {
+    setIsJoin(true);
+  };
+  const leaveMapHandler = () => {
+    setIsJoin(false);
+  };
   return (
     <>
       {isLoading && <Loading />}
-      <Container>
-        <PageTitle>商家地圖</PageTitle>
-        <SearchButton onClick={searchStoreHandler}>
-          {searchLoading ? (
-            <LoadingWrapper>
-              <Circle />
-            </LoadingWrapper>
-          ) : (
-            "搜尋附近營業中商家"
-          )}
-        </SearchButton>
-        <MapWrapper>
-          {isLoaded && (
-            <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              center={
-                location || {
-                  lat: 25.0385,
-                  lng: 121.5324,
-                }
-              }
-              zoom={15}
-              onLoad={onMapLoad}
-              onBoundsChanged={onMapBoundsChanged}
-              options={{
-                fullscreenControl: false,
-                zoomControl: false,
-                mapTypeControl: false,
-                streetViewControl: false,
-                styles: [
-                  {
-                    stylers: [
-                      {
-                        visibility: "on",
-                      },
-                      { gamma: 1 },
-                      { lightness: 1 },
-                    ],
-                  },
-                ],
-              }}
-            >
-              {location && (
-                <Marker
-                  position={location}
-                  icon={{
-                    url: personIcon,
-                    scaledSize: new window.google.maps.Size(30, 30),
-                  }}
-                />
-              )}
-              {markers.length > 0 &&
-                markers.map((marker: { [index: string]: any }) => {
-                  if (marker?.place_id) {
-                    const { place_id, geometry, name } = marker;
-                    return (
-                      <Marker
-                        key={place_id}
-                        position={geometry.location}
-                        onClick={() => selectMarkerHandler(place_id)}
-                        animation={
-                          (selected === place_id &&
-                            google.maps.Animation.BOUNCE) ||
-                          google.maps.Animation.DROP
-                        }
-                      >
-                        <InfoWindow position={geometry.location}>
-                          <Title>{name}</Title>
-                        </InfoWindow>
-                      </Marker>
-                    );
-                  } else {
-                    return "";
-                  }
-                })}
-            </GoogleMap>
-          )}
-        </MapWrapper>
 
-        {markers.length > 0 &&
-          markers
-            .filter(
-              (marker: { [index: string]: any }) => marker.place_id === selected
-            )
-            .map((marker: { [index: string]: any }) => {
-              const { name, place_id, vicinity } = marker;
-              return (
-                <List
-                  key={place_id}
-                  $isSelected={place_id === selected}
-                  onClick={() => {
-                    selectMarkerHandler(place_id);
+      <Container>
+        {isPassword ? (
+          <Confirm
+            password={myMapContent.password}
+            onClose={closeConfirmHandler}
+          />
+        ) : (
+          <>
+            <TitleWrapper>
+              <PageTitle>
+                {isSelf ? "我的地圖" : `${myMapContent.name}的地圖`}
+              </PageTitle>
+              <ButtonWrapper>
+                {isEdit && (
+                  <>
+                    <Button
+                      label="取消"
+                      type="cancel"
+                      handleClick={returnHandler}
+                    />
+                    <Button
+                      label="確認"
+                      type="primary"
+                      handleClick={submitHandler}
+                    />
+                  </>
+                )}
+                {!isEdit && !isJoin && (
+                  <Button
+                    label="加入"
+                    type="primary"
+                    handleClick={joinMapHandler}
+                  />
+                )}
+                {!isEdit && isJoin && (
+                  <Button
+                    label="離開"
+                    type="reject"
+                    handleClick={leaveMapHandler}
+                  />
+                )}
+                {!isEdit && isSelf && !isJoin && (
+                  <IconButton
+                    label="編輯"
+                    icon={whitePlusIcon}
+                    handleClick={editHandler}
+                  />
+                )}
+              </ButtonWrapper>
+            </TitleWrapper>
+
+            <MapWrapper>
+              {isLoaded && (
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={
+                    (myMapContent.center.lat && myMapContent.center) || center
+                  }
+                  zoom={(myMapContent.zoom !== 0 && myMapContent.zoom) || 15}
+                  onLoad={onMapLoad}
+                  onBoundsChanged={onMapBoundsChanged}
+                  onClick={getEditMarkerPosition}
+                  options={{
+                    fullscreenControl: false,
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    styles: [
+                      {
+                        stylers: [
+                          {
+                            visibility: "on",
+                          },
+                          { gamma: 1 },
+                          { lightness: 1 },
+                        ],
+                      },
+                    ],
                   }}
                 >
-                  <SelectTitle>{name}</SelectTitle>
-                  <OpenStore>營業中</OpenStore>
-                  <NavToGoogle
-                    onClick={() => {
-                      goGoogleMap(`${vicinity}${name}`);
+                  {/* {dummyData.map((user) => (
+                  <Marker
+                    position={user.position}
+                    label={user.id}
+                    icon={{
+                      url: personIcon,
+                      scaledSize: new window.google.maps.Size(30, 30),
                     }}
-                  >
-                    開啟Google地圖導航路線
-                  </NavToGoogle>
-                </List>
-              );
-            })}
-        {showNotify && (
-          <List $isSelected={false}>
-            <CloseStore>附近店家尚未營業</CloseStore>
-          </List>
+                  />
+                ))} */}
+                  <>
+                    {markers.length > 0 &&
+                      markers.map((marker) => (
+                        <Marker
+                          position={marker.position}
+                          label={marker.order.toString()}
+                          onClick={() => {
+                            setSelectEditMarkerID(marker.id);
+                          }}
+                        >
+                          {selectEditMarkerID === marker.id && (
+                            <InfoWindow
+                              position={marker.position}
+                              onCloseClick={() => setSelectEditMarkerID("")}
+                            >
+                              <MarkerContent marker={marker} />
+                            </InfoWindow>
+                          )}
+                        </Marker>
+                      ))}
+                  </>
+
+                  {selectMarker && (
+                    <>
+                      <Marker position={selectMarker} />
+                      {isEdit && (
+                        <InfoWindow
+                          onCloseClick={() => setSelectMarker(null)}
+                          position={selectMarker}
+                          options={{
+                            pixelOffset: new window.google.maps.Size(0, -40),
+                          }}
+                        >
+                          <InfoContent
+                            markerIndex={null}
+                            onSubmitMarker={setMarkersHandler}
+                            onClear={clearEditMarkerHandler}
+                            marker={null}
+                          />
+                        </InfoWindow>
+                      )}
+                    </>
+                  )}
+                </GoogleMap>
+              )}
+              <EditMarker
+                password={myMapContent?.password}
+                setPassword={myMapContentHandler}
+                isEdit={isEdit}
+                onClear={clearEditMarkerHandler}
+                onSelectMarker={selectEditMarkerIDHandler}
+                markers={markers}
+                onSubmitMarker={setMarkersHandler}
+                onRemove={removeMarkerHandler}
+              />
+            </MapWrapper>
+          </>
         )}
       </Container>
     </>
