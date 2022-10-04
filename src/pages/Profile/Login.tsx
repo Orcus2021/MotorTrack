@@ -132,7 +132,6 @@ const Login = () => {
     if (user.name) {
       await dispatch(asyncUserAction.signUp(user));
     } else {
-      console.log("sign Login");
       await dispatch(asyncUserAction.signIn(user));
     }
   };

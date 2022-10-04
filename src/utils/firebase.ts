@@ -3,7 +3,7 @@ import { userLogin } from "../types/userType";
 import { carType } from "../types/carType";
 import logoIcon from "../assets/icon/logo192.png";
 import { partsType, partType, repairType, feeType } from "../types/recordType";
-import { myMapContentType } from "../types/mapType";
+import { myMapContentType, userType } from "../types/mapType";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -33,13 +33,25 @@ import {
   enableIndexedDbPersistence,
 } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { getDatabase, ref as relRef, set } from "firebase/database";
+import {
+  getDatabase,
+  ref as relRef,
+  set,
+  child,
+  push,
+  update,
+  onValue,
+  get,
+  off,
+} from "firebase/database";
 
 import swDev from "../swDev";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
   authDomain: "motortrack-97569.firebaseapp.com",
+  databaseURL:
+    "https://motortrack-97569-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "motortrack-97569",
   storageBucket: "motortrack-97569.appspot.com",
   messagingSenderId: "899173634521",
@@ -53,7 +65,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const database = getDatabase(app);
+export const database = getDatabase(app);
 export const messaging = getMessaging(app);
 type dataType = {
   id: string;
@@ -92,7 +104,6 @@ const firebase = {
     return new Promise((resolve) => {
       signOut(auth)
         .then(() => {
-          console.log("out");
           resolve("Logout");
         })
         .catch((error) => {
@@ -340,8 +351,6 @@ const firebase = {
   async onMessageFromFCM() {
     return new Promise((resolve) => {
       onMessage(messaging, (payload) => {
-        console.log("Message received. ", payload);
-
         if (payload.notification) {
           const notificationTitle = payload.notification.title;
           const notificationOptions = {
@@ -382,11 +391,57 @@ const firebase = {
       }
     });
   },
-  async setUserMapRoom(id: string, data): Promise<string> {
+  async setUserMapRoom(id: string, data: userType[]): Promise<string> {
     return new Promise(async (resolve) => {
       console.log(data);
       set(relRef(database, "room/" + id + "/users"), data);
       resolve("submit");
+    });
+  },
+  async updateUserMapRoom(url: string, data: object): Promise<string> {
+    return new Promise(async (resolve) => {
+      update(relRef(database, url), data);
+      resolve("update");
+    });
+  },
+  async getUserMapRoom(id: string): Promise<userType[]> {
+    return new Promise(async (resolve) => {
+      const dbRef = relRef(database);
+      get(child(dbRef, "room/" + id + "/users"))
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            resolve(snapshot.val());
+          } else {
+            console.log("No data available");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  },
+  async listenUserMapRoom(id: string): Promise<userType[]> {
+    return new Promise(async (resolve) => {
+      const usersRef = relRef(database, "room/" + id + "/users");
+      onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+
+        resolve(data);
+      });
+    });
+  },
+  async getIdMapRoom(id: string, data: userType): Promise<string> {
+    return new Promise(async (resolve) => {
+      const newKey = push(child(relRef(database), "room/" + id + "/users")).key;
+
+      update(relRef(database), data);
+      resolve(newKey as string);
+    });
+  },
+  async offUserMapRoom(url: string): Promise<userType[]> {
+    return new Promise(async (resolve) => {
+      const usersRef = relRef(database, url);
+      off(usersRef);
     });
   },
 };

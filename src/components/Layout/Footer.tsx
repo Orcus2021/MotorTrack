@@ -11,8 +11,9 @@ import refuelIcon from "../../assets/icon/refuel-plus.png";
 import mapIcon from "../../assets/icon/map.png";
 import stopWatchIcon from "../../assets/icon/stopwatch.png";
 import addRecordIcon from "../../assets/icon/add-record.png";
+import shopIcon from "../../assets/icon/shop.png";
 
-const Container = styled.div<{ $isAuth: boolean }>`
+const FooterContainer = styled.div<{ $isAuth: boolean }>`
   position: relative;
   display: none;
   position: fixed;
@@ -126,6 +127,7 @@ const Footer = () => {
   const [selectPage, setSelectPage] = useState<string>("status");
   const [showEdit, setShowEdit] = useState<boolean>(false);
   const isAuth = useAppSelector((state) => state.user.isAuth);
+  const userID = useAppSelector((state) => state.user.user.id);
   const navigate = useNavigate();
   const path = useLocation().pathname;
 
@@ -138,6 +140,8 @@ const Footer = () => {
       setSelectPage("store");
     } else if (path.includes("mileage")) {
       setSelectPage("mileage");
+    } else if (path.includes("my_map")) {
+      setSelectPage("myMap");
     }
   }, []);
 
@@ -154,6 +158,8 @@ const Footer = () => {
       navigate("/store");
     } else if (str === "mileage") {
       navigate("/mileage");
+    } else if (str === "myMap") {
+      navigate(`/my_map/${userID}`);
     }
   };
 
@@ -176,7 +182,7 @@ const Footer = () => {
     });
   };
   return (
-    <Container $isAuth={isAuth}>
+    <FooterContainer $isAuth={isAuth}>
       <NavWrapper>
         <Nav
           $isSelect={selectPage === "status"}
@@ -203,6 +209,18 @@ const Footer = () => {
           <IconText>摩托日誌</IconText>
         </Nav>
         <Nav
+          $isSelect={selectPage === "myMap"}
+          onClick={() => {
+            selectHandler("myMap");
+            setShowEdit(false);
+          }}
+        >
+          <IconBox>
+            <Img src={mapIcon} />
+          </IconBox>
+          <IconText>我的地圖</IconText>
+        </Nav>
+        <Nav
           $isSelect={selectPage === "store"}
           onClick={() => {
             selectHandler("store");
@@ -210,7 +228,7 @@ const Footer = () => {
           }}
         >
           <IconBox>
-            <Img src={mapIcon} />
+            <Img src={shopIcon} />
           </IconBox>
           <IconText>商家地圖</IconText>
         </Nav>
@@ -269,7 +287,7 @@ const Footer = () => {
           </EditBox>
         </EditWrapper>
       </NavWrapper>
-    </Container>
+    </FooterContainer>
   );
 };
 

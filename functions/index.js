@@ -113,7 +113,6 @@ exports.checkCarNotification = functions.https.onRequest(
 );
 
 exports.getUserNearby = functions.https.onRequest((request, response) => {
-  console.log(request.query);
   cors(request, response, () => {
     axios(
       encodeURI(

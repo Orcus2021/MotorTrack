@@ -142,7 +142,6 @@ const asyncRecordAction = {
       };
       try {
         const record = await add();
-        console.log(record);
         dispatch(recordActions.addExpense(record));
       } catch (e) {
         console.log(e);

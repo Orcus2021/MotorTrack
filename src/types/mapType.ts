@@ -17,8 +17,10 @@ export type markerType = {
 export type userType = {
   id: string;
   name: string;
-  position: positionType;
+  position: positionType | "";
   img: string;
+  onLine: boolean;
+  out?: boolean;
 };
 export type myMapContentType = {
   name: string;
@@ -28,4 +30,17 @@ export type myMapContentType = {
   markers: markerType[] | [];
   center: positionType;
   zoom: number;
+};
+
+export type boundType = {
+  hLat: number | undefined;
+  lLat: number | undefined;
+  hLng: number | undefined;
+  lLng: number | undefined;
+};
+
+export type geolocationOptionType = {
+  enableHighAccuracy: boolean;
+  timeout: number;
+  maximumAge: number;
 };

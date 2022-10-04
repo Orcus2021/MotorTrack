@@ -197,7 +197,6 @@ const Record = () => {
   }, [location, onRecord]);
 
   const recordCategoryHandler = (category: string) => {
-    // setRecordCategory(category);
     onRecord(category);
     setUpdate("");
   };

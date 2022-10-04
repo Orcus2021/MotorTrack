@@ -12,7 +12,7 @@ import PersonIcon from "../../assets/icon/person.png";
 import menuIcon from "../../assets/icon/hamburger.png";
 import logoIcon from "../../assets/icon/logo192.png";
 
-const HeaderWrapper = styled.div<{
+const HeaderContainer = styled.div<{
   $isModify: boolean;
   $isNav: boolean;
   $isScroll: boolean;
@@ -65,17 +65,23 @@ const NavProfile = styled.div`
   cursor: pointer;
 `;
 
-const Nav = styled.p`
+const Nav = styled.p<{ $isSelected: boolean }>`
   cursor: pointer;
   margin-right: 10px;
+  color: ${(props) => (props.$isSelected ? "var(--mainColor)" : "#fff")};
+  border-top: transparent;
+  padding: 2px 0;
+  border-bottom: solid 2px
+    ${(props) => (props.$isSelected ? "var(--mainColor)" : "transparent")};
   &:hover {
-    color: var(--lightColor);
+    color: var(--mainColor);
+    border-bottom: solid 2px var(--mainColor);
   }
   @media screen and (max-width: 701px) {
     display: none;
   }
 `;
-const NavRightBx = styled.div`
+const NavRightWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -89,7 +95,7 @@ const NavRightBx = styled.div`
   }
 `;
 
-const MemberBox = styled.div<{ $isOffline: boolean }>`
+const MemberWrapper = styled.div<{ $isOffline: boolean }>`
   padding: 2px 10px;
   cursor: pointer;
   background-color: ${(props) =>
@@ -168,7 +174,7 @@ const UserImg = styled.img<{ $isOffline: boolean }>`
   }
 `;
 
-const UserOffline = styled.div`
+const OfflineBox = styled.div`
   background-color: #ff5555;
   border-radius: 0 20px 20px 0;
   padding: 2px 5px;
@@ -185,6 +191,7 @@ const Header = () => {
   const { isAuth, isNav, isOffline } = user;
   const [scrollShow, setScrollShow] = useState<boolean>(false);
   const isModify = location.pathname.includes("car_manage");
+  const pathname = location.pathname;
   const scrollScreen = useCallback(() => {
     const lastScrollY = window.scrollY;
     if (lastScrollY > 0) {
@@ -203,11 +210,7 @@ const Header = () => {
   }, [scrollScreen]);
 
   const goHomePage = () => {
-    if (isAuth) {
-      navigate("/status");
-    } else {
-      navigate("/");
-    }
+    navigate("/");
   };
   const goOtherPage = (url: string) => {
     navigate(url);
@@ -225,39 +228,60 @@ const Header = () => {
     dispatch(userActions.showNav(!isNav));
   };
   return (
-    <HeaderWrapper $isModify={isModify} $isNav={isNav} $isScroll={scrollShow}>
+    <HeaderContainer $isModify={isModify} $isNav={isNav} $isScroll={scrollShow}>
       {isModify && <MenuImg src={menuIcon} onClick={slideBarHandler} />}
-
       <Logo src={logoImg} onClick={goHomePage} />
-
-      <NavRightBx>
-        {isAuth && (
-          <Nav onClick={() => goOtherPage(`/my_map/${user.user.id}`)}>
-            我的地圖
-          </Nav>
-        )}
-        {isAuth && <Nav onClick={() => goOtherPage(`/status`)}>儀錶板</Nav>}
-        {isAuth && (
-          <Nav onClick={() => goOtherPage(`/car_manage/record`)}>摩托日誌</Nav>
-        )}
-        <Nav onClick={() => goOtherPage(`/store`)}>商家地圖</Nav>
-        {isAuth && <Nav onClick={() => goOtherPage(`/mileage`)}>里程紀錄</Nav>}
+      <NavRightWrapper>
         {isAuth && (
           <>
+            <Nav
+              onClick={() => goOtherPage(`/status`)}
+              $isSelected={pathname.includes("status")}
+            >
+              儀錶板
+            </Nav>
+            <Nav
+              onClick={() => goOtherPage(`/car_manage/record`)}
+              $isSelected={pathname.includes("car_manage")}
+            >
+              摩托日誌
+            </Nav>
+            <Nav
+              onClick={() => goOtherPage(`/my_map/${user.user.id}`)}
+              $isSelected={pathname.includes("my_map")}
+            >
+              我的地圖
+            </Nav>
+          </>
+        )}
+        <Nav
+          onClick={() => goOtherPage(`/store`)}
+          $isSelected={pathname.includes("store")}
+        >
+          商家地圖
+        </Nav>
+        {isAuth && (
+          <>
+            <Nav
+              onClick={() => goOtherPage(`/mileage`)}
+              $isSelected={pathname.includes("mileage")}
+            >
+              里程紀錄
+            </Nav>
             <UserImg
               src={user.user.userImg || logoIcon}
               onClick={goProfile}
               $isOffline={isOffline}
             />
             {isOffline && (
-              <UserOffline>
+              <OfflineBox>
                 <Offline>離線</Offline>
-              </UserOffline>
+              </OfflineBox>
             )}
           </>
         )}
         {!isAuth && (
-          <MemberBox onClick={goProfile} $isOffline={isOffline}>
+          <MemberWrapper onClick={goProfile} $isOffline={isOffline}>
             <NavProfile>
               <Img src={PersonIcon} />
             </NavProfile>
@@ -265,10 +289,10 @@ const Header = () => {
             {!isAuth && !isOffline && (
               <LoginMessage hideOnMobile>登入</LoginMessage>
             )}
-          </MemberBox>
+          </MemberWrapper>
         )}
-      </NavRightBx>
-    </HeaderWrapper>
+      </NavRightWrapper>
+    </HeaderContainer>
   );
 };
 

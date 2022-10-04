@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../../../../components/style";
 import parts from "../../../../utils/parts";
@@ -71,32 +71,38 @@ const Select = () => {
   const showContentHandler = () => {
     setShowContent((pre) => !pre);
   };
-  const selectPartHandler = (key: string, name: string) => {
-    setValue("category", key);
-    setPartName(name);
-    setValue("mileage", parts.get(key)?.mileage as number);
-    setValue("month", parts.get(key)?.expirationMonth as number);
-    setValue("year", parts.get(key)?.expirationYear as number);
-  };
+  const selectPartHandler = useCallback(
+    (key: string, name: string) => {
+      setValue("category", key);
+      setPartName(name);
+      setValue("mileage", parts.get(key)?.mileage as number);
+      setValue("month", parts.get(key)?.expirationMonth as number);
+      setValue("year", parts.get(key)?.expirationYear as number);
+    },
+    [setValue]
+  );
 
-  const options: JSX.Element[] = [];
-  parts.forEach((value, key) => {
-    options.push(
-      <Content
-        onClick={() => selectPartHandler(key, value.name)}
-        key={value.name}
-      >
-        <BrandBx>
-          <Img src={parts.get(key)?.icon} />
-        </BrandBx>
-        <CarName>{value.name}</CarName>
-      </Content>
-    );
-  });
+  const getPartsList = useCallback(() => {
+    const options: JSX.Element[] = [];
+    parts.forEach((value, key) => {
+      options.push(
+        <Content
+          onClick={() => selectPartHandler(key, value.name)}
+          key={value.name}
+        >
+          <BrandBx>
+            <Img src={parts.get(key)?.icon} />
+          </BrandBx>
+          <CarName>{value.name}</CarName>
+        </Content>
+      );
+    });
+    return options;
+  }, [selectPartHandler]);
   return (
     <>
       <SelectBox
-        options={options}
+        options={getPartsList()}
         icon={arrowIcon}
         onShow={showContentHandler}
         showContent={showContent}

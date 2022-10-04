@@ -17,8 +17,6 @@ export const InputFloat = styled.input`
     font-size: 0.7rem;
     padding: 0 10px;
     background-color: var(--mainColor);
-    /* border-left: 1px solid #00dfc4;
-    border-right: 1px solid #00dfc4; */
     letter-spacing: 0.2rem;
     border-radius: 2px;
   }

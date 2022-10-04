@@ -1,7 +1,7 @@
 import React, { HTMLAttributes } from "react";
 import styled from "styled-components/macro";
 
-const Wrapper = styled.div<{
+const CardContainer = styled.div<{
   $width: number | undefined;
   $height: number | undefined;
   $hover: boolean;
@@ -60,7 +60,7 @@ const Card: React.FC<Props> = ({
   handleClick,
 }) => {
   return (
-    <Wrapper
+    <CardContainer
       $width={width}
       $height={height}
       $hover={hover}
@@ -69,7 +69,7 @@ const Card: React.FC<Props> = ({
       onClick={handleClick}
     >
       {children}
-    </Wrapper>
+    </CardContainer>
   );
 };
 

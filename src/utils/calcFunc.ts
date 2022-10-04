@@ -1,5 +1,6 @@
 import { repairType, feeType, partType } from "../types/recordType";
 import { carType } from "../types/carType";
+import { positionType, geolocationOptionType } from "../types/mapType";
 import { userActions } from "../store/user/userReducer";
 import { AppDispatch } from "../store";
 import firebase from "./firebase";
@@ -190,9 +191,6 @@ export const compareDateAndMileage = (
 
 export const requestPermission = async () => {
   const permission = await Notification.requestPermission();
-  // if (permission === "granted") {
-  //   console.log("Notification permission granted.");
-  // }
   return permission;
 };
 export const getMessageToken = async () => {
@@ -203,5 +201,64 @@ export const getMessageToken = async () => {
     return response;
   } catch (err) {
     console.log(err);
+  }
+};
+export const getUserLocation = (options: geolocationOptionType) => {
+  return new Promise(
+    async (
+      resolve: (value: positionType) => void,
+      reject: (value: string) => void
+    ) => {
+      if (navigator.geolocation) {
+        const success = (pos: GeolocationPosition) => {
+          const crd = pos.coords;
+          const position: positionType = {
+            lat: crd.latitude,
+            lng: crd.longitude,
+          };
+          resolve(position);
+        };
+        const error = (err: any) => {
+          console.warn(`ERROR(${err.code}): ${err.message}`);
+          reject(`ERROR(${err.code}): ${err.message}`);
+        };
+        navigator.geolocation.getCurrentPosition(success, error, options);
+      } else {
+        console.log("Geolocation is not supported for this Browser/OS.");
+      }
+    }
+  );
+};
+
+export const calcDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+  unit: string
+) => {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0;
+  } else {
+    var radlat1 = (Math.PI * lat1) / 180;
+    var radlat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radtheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    if (unit === "K") {
+      dist = dist * 1.609344;
+    }
+    if (unit === "N") {
+      dist = dist * 0.8684;
+    }
+    return dist;
   }
 };

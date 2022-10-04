@@ -73,8 +73,6 @@ this.addEventListener("fetch", (event) => {
 });
 
 messaging.onBackgroundMessage(function (payload) {
-  console.log("Received background message ", payload);
-
   this.registration.showNotification(payload.notification.title, {
     body: payload.notification.body,
     icon: "logo192.png",

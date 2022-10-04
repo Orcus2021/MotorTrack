@@ -10,17 +10,10 @@ const Container = styled.div`
   border-radius: 8px;
   backdrop-filter: blur(5px);
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
-  /* display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap; */
   display: grid;
   justify-content: space-evenly;
   grid-template-columns: repeat(auto-fill, 80px);
   grid-auto-rows: 90px;
-  /* overflow-y: scroll; */
-  gap: 10px;
   padding: 10px;
 `;
 const CardBx = styled.div`

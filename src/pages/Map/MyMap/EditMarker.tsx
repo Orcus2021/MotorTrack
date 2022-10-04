@@ -7,7 +7,7 @@ import markerIcon from "../../../assets/icon/marker.png";
 import editIcon from "../../../assets/icon/add-record.png";
 import trashIcon from "../../../assets/icon/trash.png";
 
-const EditWrapper = styled.div`
+const EditWrapper = styled.div<{ $isShow: boolean }>`
   position: absolute;
   background-color: var(--secondBack);
   border-radius: 8px;
@@ -15,22 +15,33 @@ const EditWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   width: 200px;
-  padding: 10px;
-  top: 10px;
-  left: 10px;
+  padding: 5px 0 10px 0;
+  top: 50px;
+  transition: 0.5s;
+  left: ${(props) => (props.$isShow ? "10px" : "-100%")};
 `;
 const MarkerTitle = styled.p`
   font-size: 16px;
+  width: calc(100% - 20px);
   text-align: center;
+  padding-bottom: 5px;
+  border-bottom: 1.5px #dddddd solid;
 `;
 const MarkerItemWrapper = styled.div`
   overflow: overlay;
 `;
 const MarkerItemBox = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--mainColor);
+  }
 `;
 
 const MarkerItemOrder = styled.p`
@@ -39,32 +50,39 @@ const MarkerItemOrder = styled.p`
 `;
 
 const MarkerItemImg = styled.img`
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   object-fit: cover;
   margin-right: 5px;
 `;
-const MarkerItemName = styled.p`
+const MarkerItemName = styled.p<{ $isEdit: boolean }>`
+  width: ${(props) => (props.$isEdit ? "95px" : "135px")};
+  max-width: ${(props) => (props.$isEdit ? "95px" : "135px")};
   font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 const MarkerEditWrapper = styled.div`
   position: absolute;
-  /* background-color: var(--secondBack); */
-  background-color: #fff;
+  background-color: var(--secondBack);
+  /* background-color: #fff; */
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* width: 200px; */
   padding: 10px;
-  top: 10px;
-  left: 220px;
+  top: 50px;
+  left: 10px;
 `;
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: 5px;
+  margin-top: 5px;
+
   justify-content: flex-end;
 `;
 const InputLabel = styled.label`
@@ -72,7 +90,7 @@ const InputLabel = styled.label`
   font-size: 14px;
 `;
 const Input = styled.input`
-  width: 100px;
+  width: 80px;
   font-size: 14px;
   outline: none;
   border: 1px solid var(--mainBack);
@@ -89,6 +107,7 @@ type Prop = {
   onRemove: (id: string) => void;
   onSelectMarker: (id: string) => void;
   onClear: () => void;
+  showMarkerBox: boolean;
 };
 
 const EditMarker: FC<Prop> = (props) => {
@@ -100,6 +119,7 @@ const EditMarker: FC<Prop> = (props) => {
     onSelectMarker,
     isEdit,
     setPassword,
+    showMarkerBox,
   } = props;
   const [showEditBox, setShowEditBox] = useState<boolean>(false);
   const [selectMarkerIndex, setSelectMarkerIndex] =
@@ -114,45 +134,51 @@ const EditMarker: FC<Prop> = (props) => {
 
   return (
     <>
-      <EditWrapper>
-        <MarkerTitle>{isEdit ? "編輯" : "標記"}</MarkerTitle>
-        {isEdit && (
-          <InputWrapper>
-            <InputLabel>密碼 :</InputLabel>
-            <Input
-              type="password"
-              name="password"
-              value={password}
-              onChange={setPassword}
-            />
-          </InputWrapper>
-        )}
+      {!showEditBox && (
+        <EditWrapper $isShow={showMarkerBox}>
+          <MarkerTitle>{isEdit ? "編輯" : "標記"}</MarkerTitle>
+          {isEdit && (
+            <InputWrapper>
+              <InputLabel>密碼 :</InputLabel>
+              <Input
+                type="text"
+                name="password"
+                value={password}
+                onChange={setPassword}
+              />
+            </InputWrapper>
+          )}
 
-        <MarkerItemWrapper>
-          {markers.map((marker, index) => (
-            <MarkerItemBox onClick={() => onSelectMarker(marker.id)}>
-              <MarkerItemOrder>{marker.order}.</MarkerItemOrder>
-              <MarkerItemImg src={markerIcon} />
-              <MarkerItemName>{marker.title}</MarkerItemName>
-              {isEdit && (
-                <>
-                  <MarkerItemImg
-                    src={trashIcon}
-                    onClick={() => onRemove(marker.id)}
-                  />
-                  <MarkerItemImg
-                    src={editIcon}
-                    onClick={() => showEditBoxHandler(index)}
-                  />
-                </>
-              )}
-            </MarkerItemBox>
-          ))}
-        </MarkerItemWrapper>
-      </EditWrapper>
+          <MarkerItemWrapper>
+            {markers.map((marker, index) => (
+              <MarkerItemBox
+                key={marker.id}
+                onClick={() => onSelectMarker(marker.id)}
+              >
+                <MarkerItemOrder>{marker.order}.</MarkerItemOrder>
+                <MarkerItemImg src={markerIcon} />
+                <MarkerItemName $isEdit={isEdit}>{marker.title}</MarkerItemName>
+                {isEdit && (
+                  <>
+                    <MarkerItemImg
+                      src={trashIcon}
+                      onClick={() => onRemove(marker.id)}
+                    />
+                    <MarkerItemImg
+                      src={editIcon}
+                      onClick={() => showEditBoxHandler(index)}
+                    />
+                  </>
+                )}
+              </MarkerItemBox>
+            ))}
+          </MarkerItemWrapper>
+        </EditWrapper>
+      )}
       {showEditBox && selectMarkerIndex !== null && (
         <MarkerEditWrapper>
           <InfoContent
+            from="editMarker"
             markerIndex={selectMarkerIndex}
             marker={markers[selectMarkerIndex]}
             onSubmitMarker={onSubmitMarker}

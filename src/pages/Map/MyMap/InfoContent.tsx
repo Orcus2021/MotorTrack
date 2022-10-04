@@ -3,7 +3,16 @@ import styled from "styled-components/macro";
 import uuid from "react-uuid";
 import { markerContentType, markerType } from "../../../types/mapType";
 
-const Container = styled.div``;
+import cancelWhiteIcon from "../../../assets/icon/multiply.png";
+import doneIcon from "../../../assets/icon/done.png";
+import markerIcon from "../../../assets/icon/marker.png";
+
+const Container = styled.div<{ $from: boolean }>`
+  background-color: ${(props) => (props.$from ? "var(--secondBack)" : "#fff")};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 const InputWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -11,43 +20,88 @@ const InputWrapper = styled.div`
   margin-bottom: 5px;
   justify-content: flex-end;
 `;
-const InputLabel = styled.label`
-  width: 40px;
-  font-size: 14px;
-  color: #000;
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
 `;
-const Input = styled.input`
-  width: 100px;
+const InputLabel = styled.label<{ $from: boolean }>`
+  width: 40px;
+  height: 22px;
+  font-size: 14px;
+  line-height: 22px;
+  color: ${(props) => (props.$from ? "#fff" : "#000")};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+const TextLabel = styled.label<{ $from: boolean }>`
+  width: 40px;
+  height: 22px;
+  font-size: 14px;
+  line-height: 22px;
+  color: ${(props) => (props.$from ? "#fff" : "#000")};
+  display: flex;
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: center;
+`;
+const Input = styled.input<{ $from: boolean }>`
+  width: 160px;
   font-size: 14px;
   outline: none;
-  border: 1px solid var(--mainBack);
+  color: ${(props) => (props.$from ? "#fff" : "#000")};
+  border: 1px solid ${(props) => (props.$from ? "#fff" : "var(--mainBack)")};
   border-radius: 8px;
   padding: 0 5px;
+  background-color: transparent;
 `;
-const Textarea = styled.textarea`
+const Textarea = styled.textarea<{ $from: boolean }>`
   resize: none;
-  width: 100px;
+  width: 160px;
   height: 50px;
   font-size: 14px;
   outline: none;
-  border: 1px solid var(--mainBack);
+  color: ${(props) => (props.$from ? "#fff" : "#000")};
+  border: 1px solid ${(props) => (props.$from ? "#fff" : "var(--mainBack)")};
   border-radius: 8px;
   padding: 0 5px;
+  background-color: transparent;
 `;
-const Button = styled.div`
-  width: 20px;
-  height: 20px;
-  color: #000;
+
+const Img = styled.img<{ $from: boolean }>`
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 2px;
+  margin-left: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${(props) =>
+      props.$from ? "var(--thirdBack)" : "#a3a3a3"};
+  }
 `;
+
+const Title = styled.p<{ $from: boolean }>`
+  font-size: 16px;
+  width: 100%;
+  color: ${(props) => (props.$from ? "#fff" : "var(--secondBack)")};
+  text-align: center;
+  margin-bottom: 5px;
+`;
+
 type PropType = {
   onSubmitMarker: (index: number | null, content: markerType) => void;
   onClear: () => void;
   marker: null | markerType;
   markerIndex: number | null;
+  from: string;
 };
 
 const InfoContent: FC<PropType> = (props) => {
-  const { onSubmitMarker, onClear, marker, markerIndex } = props;
+  const { onSubmitMarker, onClear, marker, markerIndex, from } = props;
 
   const [markerContent, setMarkerContent] = useState<markerContentType>({
     title: "",
@@ -107,10 +161,12 @@ const InfoContent: FC<PropType> = (props) => {
   };
 
   return (
-    <Container>
+    <Container $from={from === "editMarker"}>
+      <Title $from={from === "editMarker"}>編輯</Title>
       <InputWrapper>
-        <InputLabel>標題 :</InputLabel>
+        <InputLabel $from={from === "editMarker"}>標題</InputLabel>
         <Input
+          $from={from === "editMarker"}
           type="text"
           name="title"
           value={markerContent.title}
@@ -118,8 +174,9 @@ const InfoContent: FC<PropType> = (props) => {
         />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>排序 :</InputLabel>
+        <InputLabel $from={from === "editMarker"}>排序</InputLabel>
         <Input
+          $from={from === "editMarker"}
           type="number"
           name="order"
           onFocus={() => {
@@ -134,17 +191,26 @@ const InfoContent: FC<PropType> = (props) => {
         />
       </InputWrapper>
       <InputWrapper>
-        <InputLabel>內容 :</InputLabel>
+        <TextLabel $from={from === "editMarker"}>內容</TextLabel>
         <Textarea
+          $from={from === "editMarker"}
           name="content"
           value={markerContent.content}
           onChange={contentHandler}
         />
       </InputWrapper>
-      <InputWrapper>
-        <Button onClick={onClear}>X</Button>
-        <Button onClick={submitHandler}>V</Button>
-      </InputWrapper>
+      <ButtonWrapper>
+        <Img
+          onClick={onClear}
+          src={cancelWhiteIcon}
+          $from={from === "editMarker"}
+        />
+        <Img
+          onClick={submitHandler}
+          src={doneIcon}
+          $from={from === "editMarker"}
+        />
+      </ButtonWrapper>
     </Container>
   );
 };

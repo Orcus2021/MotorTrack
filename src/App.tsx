@@ -102,7 +102,6 @@ const App = () => {
         dispatch(userActions.loading(false));
       });
       if (userId) {
-        console.log("onAuth App");
         dispatch(asyncUserAction.signIn(userId));
       }
     };
@@ -117,7 +116,7 @@ const App = () => {
 
   useEffect(() => {
     const onPWA = async () => {
-      const response = await firebase.onOffline().catch((msg) => {
+      await firebase.onOffline().catch((msg) => {
         console.log(msg);
       });
     };
@@ -141,7 +140,6 @@ const App = () => {
             console.log(e);
           });
 
-          console.log(token);
           if (token) {
             const found = user.pushToken.find(
               (initToken) => initToken === token

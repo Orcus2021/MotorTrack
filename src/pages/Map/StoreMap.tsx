@@ -11,7 +11,8 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading/Loading";
 import Circle from "../../components/Loading/Circle";
 import { useAppSelector, useAppDispatch } from "../../store";
-import { createMessage } from "../../utils/calcFunc";
+import { createMessage, getUserLocation } from "../../utils/calcFunc";
+import { positionType } from "../../types/mapType";
 
 import personIcon from "../../assets/icon/marker-person.png";
 
@@ -44,7 +45,6 @@ const SearchButton = styled.div`
   }
 `;
 const MapWrapper = styled.div`
-  /* max-width: 1200px; */
   width: 90%;
   height: calc(100vh - 141px);
   border-radius: 8px;
@@ -69,13 +69,9 @@ const MapWrapper = styled.div`
 
 const List = styled.div<{ $isSelected: boolean }>`
   position: absolute;
-  /* padding: 5px; */
   margin-bottom: 10px;
   top: 60px;
   left: calc(5% + 20px);
-
-  /* border-top: 1px solid rgba(255, 255, 255, 0.3); */
-  /* border-left: 1px solid rgba(255, 255, 255, 0.3); */
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(5px);
   border-radius: 8px;
@@ -97,7 +93,6 @@ const List = styled.div<{ $isSelected: boolean }>`
 const Title = styled.p`
   font-size: 14px;
   max-width: 145px;
-  /* color: var(--deepColor); */
   color: #fff;
   padding: 0 5px;
   background-color: var(--deepColor);
@@ -145,7 +140,7 @@ const LoadingWrapper = styled.div`
   height: 22px;
 `;
 
-const libraries = ["places", "drawing"] as (
+const libraries = ["places"] as (
   | "places"
   | "drawing"
   | "geometry"
@@ -157,10 +152,28 @@ const mapContainerStyle = {
   height: "100%",
   hide: true,
 };
-type locationMap = {
-  lat: number;
-  lng: number;
+const initMapCenter = {
+  lat: 25.0385,
+  lng: 121.5324,
 };
+const mapOption = {
+  fullscreenControl: false,
+  zoomControl: false,
+  mapTypeControl: false,
+  streetViewControl: false,
+  styles: [
+    {
+      stylers: [
+        {
+          visibility: "on",
+        },
+        { gamma: 1 },
+        { lightness: 1 },
+      ],
+    },
+  ],
+};
+
 type GoogleMapType = google.maps.Map;
 
 const StoreMap = () => {
@@ -168,7 +181,7 @@ const StoreMap = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isOffline = useAppSelector((state) => state.user.isOffline);
-  const [location, setLocation] = useState<locationMap | null>(null);
+  const [location, setLocation] = useState<positionType | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [markers, setMarkers] = useState<{ [index: string]: any }[]>([]);
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
@@ -195,36 +208,12 @@ const StoreMap = () => {
       navigate(-1);
     }
   }, [isLoaded, dispatch, isOffline, navigate]);
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      const options = {
-        enableHighAccuracy: false,
-        timeout: 5000,
-        maximumAge: 0,
-      };
-      const success = (pos: any) => {
-        console.log(pos);
-        const crd = pos.coords;
-        setLocation({
-          lat: crd.latitude,
-          lng: crd.longitude,
-        });
-        getNearBy(crd.latitude, crd.longitude);
-      };
-      const error = (err: any) => {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-      };
-      navigator.geolocation.getCurrentPosition(success, error, options);
-    } else {
-      console.log("Geolocation is not supported for this Browser/OS.");
-    }
-  };
 
   const selectMarkerHandler = (id: string | null) => {
     setSelected(id);
   };
 
-  const getNearBy = async (lat: string, lng: string) => {
+  const getNearBy = async (lat: number, lng: number) => {
     const response = await fetch(
       `https://us-central1-motortrack-97569.cloudfunctions.net/getUserNearby?lat=${lat}&lng=${lng}`
     );
@@ -239,9 +228,18 @@ const StoreMap = () => {
     }
     setSearchLoading(false);
   };
-  const searchStoreHandler = () => {
+  const searchStoreHandler = async () => {
     setSearchLoading(true);
-    getUserLocation();
+    const options = {
+      enableHighAccuracy: false,
+      timeout: 5000,
+      maximumAge: 0,
+    };
+    const position = await getUserLocation(options);
+    if (position.lat) {
+      setLocation(position);
+      getNearBy(position.lat, position.lng);
+    }
   };
 
   const goGoogleMap = (str: string) => {
@@ -268,31 +266,10 @@ const StoreMap = () => {
           {isLoaded && (
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
-              center={
-                location || {
-                  lat: 25.0385,
-                  lng: 121.5324,
-                }
-              }
+              center={location || initMapCenter}
               zoom={15}
               onLoad={onMapLoad}
-              options={{
-                fullscreenControl: false,
-                zoomControl: false,
-                mapTypeControl: false,
-                streetViewControl: false,
-                styles: [
-                  {
-                    stylers: [
-                      {
-                        visibility: "on",
-                      },
-                      { gamma: 1 },
-                      { lightness: 1 },
-                    ],
-                  },
-                ],
-              }}
+              options={mapOption}
             >
               {location && (
                 <Marker

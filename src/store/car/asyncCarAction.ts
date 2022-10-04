@@ -89,8 +89,6 @@ const asyncCarAction = {
       try {
         await deleteCar();
         dispatch(carActions.delete(id));
-
-        console.log("delete", id);
       } catch (e) {
         console.log(e);
       }

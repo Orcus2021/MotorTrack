@@ -78,7 +78,6 @@ const asyncUserAction = {
           await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
       } catch (e: any) {
-        console.log(e.message);
         if (
           e.message.includes("auth/user-not-found") ||
           e.message.includes("auth/wrong-password")
@@ -92,7 +91,7 @@ const asyncUserAction = {
   logout() {
     return async (dispatch: AppDispatch) => {
       const logout = async () => {
-        const response = await firebase.logout();
+        await firebase.logout();
       };
 
       try {

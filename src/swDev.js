@@ -6,14 +6,5 @@ const swDev = () => {
     resolve(sw);
   });
 };
-// if ("serviceWorker" in navigator) {
-//   navigator.serviceWorker.getRegistration().then(async (reg) => {
-//     const token = await messaging.getToken({
-//       vapidKey: messageKey,
-//       serviceWorkerRegistration: reg,
-//     });
-//     console.log("TOKEN", token);
-//     notificationsService.subscribeUser(token);
-//   });
-// }
+
 export default swDev;

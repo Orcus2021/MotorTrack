@@ -7,6 +7,8 @@ import Modal from "../../components/Modal/Modal";
 import MessageBox from "../../components/Modal/MessageBox";
 import asyncCarAction from "../../store/car/asyncCarAction";
 import { useAppDispatch, useAppSelector } from "../../store";
+import { calcDistance, getUserLocation } from "../../utils/calcFunc";
+import { positionType } from "../../types/mapType";
 import Ripple from "../../components/Loading/Ripple";
 
 const Container = styled.div`
@@ -110,91 +112,43 @@ const LoadingBox = styled.div`
   transform: translateX(-50%);
 `;
 
-type positionType = {
-  latitude: number;
-  longitude: number;
-};
-
 const Mileage = () => {
   const car = useAppSelector((state) => state.car.car);
   const carMileage = car?.mileage || 0;
   const dispatch = useAppDispatch();
   const [mileages, setMileages] = useState<number>(0);
   const [startRecord, setStartRecord] = useState<boolean>(false);
-  const timerGPS = useRef<any>("");
+  const timerGPS = useRef<ReturnType<typeof setInterval>>();
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [initMileage, setInitMileage] = useState<number | "">(carMileage);
 
-  const LonAndLat = useRef<{ latBefore: number; lonBefore: number }>({
-    latBefore: NaN,
-    lonBefore: NaN,
+  const LonAndLat = useRef<{ latBefore: number | ""; lonBefore: number | "" }>({
+    latBefore: "",
+    lonBefore: "",
   });
 
-  const [initMileage, setInitMileage] = useState<number | "">(carMileage);
-  const calcDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-    unit: string
-  ) => {
-    if (lat1 === lat2 && lon1 === lon2) {
-      return 0;
-    } else {
-      var radlat1 = (Math.PI * lat1) / 180;
-      var radlat2 = (Math.PI * lat2) / 180;
-      var theta = lon1 - lon2;
-      var radtheta = (Math.PI * theta) / 180;
-      var dist =
-        Math.sin(radlat1) * Math.sin(radlat2) +
-        Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-      if (dist > 1) {
-        dist = 1;
-      }
-      dist = Math.acos(dist);
-      dist = (dist * 180) / Math.PI;
-      dist = dist * 60 * 1.1515;
-      if (unit === "K") {
-        dist = dist * 1.609344;
-      }
-      if (unit === "N") {
-        dist = dist * 0.8684;
-      }
-      return dist;
-    }
-  };
   const distanceHandler = (position: positionType) => {
-    const { latitude, longitude } = position;
+    const { lat, lng } = position;
     if (LonAndLat.current?.latBefore && LonAndLat.current?.lonBefore) {
       const dist = calcDistance(
         LonAndLat.current.latBefore,
         LonAndLat.current.lonBefore,
-        latitude,
-        longitude,
+        lat,
+        lng,
         "K"
       );
       setMileages((pre) => pre + dist);
     }
-    LonAndLat.current.latBefore = latitude;
-    LonAndLat.current.lonBefore = longitude;
+    LonAndLat.current.latBefore = lat;
+    LonAndLat.current.lonBefore = lng;
   };
 
   const initMileageHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const changeMileage = Number(e.target.value);
     setInitMileage(changeMileage);
   };
-
-  const success = (pos: any) => {
-    const crd = pos.coords;
-    console.log(pos);
-    distanceHandler(crd);
-  };
-
-  const error = (err: any) => {
-    console.warn(`ERROR(${err.code}): ${err.message}`);
-  };
-
-  const startRecordHandler = () => {
+  const startRecordHandler = async () => {
     if (car && initMileage < car.mileage) {
       createMessage("error", dispatch, "低於原里程數");
       return;
@@ -207,9 +161,11 @@ const Mileage = () => {
         maximumAge: 0,
       };
       if (timerGPS.current) clearTimeout(timerGPS.current);
-      navigator.geolocation.getCurrentPosition(success, error, options);
-      timerGPS.current = setInterval(() => {
-        navigator.geolocation.getCurrentPosition(success, error, options);
+      const position = await getUserLocation(options);
+      distanceHandler(position);
+      timerGPS.current = setInterval(async () => {
+        const position = await getUserLocation(options);
+        distanceHandler(position);
       }, 5000);
       setStartRecord(true);
     } else {
@@ -219,16 +175,21 @@ const Mileage = () => {
   const endRecordHandler = () => {
     setShowConfirm(true);
     clearInterval(timerGPS.current);
-
     setStartRecord(false);
   };
   const closePartForm = () => {
     setCloseEffect(true);
-
     setTimeout(() => {
       setShowConfirm(false);
       setCloseEffect(false);
     }, 600);
+  };
+  const clearCalcDistanceContent = () => {
+    LonAndLat.current = {
+      latBefore: "",
+      lonBefore: "",
+    };
+    setMileages(0);
   };
   const updateMileageHandler = () => {
     if (car?.id && initMileage !== "") {
@@ -237,19 +198,11 @@ const Mileage = () => {
       setInitMileage(newMileage);
     }
 
-    LonAndLat.current = {
-      latBefore: NaN,
-      lonBefore: NaN,
-    };
-    setMileages(0);
+    clearCalcDistanceContent();
     closePartForm();
   };
   const cancelHandler = () => {
-    LonAndLat.current = {
-      latBefore: NaN,
-      lonBefore: NaN,
-    };
-    setMileages(0);
+    clearCalcDistanceContent();
     closePartForm();
   };
   const clearZeroHandler = () => {
