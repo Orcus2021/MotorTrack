@@ -411,7 +411,7 @@ const StoreMap = () => {
     firebase.updateUserMapRoom(updateUrl, mySelf);
     userIndex.current = null;
     clearInterval(userPositionTimer.current);
-
+    console.log("r");
     setRoomUsers(null);
     setIsJoin(false);
   };
