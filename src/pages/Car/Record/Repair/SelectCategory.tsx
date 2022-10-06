@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import styled from "styled-components/macro";
+import SelectBox from "../../../../components/SelectBox";
 import { Img } from "../../../../components/style";
 import parts from "../../../../utils/parts";
-import { useFormContext } from "react-hook-form";
-import SelectBox from "../../../../components/SelectBox";
 
 import arrowIcon from "../../../../assets/icon/arrow_down.png";
 
@@ -34,7 +34,7 @@ const BrandBx = styled.div`
   width: 20px;
   position: relative;
 `;
-const DisplayBrandBx = styled.div`
+const DisplayBrandBox = styled.div`
   height: 20px;
   width: 20px;
   margin-right: 5px;
@@ -60,7 +60,6 @@ const Select = () => {
   const methods = useFormContext();
   const { register, setValue, watch } = methods;
   const initName = parts.get(watch("category"))?.name as string;
-
   const [showContent, setShowContent] = useState<boolean>(false);
   const [partName, setPartName] = useState<string>("");
 
@@ -82,7 +81,7 @@ const Select = () => {
     [setValue]
   );
 
-  const getPartsList = useCallback(() => {
+  const partsList = useMemo(() => {
     const options: JSX.Element[] = [];
     parts.forEach((value, key) => {
       options.push(
@@ -91,7 +90,7 @@ const Select = () => {
           key={value.name}
         >
           <BrandBx>
-            <Img src={parts.get(key)?.icon} />
+            <Img src={value.icon} />
           </BrandBx>
           <CarName>{value.name}</CarName>
         </Content>
@@ -102,15 +101,15 @@ const Select = () => {
   return (
     <>
       <SelectBox
-        options={getPartsList()}
+        options={partsList}
         icon={arrowIcon}
         onShow={showContentHandler}
         showContent={showContent}
         width="50%"
       >
-        <DisplayBrandBx>
+        <DisplayBrandBox>
           <Img src={parts.get(watch("category"))?.icon} />
-        </DisplayBrandBx>
+        </DisplayBrandBox>
         <DisplayName>{partName}</DisplayName>
         <PartInput readOnly {...register("category", { required: true })} />
       </SelectBox>

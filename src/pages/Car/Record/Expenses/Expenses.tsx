@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import styled from "styled-components/macro";
-import expenseCategory from "../../../../utils/expenseItem";
-import { carType } from "../../../../types/carType";
-import { feeType } from "../../../../types/recordType";
-import { useForm, FormProvider } from "react-hook-form";
-import { useAppDispatch, useAppSelector } from "../../../../store";
-import asyncCarAction from "../../../../store/car/asyncCarAction";
-import { formatDate, createMessage } from "../../../../utils/calcFunc";
-import asyncRecordAction from "../../../../store/record/asyncRecordAction";
-import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
 import { NeonText } from "../../../../components/style";
-import FormNoteBox from "../FormNoteBox";
 import useFindSecond from "../../../../Hook/useFindSecond";
+import { useAppDispatch, useAppSelector } from "../../../../store";
+import asyncCarAction from "../../../../store/car/asyncCarAction";
+import asyncRecordAction from "../../../../store/record/asyncRecordAction";
+import { carType } from "../../../../types/carType";
+import { feeType } from "../../../../types/recordType";
+import { createMessage, formatDate } from "../../../../utils/calcFunc";
+import FormNoteBox from "../FormNoteBox";
+import SelectCategory from "./SelectCategory";
 
-const Container = styled.div`
+const ExpensesContainer = styled.div`
   width: 100%;
   max-width: 1280px;
   padding: 10px;
@@ -31,7 +30,7 @@ const InputWrapper = styled.div`
   }
 `;
 
-const DetailBX = styled.div`
+const DetailWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -87,15 +86,14 @@ const Expenses: React.FC<{
   const { onClose, updateId } = props;
   const dispatch = useAppDispatch();
   const secondMileage = useFindSecond();
+  const car = useAppSelector((state) => state.car.car);
   const record = useAppSelector((state) => {
     const newExpenses = [...state.record.fee, ...state.record.refuel];
     return newExpenses.find((record) => record.id === updateId);
   });
-
   const [selectCategory, setSelectCategory] = useState<string>(
     record?.category || "refuel"
   );
-  const car = useAppSelector((state) => state.car.car);
   const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
   const methods = useForm<feeType>({
     defaultValues: record || {
@@ -112,10 +110,6 @@ const Expenses: React.FC<{
     setValue,
   } = methods;
 
-  const closeRepair = () => {
-    onClose("record");
-  };
-
   useEffect(() => {
     if (updateId) {
       reset(record);
@@ -128,12 +122,11 @@ const Expenses: React.FC<{
     }
   }, [record, reset, updateId, carMileage]);
 
-  const options: JSX.Element[] = [];
-  expenseCategory.forEach((value, key) => {
-    options.push(<option value={key}>{value.name}</option>);
-  });
+  const closeRepairHandler = () => {
+    onClose("record");
+  };
 
-  const addMessage = (type: string) => {
+  const addPopupMessage = (type: string) => {
     let message = updateId ? "已更新紀錄" : "已新增紀錄";
     if (type === "error") message = "已刪除紀錄";
     createMessage(type, dispatch, message);
@@ -152,8 +145,6 @@ const Expenses: React.FC<{
     } else if (newRecord.category === record?.category) {
       dispatch(asyncRecordAction.updateExpense(carID as string, newRecord));
     } else if (newRecord.category !== record?.category) {
-      // FIXME
-
       dispatch(
         asyncRecordAction.updateDiffCategoryExpense(
           carID as string,
@@ -162,7 +153,7 @@ const Expenses: React.FC<{
         )
       );
     }
-    addMessage("remind");
+    addPopupMessage("remind");
     dispatch(
       asyncCarAction.updateCar(carID as string, { mileage: newRecord.mileage })
     );
@@ -182,7 +173,7 @@ const Expenses: React.FC<{
       )
     );
 
-    addMessage("error");
+    addPopupMessage("error");
     onClose("record");
   };
 
@@ -193,7 +184,7 @@ const Expenses: React.FC<{
 
   return (
     <>
-      <Container>
+      <ExpensesContainer>
         <FormProvider {...methods}>
           <Title>費用表單</Title>
           <InputsWrapper>
@@ -217,7 +208,7 @@ const Expenses: React.FC<{
               }}
               type="text"
             />
-            <DetailBX>
+            <DetailWrapper>
               <Detail>
                 <InputWrapper>
                   <InputBox
@@ -275,7 +266,7 @@ const Expenses: React.FC<{
                   type="number"
                 />
               </Detail>
-            </DetailBX>
+            </DetailWrapper>
           </InputsWrapper>
 
           <SelectCategory
@@ -285,13 +276,13 @@ const Expenses: React.FC<{
 
           <Select {...register("category")} />
           <FormNoteBox
-            onCloseRepair={closeRepair}
+            onCloseRepair={closeRepairHandler}
             onDeleteRepair={deleteRepairRecord}
             updateId={updateId}
             onSubmit={handleSubmit(createExpenseHandler)}
           />
         </FormProvider>
-      </Container>
+      </ExpensesContainer>
     </>
   );
 };

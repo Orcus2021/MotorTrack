@@ -1,6 +1,6 @@
-import styled from "styled-components/macro";
-import ReactDOM from "react-dom";
 import React from "react";
+import ReactDOM from "react-dom";
+import styled from "styled-components/macro";
 
 const Back = styled.div`
   position: fixed;
@@ -11,7 +11,7 @@ const Back = styled.div`
   z-index: 100;
   background-color: rgba(0, 0, 0, 0.7);
 `;
-const ModalBx = styled.div<{ $isClose: boolean; $width: number }>`
+const ModalBox = styled.div<{ $isClose: boolean; $width: number }>`
   top: 20%;
   left: calc((100% - ${(props) => props.$width}px) / 2);
   z-index: 101;
@@ -64,9 +64,9 @@ const ModalOverlay: React.FC<{
   const { closeEffect, containerWidth } = props;
 
   return (
-    <ModalBx $isClose={closeEffect} $width={containerWidth}>
+    <ModalBox $isClose={closeEffect} $width={containerWidth}>
       <ModalContent>{props.children}</ModalContent>
-    </ModalBx>
+    </ModalBox>
   );
 };
 const Backdrop: React.FC<{

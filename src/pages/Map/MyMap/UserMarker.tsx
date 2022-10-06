@@ -1,7 +1,7 @@
-import React, { FC, useEffect, useState, useCallback } from "react";
-import styled from "styled-components/macro";
 import { InfoBox } from "@react-google-maps/api";
-import { userType, boundType, positionType } from "../../../types/mapType";
+import { FC, useCallback, useEffect, useState } from "react";
+import styled from "styled-components/macro";
+import { boundType, positionType, userType } from "../../../types/mapType";
 import { calcDistance } from "../../../utils/calcFunc";
 import FriendsBox from "./FriendsBox";
 
@@ -16,7 +16,7 @@ const UserImage = styled.img<{ $isOut: boolean | undefined }>`
   background-color: ${(props) =>
     props.$isOut ? "var(--errorColor)" : "var(--mainColor)"};
 `;
-type PropType = {
+type Props = {
   roomUsers: userType[] | null;
   showFriends: boolean;
   map: google.maps.Map | undefined;
@@ -29,11 +29,10 @@ type PropType = {
     | undefined;
 };
 
-const UserMarker: FC<PropType> = (props) => {
+const UserMarker: FC<Props> = (props) => {
   const { roomUsers, boundAndCenter, showFriends, onClearPanto, map } = props;
 
-  const [usersInfoBoxes, setUsersInfoBoxes] =
-    useState<userType[] | undefined>();
+  const [usersInfoBoxes, setUsersInfoBoxes] = useState<userType[] | null>(null);
 
   const outPosition = (
     mapBounds: boundType,
@@ -130,7 +129,10 @@ const UserMarker: FC<PropType> = (props) => {
     }
   };
   const checkUserPosition = useCallback(() => {
-    if (!boundAndCenter || !roomUsers) return;
+    if (!boundAndCenter || !roomUsers) {
+      return null;
+    }
+
     const jsonUsers = JSON.stringify(roomUsers);
     const newRoomUsers = JSON.parse(jsonUsers) as userType[];
 
@@ -156,7 +158,11 @@ const UserMarker: FC<PropType> = (props) => {
 
   useEffect(() => {
     const newUsers = checkUserPosition();
-    setUsersInfoBoxes(newUsers);
+    if (newUsers) {
+      setUsersInfoBoxes(newUsers);
+    } else {
+      setUsersInfoBoxes(null);
+    }
   }, [checkUserPosition, boundAndCenter]);
 
   return (

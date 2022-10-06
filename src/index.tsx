@@ -14,7 +14,7 @@ import StoreMap from "./pages/Map/StoreMap";
 import Mileage from "./pages/Mileage/Mileage";
 import MyMap from "./pages/Map/MyMap/MyMap";
 import NotFound from "./components/Layout/NotFound";
-import Test from "./Test";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
@@ -33,7 +33,6 @@ root.render(
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
           <Route path="status" element={<Status />} />
-          <Route path="test" element={<Test />} />
           <Route path="store" element={<StoreMap />} />
           <Route path="my_map/:userID" element={<MyMap />} />
           <Route path="mileage" element={<Mileage />} />

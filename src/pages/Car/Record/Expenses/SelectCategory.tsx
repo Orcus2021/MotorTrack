@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import styled from "styled-components/macro";
 import expenseCategory from "../../../../utils/expenseItem";
 
@@ -43,7 +43,6 @@ const Icon = styled.img`
   height: 50px;
   width: 50px;
   object-fit: cover;
-  /* background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); */
   background: linear-gradient(
     120deg,
     var(--secondColor) 0%,
@@ -60,24 +59,30 @@ const SelectCategory: React.FC<{
   onSelect: (key: string) => void;
   selectCategory: string;
 }> = ({ onSelect, selectCategory }) => {
-  const selectHandler = (key: string) => {
-    onSelect(key);
-  };
+  const selectHandler = useCallback(
+    (key: string) => {
+      onSelect(key);
+    },
+    [onSelect]
+  );
 
-  const categories: JSX.Element[] = [];
-  expenseCategory.forEach((value, key) => {
-    categories.push(
-      <CardBx key={value.name}>
-        <Card
-          $isSelect={selectCategory === key}
-          onClick={() => selectHandler(key)}
-        >
-          <Icon src={value.icon} />
-          <Category>{value.name}</Category>
-        </Card>
-      </CardBx>
-    );
-  });
+  const categories = useMemo(() => {
+    const categories: JSX.Element[] = [];
+    expenseCategory.forEach((value, key) => {
+      categories.push(
+        <CardBx key={value.name}>
+          <Card
+            $isSelect={selectCategory === key}
+            onClick={() => selectHandler(key)}
+          >
+            <Icon src={value.icon} />
+            <Category>{value.name}</Category>
+          </Card>
+        </CardBx>
+      );
+    });
+    return categories;
+  }, [selectCategory, selectHandler]);
 
   return <Container>{categories}</Container>;
 };

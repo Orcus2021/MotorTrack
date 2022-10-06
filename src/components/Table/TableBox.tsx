@@ -1,7 +1,7 @@
-import React, { FC, HTMLAttributes, ReactNode } from "react";
+import { FC, HTMLAttributes, ReactNode } from "react";
 import styled from "styled-components/macro";
 
-const TitleBx = styled.div`
+const TitleBox = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
@@ -27,13 +27,12 @@ const SubTitle = styled.div<{ $width: string }>`
   text-align: center;
 `;
 
-const TableBx = styled.div`
+const ContentBox = styled.div`
   min-height: 112px;
   max-height: calc(100vh - 285px);
   background: rgba(1, 0, 44, 0.2);
   backdrop-filter: blur(5px);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
-  /* overflow-y: scroll; */
   overflow: overlay;
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
   &::-webkit-scrollbar {
@@ -66,14 +65,14 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
 const TableBox: FC<Props> = ({ titles, children }) => {
   return (
     <>
-      <TitleBx>
+      <TitleBox>
         {titles.map((title) => (
           <SubTitle key={title.title} $width={title.width}>
             {title.title}
           </SubTitle>
         ))}
-      </TitleBx>
-      <TableBx>{children}</TableBx>
+      </TitleBox>
+      <ContentBox>{children}</ContentBox>
     </>
   );
 };

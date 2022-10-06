@@ -1,7 +1,7 @@
-import React, { FC, HTMLAttributes, ReactNode } from "react";
+import { FC, HTMLAttributes, ReactNode } from "react";
 import styled from "styled-components/macro";
 
-const TitleBx = styled.div`
+const TitleBox = styled.div`
   width: 100%;
   display: none;
   align-items: center;
@@ -27,7 +27,7 @@ const SubTitle = styled.div<{ $width: string }>`
   text-align: center;
 `;
 
-const TableBx = styled.div`
+const ContentBox = styled.div`
   min-height: 112px;
   display: none;
   max-height: calc(100vh - 285px);
@@ -66,14 +66,14 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
 const TableBox: FC<Props> = ({ titles, children }) => {
   return (
     <>
-      <TitleBx>
+      <TitleBox>
         {titles.map((title) => (
           <SubTitle key={title.title} $width={title.width}>
             {title.title}
           </SubTitle>
         ))}
-      </TitleBx>
-      <TableBx>{children}</TableBx>
+      </TitleBox>
+      <ContentBox>{children}</ContentBox>
     </>
   );
 };

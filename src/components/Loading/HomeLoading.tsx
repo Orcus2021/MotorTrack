@@ -1,8 +1,7 @@
-import React from "react";
 import styled from "styled-components/macro";
 
-import upLogo from "../../assets/img/logo_white-up.png";
 import downLogo from "../../assets/img/logo_white-down.png";
+import upLogo from "../../assets/img/logo_white-up.png";
 
 const Back = styled.div`
   position: fixed;
@@ -35,12 +34,10 @@ const LogoWrapper = styled.div`
   animation: scaleLogo linear forwards 1s 3s;
   @keyframes scaleLogo {
     0% {
-      /* transform: scale(1); */
       width: 215px;
       opacity: 1;
     }
     100% {
-      /* transform: scale(5); */
       width: 90vw;
       opacity: 0;
     }
@@ -48,10 +45,7 @@ const LogoWrapper = styled.div`
 `;
 const UpImg = styled.img`
   width: 100%;
-
   animation: logoUp linear forwards 0.5s;
-  /* animation: logoLight linear forwards 1s 1.5s; */
-
   @keyframes logoUp {
     0% {
       transform: translateY(23px);
@@ -61,14 +55,10 @@ const UpImg = styled.img`
     }
   }
 `;
-const UpWrapper = styled.div`
+const UpBox = styled.div`
   width: 100%;
-  /* height: 23px;
-  max-height: auto; */
   overflow: hidden;
-
   animation: lightText linear forwards 0.5s 2s;
-
   @keyframes lightText {
     0% {
       filter: drop-shadow(0px 0px 0px rgb(162, 196, 255));
@@ -78,10 +68,8 @@ const UpWrapper = styled.div`
     }
   }
 `;
-const DownWrapper = styled.div`
+const DownBox = styled.div`
   width: 100%;
-  /* height: 38px;
-  max-height: auto; */
   overflow: hidden;
   animation: lightText linear forwards 0.5s 2s;
 
@@ -112,12 +100,12 @@ const Loading = () => {
   return (
     <Back>
       <LogoWrapper>
-        <UpWrapper>
+        <UpBox>
           <UpImg src={upLogo} />
-        </UpWrapper>
-        <DownWrapper>
+        </UpBox>
+        <DownBox>
           <DownImg src={downLogo} />
-        </DownWrapper>
+        </DownBox>
       </LogoWrapper>
     </Back>
   );

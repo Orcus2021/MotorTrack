@@ -23,12 +23,12 @@ const Input = styled.input`
       0 0 8px rgba(102, 175, 233, 0.6);
   }
 `;
-type PropType = {
+type Props = {
   password: string;
   onClose: () => void;
 };
 
-const Confirm: FC<PropType> = (props) => {
+const Confirm: FC<Props> = (props) => {
   const { password, onClose } = props;
   const [selfPassword, setSelfPassword] = useState<string>("");
   const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

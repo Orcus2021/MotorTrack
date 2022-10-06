@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components/macro";
 import SelectBox from "../../components/SelectBox";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { recordActions } from "../../store/record/recordReducer";
-import { useAppSelector, useAppDispatch } from "../../store";
-import PieChar from "./PieChar";
 import BarChart from "./BarChart";
+import PieChar from "./PieChar";
 
 import arrowIcon from "../../assets/icon/arrow_down.png";
 const Container = styled.div`
@@ -97,11 +97,9 @@ const ChartOption = styled.p<{ $isSelectBar: boolean }>`
   }
   &:hover {
     color: #fff;
-    /* box-shadow: unset; */
   }
 `;
 const ChartWrapper = styled.div<{ $isSelectBar: string }>`
-  /* position: absolute; */
   position: relative;
   display: flex;
   flex-direction: row;
@@ -126,47 +124,53 @@ const Chart = () => {
   const [selectChart, setSelectChart] = useState<string>("pie");
   const expensesAnnual = useAppSelector((state) => state.car.car?.recordAnnual);
 
-  let annual = [];
-  for (let key in expensesAnnual) {
-    if (expensesAnnual[key] > 0) {
-      annual.push(key);
-    }
-  }
-  const selectAnnualHandler = (category: string) => {
-    if (category === "all") {
-      dispatch(recordActions.getAllExpense());
-      setSelect("全部");
-    } else {
-      dispatch(recordActions.getYearExpense(category));
-      setSelect(category);
-    }
-  };
+  const selectAnnualHandler = useCallback(
+    (category: string) => {
+      if (category === "all") {
+        dispatch(recordActions.getAllExpense());
+        setSelect("全部");
+      } else {
+        dispatch(recordActions.getYearExpense(category));
+        setSelect(category);
+      }
+    },
+    [dispatch]
+  );
   const showContentHandler = () => {
     setShowContent((pre) => !pre);
   };
 
-  const options: JSX.Element[] = [
-    <Option
-      key="all"
-      onClick={() => {
-        selectAnnualHandler("all");
-      }}
-    >
-      全部
-    </Option>,
-  ];
-  annual.forEach((year) =>
-    options.push(
+  const options = useMemo(() => {
+    const annual = [];
+    for (let key in expensesAnnual) {
+      if (expensesAnnual[key] > 0) {
+        annual.push(key);
+      }
+    }
+    const options: JSX.Element[] = [
       <Option
-        key={year}
+        key="all"
         onClick={() => {
-          selectAnnualHandler(year);
+          selectAnnualHandler("all");
         }}
       >
-        {year}年
-      </Option>
-    )
-  );
+        全部
+      </Option>,
+    ];
+    annual.forEach((year) =>
+      options.push(
+        <Option
+          key={year}
+          onClick={() => {
+            selectAnnualHandler(year);
+          }}
+        >
+          {year}年
+        </Option>
+      )
+    );
+    return options;
+  }, [expensesAnnual, selectAnnualHandler]);
 
   return (
     <Container>

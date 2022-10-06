@@ -1,13 +1,12 @@
-import React, { HTMLAttributes, FC, ReactNode } from "react";
+import React, { FC, HTMLAttributes, ReactNode } from "react";
 import styled from "styled-components/macro";
 import { Img } from "./style";
 
-const Container = styled.div<{
+const SelectContainer = styled.div<{
   $width: string;
   $isBorder: boolean | undefined;
 }>`
   width: ${(props) => props.$width};
-  /* padding: 6px 10px; */
   z-index: 2;
   border: ${(props) =>
     props.$isBorder ? "1px solid rgba(255, 255, 255, 0.25)" : "none"};
@@ -17,12 +16,9 @@ const Container = styled.div<{
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  /* overflow: hidden; */
 `;
 const Name = styled.div<{ $isBorder: boolean }>`
   padding: ${(props) => (props.$isBorder ? " 6px 0 6px 10px" : "0px")};
-  /* width: calc(100% - 28px); */
-
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -31,14 +27,14 @@ const Name = styled.div<{ $isBorder: boolean }>`
     flex-grow: 1;
   }
 `;
-const DownBx = styled.div`
+const DownIconBox = styled.div`
   height: 15px;
   width: 15px;
   position: relative;
   margin-right: 5px;
   cursor: pointer;
 `;
-const ContentBx = styled.div<{ $isShow: boolean }>`
+const ContentBox = styled.div<{ $isShow: boolean }>`
   width: 100%;
   position: absolute;
   background-color: #fff;
@@ -58,8 +54,6 @@ const ContentBx = styled.div<{ $isShow: boolean }>`
   top: calc(100% + 5px);
   left: 0;
   background-color: var(--thirdBack);
-
-  /* overflow-y: scroll; */
   max-height: 0;
   max-height: ${(props) => props.$isShow && "250px"};
   transition: 0.5s;
@@ -86,13 +80,13 @@ const SelectBox: FC<Props> = ({
   border = true,
 }) => {
   return (
-    <Container $width={width} $isBorder={border} onClick={onShow}>
+    <SelectContainer $width={width} $isBorder={border} onClick={onShow}>
       <Name $isBorder={border}>{children}</Name>
-      <DownBx>
+      <DownIconBox>
         <Img src={icon} />
-      </DownBx>
-      <ContentBx $isShow={showContent}>{options}</ContentBx>
-    </Container>
+      </DownIconBox>
+      <ContentBox $isShow={showContent}>{options}</ContentBox>
+    </SelectContainer>
   );
 };
 

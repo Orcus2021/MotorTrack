@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "../../../store";
 
-import { Img } from "../../../components/style";
-import Repair from "./Repair/Repair";
-import Expenses from "./Expenses/Expenses";
-import RecordList from "./RecordList";
-import styled from "styled-components/macro";
 import { useLocation, useOutletContext } from "react-router-dom";
-import { NeonText } from "../../../components/style";
-import TableBox from "../../../components/Table/TableBox";
+import styled from "styled-components/macro";
 import IconButton from "../../../components/Button/IconButton";
 import SkeletonForm from "../../../components/Skeleton/SkeletonForm";
+import { Img, NeonText } from "../../../components/style";
+import TableBox from "../../../components/Table/TableBox";
 import TableBoxRecord from "../../../components/Table/TableBoxRecord";
+import Expenses from "./Expenses/Expenses";
+import RecordList from "./RecordList";
+import Repair from "./Repair/Repair";
 
 import allIcon from "../../../assets/icon/chart-white.png";
-import whitePlusIcon from "../../../assets/icon/plus-white.png";
-import repairIcon from "../../../assets/icon/repair.png";
-import refuelIcon from "../../../assets/icon/refuel.png";
 import feeIcon from "../../../assets/icon/moneyBag.png";
+import whitePlusIcon from "../../../assets/icon/plus-white.png";
+import refuelIcon from "../../../assets/icon/refuel.png";
+import repairIcon from "../../../assets/icon/repair.png";
 
 const RecordContainer = styled.div`
   max-width: 1280px;
@@ -37,7 +36,7 @@ const CartWrapper = styled.div`
   }
 `;
 
-const CardBx = styled.div`
+const CardBox = styled.div`
   position: relative;
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
@@ -49,7 +48,7 @@ const CardBx = styled.div`
   align-items: center;
   justify-content: flex-start;
 `;
-const RecordDetail = styled.div`
+const RecordDetailWrapper = styled.div`
   position: relative;
   width: 100%;
   padding: 20px;
@@ -137,7 +136,7 @@ const TextBox = styled.div`
   flex-direction: column;
 `;
 
-const ImgBx = styled.div`
+const ImgBox = styled.div`
   height: 40px;
   width: 40px;
   position: relative;
@@ -168,9 +167,7 @@ const tableTitlesRwd = [
 ];
 
 const Record = () => {
-  // const [recordCategory, setRecordCategory] = useState<string>("record");
   const [selectCategory, setSelectCategory] = useState<string>("all");
-
   const [updateId, setUpdate] = useState<string>("");
   const location = useLocation().state as string;
   const outletProps =
@@ -213,7 +210,7 @@ const Record = () => {
     setSelectCategory(category);
   };
 
-  const clearUpdateId = () => {
+  const clearUpdateIdHandler = () => {
     setUpdate("");
   };
 
@@ -231,19 +228,18 @@ const Record = () => {
           <Title>車輛紀錄</Title>
           <CartWrapper>
             {CardInfo.map((card) => (
-              <CardBx key={card.title}>
-                <ImgBx>
+              <CardBox key={card.title}>
+                <ImgBox>
                   <Img src={card.icon} />
-                </ImgBx>
+                </ImgBox>
                 <TextBox>
                   <ExpenseNum>${card.expense}</ExpenseNum>
                   <ExpenseText>{card.title}</ExpenseText>
                 </TextBox>
-              </CardBx>
+              </CardBox>
             ))}
           </CartWrapper>
-
-          <RecordDetail>
+          <RecordDetailWrapper>
             <DetailHeader>
               <DetailRight $category={selectCategory}>
                 <DetailTitle onClick={() => selectCategoryHandler("all")}>
@@ -310,14 +306,14 @@ const Record = () => {
                 />
               )}
             </TableBoxRecord>
-          </RecordDetail>
+          </RecordDetailWrapper>
         </RecordContainer>
       )}
       {recordCategory === "repair" && (
         <Repair
           onClose={onRecord}
           updateId={updateId}
-          onClear={clearUpdateId}
+          onClear={clearUpdateIdHandler}
         />
       )}
       {recordCategory === "fee" && (

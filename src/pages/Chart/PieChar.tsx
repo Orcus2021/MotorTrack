@@ -1,4 +1,3 @@
-import React from "react";
 import ReactECharts from "echarts-for-react";
 import { useAppSelector } from "../../store";
 
@@ -13,7 +12,7 @@ const PieChar = () => {
     selectYear,
   } = expense;
 
-  let finalData = [
+  const finalData = [
     { value: repairExpenses, name: "維修" },
     { value: refuelExpenses, name: "加油/充電" },
     { value: feeExpenses, name: "費用" },

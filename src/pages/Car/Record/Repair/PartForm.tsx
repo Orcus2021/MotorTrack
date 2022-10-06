@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import styled from "styled-components/macro";
-import parts from "../../../../utils/parts";
-import { partType } from "../../../../types/recordType";
-import { useForm, FormProvider } from "react-hook-form";
+import Button from "../../../../components/Button/Button";
 import Input from "../../../../components/Input/Input";
-import SelectCategory from "./SelectCategory";
 import InputBox from "../../../../components/Input/InputBox";
 import Textarea from "../../../../components/Input/Textarea";
-import Button from "../../../../components/Button/Button";
+import { partType } from "../../../../types/recordType";
+import parts from "../../../../utils/parts";
+import SelectCategory from "./SelectCategory";
 
 const PartContainer = styled.div`
   width: 400px;
@@ -20,7 +20,7 @@ const PartContainer = styled.div`
     width: 100%;
   }
 `;
-const HeaderBx = styled.div`
+const HeaderBox = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -45,11 +45,11 @@ const BoxWrapper = styled.div`
   }
 `;
 
-const SpecBx = styled.div`
+const SpecBox = styled.div`
   width: 50%;
   margin-right: 10px;
 `;
-const ButtonBx = styled.div`
+const ButtonBox = styled.div`
   display: flex;
   width: 100%;
   flex-direction: row;
@@ -82,7 +82,7 @@ const TimeBox = styled(BoxWrapper)`
 const PartForm: React.FC<{
   onAddPart: (part: partType) => void;
   onClose: () => void;
-  part: partType;
+  part: partType | false;
 }> = (props) => {
   const { onAddPart, onClose, part } = props;
   const methods = useForm<partType>({ mode: "all" });
@@ -110,7 +110,7 @@ const PartForm: React.FC<{
     }
   }, [part, reset]);
 
-  const submitPart = (part: partType) => {
+  const submitPartHandler = (part: partType) => {
     const partName = parts.get(watch("category"));
     if (!partName) return;
     part.name = partName.name;
@@ -126,8 +126,8 @@ const PartForm: React.FC<{
   return (
     <PartContainer>
       <FormProvider {...methods}>
-        <HeaderBx>
-          <SpecBx>
+        <HeaderBox>
+          <SpecBox>
             <Input
               name="spec"
               content="規格"
@@ -140,9 +140,9 @@ const PartForm: React.FC<{
                 },
               }}
             />
-          </SpecBx>
+          </SpecBox>
           <SelectCategory />
-        </HeaderBx>
+        </HeaderBox>
         <InputWrapper>
           <BoxWrapper>
             <InputBox
@@ -248,14 +248,14 @@ const PartForm: React.FC<{
         </MileageColumn>
         <Textarea content="備註" name="note" height={80} />
 
-        <ButtonBx>
+        <ButtonBox>
           <Button label="取消" type="cancel" handleClick={closeFormHandler} />
           <Button
             label="新增"
             type="primary"
-            handleClick={handleSubmit(submitPart)}
+            handleClick={handleSubmit(submitPartHandler)}
           />
-        </ButtonBx>
+        </ButtonBox>
       </FormProvider>
     </PartContainer>
   );

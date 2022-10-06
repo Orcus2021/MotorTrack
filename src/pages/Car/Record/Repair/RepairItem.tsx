@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import styled from "styled-components/macro";
+import Confirm from "../../../../components/Modal/Confirm";
+import Modal from "../../../../components/Modal/Modal";
 import { partType } from "../../../../types/recordType";
 import parts from "../../../../utils/parts";
-import Modal from "../../../../components/Modal/Modal";
-import Confirm from "../../../../components/Modal/Confirm";
 
 import trashIcon from "../../../../assets/icon/trash.png";
 
-const ContentWrapper = styled.tr`
+const ItemContainer = styled.tr`
   height: 28px;
   cursor: pointer;
   &:nth-child(odd) {
@@ -83,17 +83,17 @@ const RepairItem: React.FC<Props> = (props) => {
     onDeletePart(record);
   };
 
-  const callConfirm = (e: React.MouseEvent) => {
+  const callConfirmHandler = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowConfirm(true);
   };
 
-  const deadline = () => {
+  const setDeadlineContent = () => {
     let msg: string = "";
     if (year > 0) {
-      msg += `${year}年`;
+      msg += `${year} 年`;
     } else if (month > 0) {
-      msg += `${month}月`;
+      msg += `${month} 月`;
     } else if (year === 0 && month === 0) {
       msg = "---";
     }
@@ -103,7 +103,7 @@ const RepairItem: React.FC<Props> = (props) => {
   const tableContent = [
     { content: parts.get(category)?.name, width: "100px" },
     { content: spec, width: "80px" },
-    { content: deadline(), width: "100px" },
+    { content: setDeadlineContent(), width: "100px" },
     { content: mileage, width: "auto" },
     { content: price, width: "80px" },
     { content: qty, width: "50px" },
@@ -126,7 +126,7 @@ const RepairItem: React.FC<Props> = (props) => {
 
   return (
     <>
-      <ContentWrapper onClick={showPartFormHandler}>
+      <ItemContainer onClick={showPartFormHandler}>
         {!rwd &&
           tableContent.map((content, index) => (
             <Content key={content.content + `${index}`} $width={content.width}>
@@ -139,12 +139,12 @@ const RepairItem: React.FC<Props> = (props) => {
               {content.content}
             </Content>
           ))}
-        <IconWrapper onClick={callConfirm}>
+        <IconWrapper onClick={callConfirmHandler}>
           <IconBox>
             <Icon src={trashIcon} />
           </IconBox>
         </IconWrapper>
-      </ContentWrapper>
+      </ItemContainer>
       {showConfirm && (
         <Modal
           closeEffect={closeEffect}

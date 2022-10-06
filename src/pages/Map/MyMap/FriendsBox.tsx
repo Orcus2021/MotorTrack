@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import styled from "styled-components/macro";
 import { positionType, userType } from "../../../types/mapType";
 
@@ -77,14 +77,14 @@ const NoUser = styled.p`
   width: 100%;
 `;
 
-type PropType = {
-  usersInfoBoxes: userType[] | undefined;
+type Props = {
+  usersInfoBoxes: userType[] | null;
   map: google.maps.Map | undefined;
   showFriends: boolean;
   onClearPanto: () => void;
 };
 
-const FriendsBox: FC<PropType> = (props) => {
+const FriendsBox: FC<Props> = (props) => {
   const { usersInfoBoxes, showFriends, onClearPanto, map } = props;
 
   const pantoUserHandler = (position: positionType) => {

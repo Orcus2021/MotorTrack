@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import Card from "../../components/Layout/Card";
-import InputBox from "../../components/Input/InputBox";
-import { useNavigate, useLocation } from "react-router-dom";
-import Button from "../../components/Button/Button";
-import { userActions } from "../../store/user/userReducer";
-import asyncUserAction from "../../store/user/asyncUserAction";
-import { useAppDispatch, useAppSelector } from "../../store/index";
+import React, { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Loading from "../../components/Loading/Loading";
-import { useForm, FormProvider } from "react-hook-form";
 import backImg from "../../assets/img/back-view2.jpg";
+import Button from "../../components/Button/Button";
+import InputBox from "../../components/Input/InputBox";
+import Card from "../../components/Layout/Card";
+import Loading from "../../components/Loading/Loading";
+import { useAppDispatch, useAppSelector } from "../../store/index";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import { userActions } from "../../store/user/userReducer";
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -92,7 +92,7 @@ const Login = () => {
     formState: { errors },
   } = methods;
 
-  const showSingUp = () => {
+  const showSingUpHandler = () => {
     if (isSignUp) {
       setTimeout(() => {
         setIsSignUp((pre) => !pre);
@@ -154,7 +154,6 @@ const Login = () => {
           <Card width={300} boxShadow={true}>
             <SignInWrapper>
               <Title>{isSignUp ? "註冊" : "登入"}</Title>
-
               <NameBox $isShow={signUpEffect}>
                 {isSignUp && (
                   <InputBox
@@ -223,7 +222,7 @@ const Login = () => {
 
               <SignUpTxt>
                 {isSignUp ? "已經有帳號了嗎？" : "新朋友?"}
-                <SignUpSpan onClick={showSingUp}>
+                <SignUpSpan onClick={showSingUpHandler}>
                   {isSignUp ? "登入" : "註冊"}
                 </SignUpSpan>
               </SignUpTxt>

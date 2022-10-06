@@ -1,7 +1,6 @@
-import React from "react";
 import styled from "styled-components/macro";
 
-const SkeletonWrapper = styled.div`
+const SkeletonContainer = styled.div`
   width: 100%;
   height: 50px;
   padding: 5px 10px;
@@ -88,13 +87,13 @@ const SkeletonBar = styled.div`
 
 const Skeleton = () => {
   return (
-    <SkeletonWrapper>
+    <SkeletonContainer>
       <SkeletonCircle />
       <SkeletonMidBox>
         <SkeletonBar />
         <SkeletonBar />
       </SkeletonMidBox>
-    </SkeletonWrapper>
+    </SkeletonContainer>
   );
 };
 

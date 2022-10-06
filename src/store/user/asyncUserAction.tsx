@@ -12,17 +12,13 @@ const asyncUserAction = {
   signUp(data: userLogin) {
     return async (dispatch: AppDispatch) => {
       dispatch(userActions.loading(true));
-      // dispatch(
-      //   userActions.showNotification({
-      //     status: "pending",
-      //     title: "Sending...",
-      //     message: "Sending user data!",
-      //   })
-      // );
       const signUp = async () => {
-        const userID = await firebase.signUp(data).catch((e) => {
-          throw new Error(e);
-        });
+        let userID;
+        try {
+          userID = await firebase.signUp(data);
+        } catch (e) {
+          console.log(e);
+        }
 
         if (userID) {
           const initUser = {
@@ -57,10 +53,9 @@ const asyncUserAction = {
 
       const signIn = async () => {
         let userID = data;
+
         if (typeof data !== "string") {
-          userID = await firebase.signIn(data).catch((e) => {
-            throw new Error(e);
-          });
+          userID = await firebase.signIn(data);
         }
         if (typeof userID === "string") {
           dispatch(asyncCarAction.getCars(userID));
@@ -77,14 +72,17 @@ const asyncUserAction = {
           dispatch(carActions.selectCar(user.selectCar));
           await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
-      } catch (e: any) {
-        if (
-          e.message.includes("auth/user-not-found") ||
-          e.message.includes("auth/wrong-password")
-        ) {
-          createMessage("error", dispatch, "帳號或密碼錯誤");
+      } catch (e) {
+        if (e instanceof Error) {
+          if (
+            e.message.includes("auth/user-not-found") ||
+            e.message.includes("auth/wrong-password")
+          ) {
+            createMessage("error", dispatch, "帳號或密碼錯誤");
+          }
+
+          dispatch(userActions.loading(false));
         }
-        dispatch(userActions.loading(false));
       }
     };
   },

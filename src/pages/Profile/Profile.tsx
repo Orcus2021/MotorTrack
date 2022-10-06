@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components/macro";
-import asyncUserAction from "../../store/user/asyncUserAction";
+import Loading from "../../components/Loading/Loading";
+import Modal from "../../components/Modal/Modal";
 import { Img } from "../../components/style";
 import { carActions } from "../../store/car/carReducer";
-import { recordActions } from "../../store/record/recordReducer";
 import { useAppDispatch, useAppSelector } from "../../store/index";
-import { useNavigate } from "react-router-dom";
-import Modal from "../../components/Modal/Modal";
-import Upload from "./Upload";
+import { recordActions } from "../../store/record/recordReducer";
+import asyncUserAction from "../../store/user/asyncUserAction";
 import { userActions } from "../../store/user/userReducer";
-import Loading from "../../components/Loading/Loading";
-import { requestPermission, getMessageToken } from "../../utils/calcFunc";
+import { getMessageToken, requestPermission } from "../../utils/calcFunc";
+import Upload from "./Upload";
 
-import banner from "../../assets/img/banner.JPG";
 import camera from "../../assets/icon/camera.png";
-import logout from "../../assets/icon/logout.png";
 import logoIcon from "../../assets/icon/logo192.png";
+import logout from "../../assets/icon/logout.png";
+import banner from "../../assets/img/banner.JPG";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -55,16 +55,15 @@ const UserWrapper = styled.div`
   padding: 0 30px;
   display: flex;
   flex-direction: row;
-  /* align-items: center; */
   justify-content: space-between;
 `;
-const UserBx = styled.div`
+const UserBox = styled.div`
   display: flex;
   flex-direction: row;
 
   height: 100%;
 `;
-const UserImgBx = styled.div`
+const UserImgBox = styled.div`
   position: relative;
   border: 4px solid var(--secondBack);
   width: 120px;
@@ -132,7 +131,7 @@ const CameraIcon = styled.img`
   background-color: var(--mainColor);
   cursor: pointer;
 `;
-const EditCameraBx = styled.span`
+const EditCameraBox = styled.span`
   position: relative;
   width: 20px;
   height: 20px;
@@ -148,7 +147,7 @@ const UserPic = styled.img`
   object-fit: cover;
   border-radius: 50%;
 `;
-const LogoutBx = styled.span`
+const LogoutBox = styled.span`
   position: relative;
   display: inline-block;
   width: 20px;
@@ -183,6 +182,7 @@ const Profile = () => {
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(userActions.loading(true));
     if (isAuth) {
@@ -210,28 +210,30 @@ const Profile = () => {
     }, 600);
   };
 
+  const updateTokenAndRemind = (token: string) => {
+    const found = user.pushToken.find((initToken) => initToken === token);
+    if (found) {
+      return { continueRemind: true };
+    } else {
+      const newTokenArr = [...user.pushToken, token];
+      return {
+        continueRemind: true,
+        pushToken: newTokenArr,
+      };
+    }
+  };
+
   const remindHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const permission = await requestPermission();
 
       if (permission === "granted") {
         const token = await getMessageToken();
-        const found = user.pushToken.find((initToken) => initToken === token);
-        let update;
-        if (found) {
-          update = { continueRemind: true };
-        } else {
-          const newTokenArr = [...user.pushToken, token];
-          update = {
-            continueRemind: true,
-            pushToken: newTokenArr,
-          };
-        }
-
+        if (!token) return;
+        const update = updateTokenAndRemind(token);
         dispatch(asyncUserAction.updateUser(user.id, update));
       } else if (permission === "denied") {
         const update = { continueRemind: false };
-
         dispatch(asyncUserAction.updateUser(user.id, update));
       } else if (permission === "default") {
         console.log("notification default");
@@ -253,15 +255,15 @@ const Profile = () => {
                 uploadImgHandler("banner");
               }}
             >
-              <EditCameraBx>
+              <EditCameraBox>
                 <Img src={camera} />
-              </EditCameraBx>
+              </EditCameraBox>
               編輯封面照片
             </BannerEdit>
           </Banner>
           <UserWrapper>
-            <UserBx>
-              <UserImgBx>
+            <UserBox>
+              <UserImgBox>
                 <UserPic src={user.userImg || logoIcon} />
                 <CameraIcon
                   src={camera}
@@ -269,17 +271,17 @@ const Profile = () => {
                     uploadImgHandler("user");
                   }}
                 />
-              </UserImgBx>
+              </UserImgBox>
               <NameWrapper>
                 <NameText>{user.name}</NameText>
                 <CarText>車輛數:{user.cars}</CarText>
               </NameWrapper>
-            </UserBx>
+            </UserBox>
             <Logout onClick={logoutHandler}>
               登出
-              <LogoutBx>
+              <LogoutBox>
                 <Img src={logout} />
-              </LogoutBx>
+              </LogoutBox>
             </Logout>
           </UserWrapper>
           <InfoWrapper>

@@ -16,6 +16,7 @@ import InfoContent from "./InfoContent";
 import MarkerContent from "./MarkerContent";
 import SearchBar from "./SearchBar";
 import Title from "./Title";
+import ScheduleMarker from "./ScheduleMarker";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../../store";
 import { createMessage, getUserLocation } from "../../../utils/calcFunc";
@@ -29,7 +30,7 @@ import {
   boundType,
 } from "../../../types/mapType";
 
-const Container = styled.div`
+const MyMapContainer = styled.div`
   position: relative;
   width: 100%;
   min-height: calc(100vh - 68px);
@@ -88,6 +89,7 @@ const mapOption = {
     },
   ],
 };
+
 const libraries = ["places"] as (
   | "places"
   | "drawing"
@@ -122,7 +124,8 @@ const StoreMap = () => {
   const userState = useAppSelector((state) => state.user);
   const { isAuth, isOffline, user } = userState;
   const [isPassword, setIsPassword] = useState<boolean>(false);
-  const [directionResponse, setDirectionResponse] = useState(null);
+  const [directionResponse, setDirectionResponse] =
+    useState<google.maps.DirectionsResult | null>(null);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [selectMarker, setSelectMarker] = useState<positionType | null>(null);
   const [markers, setMarkers] = useState<markerType[]>([]);
@@ -143,7 +146,7 @@ const StoreMap = () => {
     center: {} as positionType,
     zoom: 0,
   });
-  const isSelf = params.userID === user.id && isAuth;
+
   const onMapLoad = useCallback((map: GoogleMapType) => {
     setMap(map);
   }, []);
@@ -217,14 +220,15 @@ const StoreMap = () => {
     setBoundAndCenter({ bounds, center: center as positionType });
   }, [map]);
 
-  const getEditMarkerPosition = (e: any) => {
-    const position = {
-      lat: e.latLng.lat() as number,
-      lng: e.latLng.lng() as number,
-    };
-
-    setSelectMarker(position);
-    setSelectEditMarkerID("");
+  const getEditMarkerPosition = (e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      const position = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+      };
+      setSelectMarker(position);
+      setSelectEditMarkerID("");
+    }
   };
   const clearEditMarkerHandler = () => {
     setSelectMarker(null);
@@ -236,37 +240,44 @@ const StoreMap = () => {
     }
   };
 
-  const submitHandler = async () => {
+  const updateMap = (newMap: myMapContentType) => {
+    const url = `maps/${myMapContent.id}`;
+    firebase.updateDoc(url, newMap);
+  };
+
+  const addNewMap = async (newMap: myMapContentType) => {
+    const room: userType[] = [
+      {
+        id: user.id,
+        name: user.name,
+        position: "",
+        img: user.userImg,
+        onLine: false,
+      },
+    ];
+    if (params.userID) {
+      firebase.setUserMapRoom(params.userID, room);
+    }
+    return await firebase.setMapDoc(newMap);
+  };
+
+  const submitMapHandler = async () => {
     if (!map) return;
     const center = {
       lat: map.getCenter()?.lat(),
       lng: map.getCenter()?.lng(),
     };
-    const newMyMap = {
+    let result = {
       ...myMapContent,
       center: center as positionType,
       zoom: map.getZoom() as number,
       markers,
     };
-    let result;
+
     if (myMapContent.id) {
-      const url = `maps/${myMapContent.id}`;
-      firebase.updateDoc(url, newMyMap);
-      result = newMyMap;
+      updateMap(result);
     } else {
-      const room: userType[] = [
-        {
-          id: user.id,
-          name: user.name,
-          position: "",
-          img: user.userImg,
-          onLine: false,
-        },
-      ];
-      if (params.userID) {
-        firebase.setUserMapRoom(params.userID, room);
-      }
-      result = await firebase.setMapDoc(newMyMap);
+      result = await addNewMap(result);
     }
 
     setMyMapContent(result);
@@ -330,14 +341,16 @@ const StoreMap = () => {
   const closeConfirmHandler = () => {
     setIsPassword(false);
   };
+
   const listenRoomUsers = () => {
     const usersRef = ref(database, "room/" + params.userID + "/users");
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
-
+      console.log(data, "listen");
       setRoomUsers(data);
     });
   };
+
   useEffect(() => {
     if (userIndex.current !== null && !isDragMap && roomUsers) {
       map?.panTo(roomUsers[userIndex.current].position as positionType);
@@ -348,19 +361,19 @@ const StoreMap = () => {
     userPositionTimer.current = setInterval(async () => {
       const position = await getUserLocation(positionOptions);
       const url = `room/${params.userID}/users/${userIndex.current}`;
-
       firebase.updateUserMapRoom(url, { position: position });
     }, 2000);
   };
 
-  const updateFirebase = async (userID: string, position: positionType) => {
+  const updateRoomUser = async (userID: string, position: positionType) => {
     const users = await firebase.getUserMapRoom(userID);
+    console.log("users realtime", users);
 
     if (roomUsers) return;
     userIndex.current = users.findIndex(
       (initUser: userType) => user.id === initUser.id
     );
-
+    console.log(userIndex.current, "from users");
     if (userIndex.current >= 0 && userIndex.current !== null) {
       const newUser = {
         ...users[userIndex.current],
@@ -370,6 +383,7 @@ const StoreMap = () => {
       };
       const url = `room/${userID}/users/${userIndex.current}`;
       if (newUser) {
+        console.log(newUser, "updateRoomUser");
         firebase.updateUserMapRoom(url, newUser);
       }
     } else {
@@ -382,6 +396,7 @@ const StoreMap = () => {
       };
 
       userIndex.current = users.length;
+      console.log(users.length);
       if (mySelf) {
         const newUsers = [...users, mySelf];
         firebase.setUserMapRoom(userID, newUsers);
@@ -394,7 +409,7 @@ const StoreMap = () => {
       listenRoomUsers();
 
       const position: positionType = await getUserLocation(positionOptions);
-      updateFirebase(params.userID, position);
+      updateRoomUser(params.userID, position);
       map?.setCenter(position);
       autoGetPosition();
     }
@@ -408,10 +423,11 @@ const StoreMap = () => {
       onLine: false,
     };
     const updateUrl = `room/${params.userID}/users/${userIndex.current}`;
+
     firebase.updateUserMapRoom(updateUrl, mySelf);
+
     userIndex.current = null;
     clearInterval(userPositionTimer.current);
-
     setRoomUsers(null);
     setIsJoin(false);
   };
@@ -424,37 +440,31 @@ const StoreMap = () => {
       map?.panTo(roomUsers[userIndex.current].position as positionType);
     }
   };
-  const directionRender = useCallback((response: any) => {
-    if (response !== null) {
-      setDirectionResponse(response);
-    }
-  }, []);
+  const directionRender = useCallback(
+    (response: google.maps.DirectionsResult) => {
+      if (response !== null) {
+        setDirectionResponse(response);
+      }
+    },
+    []
+  );
 
   const calculateDirection = async () => {
-    let dirOption: google.maps.DirectionsRequest | undefined;
-    if (markers.length === 2) {
-      dirOption = {
-        travelMode: google.maps.TravelMode.DRIVING,
-        origin: markers[0].position,
-        destination: markers[1].position,
-        avoidHighways: true,
-      };
-    } else if (markers.length > 2) {
+    let dirOption: google.maps.DirectionsRequest | undefined = {
+      travelMode: google.maps.TravelMode.DRIVING,
+      origin: markers[0].position,
+      destination: markers[markers.length - 1].position,
+      avoidHighways: true,
+    };
+    if (markers.length > 2) {
       const viaArr = markers.slice(1, -1).map((marker) => {
         return { location: marker.position };
       });
-
-      dirOption = {
-        travelMode: google.maps.TravelMode.DRIVING,
-        waypoints: viaArr as google.maps.DirectionsWaypoint[],
-        origin: markers[0].position,
-        destination: markers[markers.length - 1].position,
-        avoidHighways: true,
-      };
-    } else if (markers.length < 2) return;
-
+      dirOption.waypoints = viaArr as google.maps.DirectionsWaypoint[];
+    } else if (markers.length < 2) {
+      createMessage("alert", dispatch, "請新增行程");
+    }
     const directionService = new google.maps.DirectionsService();
-    if (!dirOption) return;
     const result = await directionService.route(dirOption);
     directionRender(result);
   };
@@ -476,7 +486,7 @@ const StoreMap = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <Container>
+      <MyMapContainer>
         {isPassword ? (
           <Confirm
             password={myMapContent.password}
@@ -486,7 +496,6 @@ const StoreMap = () => {
           <>
             <Title
               showMarkerBox={showMarkerBox}
-              isSelf={isSelf}
               myMapContent={myMapContent}
               isEdit={isEdit}
               isJoin={isJoin}
@@ -494,7 +503,7 @@ const StoreMap = () => {
               onShowFriendsBox={showFriendsBoxHandler}
               onShowMarkerBox={showMarkerBoxHandler}
               onReturn={returnHandler}
-              onSubmit={submitHandler}
+              onSubmit={submitMapHandler}
               onJoin={joinMapHandler}
               onLeave={leaveMapHandler}
               onEdit={editHandler}
@@ -532,27 +541,13 @@ const StoreMap = () => {
                     roomUsers={roomUsers}
                     boundAndCenter={boundAndCenter}
                   />
-                  {markers.length > 0 &&
-                    markers.map((marker) => (
-                      <Marker
-                        key={marker.id}
-                        position={marker.position}
-                        label={marker.order.toString()}
-                        onClick={() => {
-                          setSelectEditMarkerID(marker.id);
-                        }}
-                      >
-                        {selectEditMarkerID === marker.id && (
-                          <InfoWindow
-                            position={marker.position}
-                            onCloseClick={() => setSelectEditMarkerID("")}
-                          >
-                            <MarkerContent marker={marker} />
-                          </InfoWindow>
-                        )}
-                      </Marker>
-                    ))}
-
+                  {markers.length > 0 && (
+                    <ScheduleMarker
+                      markers={markers}
+                      setSelectEditMarkerID={setSelectEditMarkerID}
+                      selectEditMarkerID={selectEditMarkerID}
+                    />
+                  )}
                   {selectMarker && (
                     <>
                       <Marker position={selectMarker} />
@@ -597,7 +592,7 @@ const StoreMap = () => {
             </MapWrapper>
           </>
         )}
-      </Container>
+      </MyMapContainer>
     </>
   );
 };

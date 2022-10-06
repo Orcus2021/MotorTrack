@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import styled from "styled-components/macro";
-import TableBox from "../../../../components/Table/TableBox";
-import RepairItem from "./RepairItem";
-import MessageBox from "../../../../components/Modal/MessageBox";
-import { partType } from "../../../../types/recordType";
-import Modal from "../../../../components/Modal/Modal";
-import PartForm from "./PartForm";
 import IconButton from "../../../../components/Button/IconButton";
+import MessageBox from "../../../../components/Modal/MessageBox";
+import Modal from "../../../../components/Modal/Modal";
 import { Img } from "../../../../components/style";
+import TableBox from "../../../../components/Table/TableBox";
 import TableBoxRepair from "../../../../components/Table/TableBoxRepair";
+import { partType } from "../../../../types/recordType";
+import PartForm from "./PartForm";
+import RepairItem from "./RepairItem";
 
 import circlePlusIcon from "../../../../assets/icon/circle-plus-white.png";
 
 import plusIconWhite from "../../../../assets/icon/plus-white.png";
-const HeaderBx = styled.div`
+const HeaderBox = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -36,14 +36,14 @@ const MessageTable = styled.table`
   border: 0;
   border-collapse: collapse;
 `;
-const ImgBx = styled.div`
+const AddRepairIconBox = styled.div`
   position: relative;
   margin-top: 10px;
   width: 80px;
   height: 80px;
   opacity: 0.5;
 `;
-const ImgWrapper = styled.div`
+const IconWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -75,17 +75,16 @@ const RepairList: React.FC<{
   onDeletePart: (removePart: partType) => void;
 }> = (props) => {
   const { onAdd, parts, onDeletePart } = props;
-
   const [showPartForm, setShowPartForm] = useState<boolean>(false);
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
-  const [selectPartIndex, setSelectPartIndex] = useState<number>(NaN);
+  const [selectPartIndex, setSelectPartIndex] = useState<number | null>(null);
   const showPartHandler = () => {
     setShowPartForm(true);
-    setSelectPartIndex(NaN);
+    setSelectPartIndex(null);
   };
   const closePartForm = () => {
     setCloseEffect(true);
-    setSelectPartIndex(NaN);
+    setSelectPartIndex(null);
     setTimeout(() => {
       setShowPartForm(false);
       setCloseEffect(false);
@@ -97,14 +96,14 @@ const RepairList: React.FC<{
 
   return (
     <>
-      <HeaderBx>
+      <HeaderBox>
         <Title>維修/保養項目</Title>
         <IconButton
           label="新增"
           icon={plusIconWhite}
           handleClick={showPartHandler}
         />
-      </HeaderBx>
+      </HeaderBox>
       <TableBox titles={tableTitle}>
         {parts.length > 0 && (
           <MessageTable>
@@ -123,11 +122,11 @@ const RepairList: React.FC<{
           </MessageTable>
         )}
         {parts.length === 0 && (
-          <ImgWrapper onClick={showPartHandler}>
-            <ImgBx>
+          <IconWrapper onClick={showPartHandler}>
+            <AddRepairIconBox>
               <Img src={circlePlusIcon} />
-            </ImgBx>
-          </ImgWrapper>
+            </AddRepairIconBox>
+          </IconWrapper>
         )}
       </TableBox>
       <TableBoxRepair titles={tableTitleRwd}>
@@ -136,7 +135,7 @@ const RepairList: React.FC<{
             <tbody>
               {parts.map((record, index) => (
                 <RepairItem
-                  key={record.recordID + index}
+                  key={record.recordID}
                   record={record}
                   onShow={showPartHandler}
                   onSelect={() => selectPartHandler(index)}
@@ -148,11 +147,11 @@ const RepairList: React.FC<{
           </MessageTable>
         )}
         {parts.length === 0 && (
-          <ImgWrapper onClick={showPartHandler}>
-            <ImgBx>
+          <IconWrapper onClick={showPartHandler}>
+            <AddRepairIconBox>
               <Img src={circlePlusIcon} />
-            </ImgBx>
-          </ImgWrapper>
+            </AddRepairIconBox>
+          </IconWrapper>
         )}
       </TableBoxRepair>
       {showPartForm && (
@@ -165,7 +164,7 @@ const RepairList: React.FC<{
             <PartForm
               onAddPart={onAdd}
               onClose={closePartForm}
-              part={parts[selectPartIndex]}
+              part={selectPartIndex !== null && parts[selectPartIndex]}
             />
           </MessageBox>
         </Modal>

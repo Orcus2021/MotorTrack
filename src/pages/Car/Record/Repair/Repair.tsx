@@ -1,27 +1,26 @@
-import React, { useEffect, useState, useRef } from "react";
-import RepairList from "./RepairList";
-import styled from "styled-components/macro";
-import { partsType, partType, repairType } from "../../../../types/recordType";
-import { carType } from "../../../../types/carType";
-import { useForm, FormProvider } from "react-hook-form";
-import { useAppDispatch, useAppSelector } from "../../../../store";
-import asyncRecordAction from "../../../../store/record/asyncRecordAction";
-import { formatDate, createMessage } from "../../../../utils/calcFunc";
-import asyncCarAction from "../../../../store/car/asyncCarAction";
 import moment from "moment";
-import { NeonText } from "../../../../components/style";
-import FormNoteBox from "../FormNoteBox";
+import React, { useEffect, useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import styled from "styled-components/macro";
 import InputBox from "../../../../components/Input/InputBox";
+import { NeonText } from "../../../../components/style";
 import useFindSecond from "../../../../Hook/useFindSecond";
+import { useAppDispatch, useAppSelector } from "../../../../store";
+import asyncCarAction from "../../../../store/car/asyncCarAction";
+import asyncRecordAction from "../../../../store/record/asyncRecordAction";
+import { carType } from "../../../../types/carType";
+import { partsType, partType, repairType } from "../../../../types/recordType";
+import { createMessage, formatDate } from "../../../../utils/calcFunc";
+import FormNoteBox from "../FormNoteBox";
+import RepairList from "./RepairList";
 
 const RepairContainer = styled.div`
   width: 100%;
   max-width: 1280px;
   padding: 10px;
-  /* position: relative; */
 `;
 
-const DetailBX = styled.div`
+const DetailBox = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -93,7 +92,6 @@ const Repair: React.FC<{
   );
   const [parts, setParts] = useState<partType[] | []>(record?.records || []);
   const [amountValue, setAmountValue] = useState<number>();
-
   const deletePart = useRef<partType[]>([]);
   const { id: carID, mileage: carMileage, recordAnnual } = car as carType;
   const { parts: initParts } = initRecord;
@@ -151,7 +149,7 @@ const Repair: React.FC<{
     });
   };
 
-  const setPartDateAndMileage = (record: repairType) => {
+  const setPartDateAndMileageRange = (record: repairType) => {
     const JSONParts = JSON.stringify(parts);
     const newParts = JSON.parse(JSONParts) as partType[];
 
@@ -172,7 +170,7 @@ const Repair: React.FC<{
     return newRecords;
   };
 
-  const createRemind = (type: string) => {
+  const addPopupMessage = (type: string) => {
     let message = updateId ? "已更新紀錄" : "已新增紀錄";
     if (type === "error") message = "已刪除紀錄";
     createMessage(type, dispatch, message);
@@ -181,7 +179,7 @@ const Repair: React.FC<{
   const createRepairHandler = (record: repairType) => {
     record.amount = Number(record.amount);
     record.mileage = Number(record.mileage);
-    record.records = setPartDateAndMileage(record);
+    record.records = setPartDateAndMileageRange(record);
 
     if (record.records.length === 0) {
       createMessage("alert", dispatch, "請新增維修項目");
@@ -203,12 +201,12 @@ const Repair: React.FC<{
     }
     if (car && record.mileage > car.mileage)
       dispatch(asyncCarAction.updateCar(carID, { mileage: record.mileage }));
-    createRemind("remind");
+    addPopupMessage("remind");
     onClear();
     onClose("record");
   };
 
-  const closeRepair = () => {
+  const closeRepairHandler = () => {
     onClose("record");
   };
 
@@ -223,7 +221,7 @@ const Repair: React.FC<{
         recordAnnual
       )
     );
-    createRemind("error");
+    addPopupMessage("error");
     onClose("record");
   };
   const deletePartHandler = (removePart: partType) => {
@@ -236,7 +234,7 @@ const Repair: React.FC<{
     }
   };
   const remindHandler = () => {
-    createMessage("remind", dispatch, "請新增維修／保養項目");
+    createMessage("alert", dispatch, "請新增維修／保養項目");
   };
 
   return (
@@ -264,7 +262,7 @@ const Repair: React.FC<{
                 : ""
             }
           />
-          <DetailBX>
+          <DetailBox>
             <Detail>
               <InputWrapper>
                 <InputBox
@@ -311,7 +309,7 @@ const Repair: React.FC<{
                 message={errors.amount && "尚未新增零件資料"}
               />
             </AmountDetail>
-          </DetailBX>
+          </DetailBox>
         </InputsWrapper>
 
         <RepairList
@@ -320,7 +318,7 @@ const Repair: React.FC<{
           onDeletePart={deletePartHandler}
         />
         <FormNoteBox
-          onCloseRepair={closeRepair}
+          onCloseRepair={closeRepairHandler}
           onDeleteRepair={deleteRepairRecord}
           updateId={updateId}
           onSubmit={handleSubmit(createRepairHandler)}

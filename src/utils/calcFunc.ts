@@ -1,8 +1,8 @@
-import { repairType, feeType, partType } from "../types/recordType";
-import { carType } from "../types/carType";
-import { positionType, geolocationOptionType } from "../types/mapType";
-import { userActions } from "../store/user/userReducer";
 import { AppDispatch } from "../store";
+import { userActions } from "../store/user/userReducer";
+import { carType } from "../types/carType";
+import { geolocationOptionType, positionType } from "../types/mapType";
+import { feeType, partType, repairType } from "../types/recordType";
 import firebase from "./firebase";
 
 export const formatDate = (date: Date) => {
@@ -198,7 +198,7 @@ export const getMessageToken = async () => {
     const response = await firebase.getMessageToken().catch((msg) => {
       console.log(msg);
     });
-    return response;
+    return response as string;
   } catch (err) {
     console.log(err);
   }

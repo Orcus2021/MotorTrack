@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../../components/style";
+import { useAppDispatch, useAppSelector } from "../../store";
 import asyncUserAction from "../../store/user/asyncUserAction";
 import { createMessage } from "../../utils/calcFunc";
-import { useAppDispatch, useAppSelector } from "../../store";
 
 import cancelIcon from "../../assets/icon/cancel.png";
 import plusIcon from "../../assets/icon/plus-blue.png";
@@ -31,13 +31,11 @@ const FileInput = styled.input`
   right: 0;
   width: 100%;
   cursor: pointer;
-
   flex-grow: 1;
   height: 100%;
   font-size: 16px;
   outline: none;
   padding-left: 10px;
-  /* border: 1px solid #cccccc; */
 `;
 
 const FileBx = styled.div<{ $isBanner: boolean }>`
@@ -86,7 +84,6 @@ const Mask = styled.div`
   box-sizing: content-box;
   pointer-events: none;
   border: 100px solid #1515155c;
-  /* background-color: red; */
   top: -100px;
   left: -100px;
 `;
@@ -114,14 +111,14 @@ const UploadIcon = styled.img`
   cursor: pointer;
 `;
 
-const Upload: React.FC<{ imageType: string; onClose: () => void }> = (
-  props
-) => {
+type Props = { imageType: string; onClose: () => void };
+
+const Upload: React.FC<Props> = (props) => {
   const { imageType, onClose } = props;
-  const [image, setImage] = useState<File>();
-  const [imageUrl, setImageUrl] = useState<string>("");
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.user.user.id);
+  const [image, setImage] = useState<File>();
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const imageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files === null) return;
@@ -139,7 +136,7 @@ const Upload: React.FC<{ imageType: string; onClose: () => void }> = (
       dispatch(asyncUserAction.uploadImage(userId, imageType, image));
       onClose();
     } else {
-      createMessage("error", dispatch, "尚未選擇照片");
+      createMessage("alert", dispatch, "尚未選擇照片");
     }
   };
 

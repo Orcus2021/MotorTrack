@@ -1,17 +1,20 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import styled from "styled-components/macro";
-import { NeonText } from "../../components/style";
-import { createMessage } from "../../utils/calcFunc";
 import Button from "../../components/Button/Button";
-import Modal from "../../components/Modal/Modal";
-import MessageBox from "../../components/Modal/MessageBox";
-import asyncCarAction from "../../store/car/asyncCarAction";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { calcDistance, getUserLocation } from "../../utils/calcFunc";
-import { positionType } from "../../types/mapType";
 import Ripple from "../../components/Loading/Ripple";
+import MessageBox from "../../components/Modal/MessageBox";
+import Modal from "../../components/Modal/Modal";
+import { NeonText } from "../../components/style";
+import { useAppDispatch, useAppSelector } from "../../store";
+import asyncCarAction from "../../store/car/asyncCarAction";
+import { positionType } from "../../types/mapType";
+import {
+  calcDistance,
+  createMessage,
+  getUserLocation,
+} from "../../utils/calcFunc";
 
-const Container = styled.div`
+const MileageContainer = styled.div`
   width: 100vw;
   height: calc(100vh - 68px);
   display: flex;
@@ -52,7 +55,6 @@ const MileagesContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   margin-bottom: 100px;
-  /* flex-grow: 1; */
 `;
 const MileagesContent = styled(NeonText)`
   font-size: 80px;
@@ -66,7 +68,7 @@ const Unit = styled.p`
   margin-bottom: 10px;
   color: #777777;
 `;
-const BtnBx = styled.div`
+const BtnBox = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -114,15 +116,14 @@ const LoadingBox = styled.div`
 
 const Mileage = () => {
   const car = useAppSelector((state) => state.car.car);
-  const carMileage = car?.mileage || 0;
+  const timerGPS = useRef<ReturnType<typeof setInterval>>();
   const dispatch = useAppDispatch();
   const [mileages, setMileages] = useState<number>(0);
   const [startRecord, setStartRecord] = useState<boolean>(false);
-  const timerGPS = useRef<ReturnType<typeof setInterval>>();
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const carMileage = car?.mileage || 0;
   const [initMileage, setInitMileage] = useState<number | "">(carMileage);
-
   const LonAndLat = useRef<{ latBefore: number | ""; lonBefore: number | "" }>({
     latBefore: "",
     lonBefore: "",
@@ -148,18 +149,14 @@ const Mileage = () => {
     const changeMileage = Number(e.target.value);
     setInitMileage(changeMileage);
   };
-  const startRecordHandler = async () => {
-    if (car && initMileage < car.mileage) {
-      createMessage("error", dispatch, "低於原里程數");
-      return;
-    }
 
+  const getIntervalPosition = async () => {
+    const options = {
+      enableHighAccuracy: false,
+      timeout: 4000,
+      maximumAge: 0,
+    };
     if (navigator.geolocation) {
-      const options = {
-        enableHighAccuracy: false,
-        timeout: 4000,
-        maximumAge: 0,
-      };
       if (timerGPS.current) clearTimeout(timerGPS.current);
       const position = await getUserLocation(options);
       distanceHandler(position);
@@ -171,6 +168,13 @@ const Mileage = () => {
     } else {
       createMessage("error", dispatch, "GPS不支援");
     }
+  };
+  const startRecordHandler = async () => {
+    if (car && initMileage < car.mileage) {
+      createMessage("error", dispatch, "低於原里程數");
+      return;
+    }
+    getIntervalPosition();
   };
   const endRecordHandler = () => {
     setShowConfirm(true);
@@ -216,7 +220,7 @@ const Mileage = () => {
   };
   return (
     <>
-      <Container>
+      <MileageContainer>
         <MileageWrapper>
           <Title>紀錄里程數</Title>
           <CarNumTitle>車牌 : {car?.plateNum}</CarNumTitle>
@@ -256,7 +260,7 @@ const Mileage = () => {
             />
           )}
         </MileageWrapper>
-      </Container>
+      </MileageContainer>
       {showConfirm && (
         <Modal
           closeEffect={closeEffect}
@@ -267,14 +271,14 @@ const Mileage = () => {
             <Message>{`增加${Math.round(mileages)}公里至${
               car?.plateNum
             }里程數`}</Message>
-            <BtnBx>
+            <BtnBox>
               <Button label="取消" type="cancel" handleClick={cancelHandler} />
               <Button
                 label="確認"
                 type="primary"
                 handleClick={updateMileageHandler}
               />
-            </BtnBx>
+            </BtnBox>
           </MessageBox>
         </Modal>
       )}
