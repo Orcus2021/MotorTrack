@@ -172,15 +172,29 @@ const StoreMap = () => {
     if (!isAuth) navigate("/login", { state: `/my_map/${params.userID}` });
 
     const getMap = async (id: string) => {
-      const response = await firebase.getMapDoc(id).catch((e) => {
-        console.log(e);
-      });
-
+      const response = await firebase.getMapDoc(id);
       if (response && response.length > 0) {
         return response[0];
       } else {
         return null;
       }
+    };
+
+    const initState = () => {
+      setIsPassword(false);
+      setDirectionResponse(null);
+      setSelectMarker(null);
+      setMarkers([]);
+      setRoomUsers(null);
+      setMyMapContent({
+        name: user.name,
+        id: "",
+        ownerID: user.id,
+        password: "",
+        markers: [],
+        center: {} as positionType,
+        zoom: 0,
+      });
     };
 
     const checkId = async () => {
@@ -195,7 +209,9 @@ const StoreMap = () => {
           }
         } else if (params.userID !== user.id) {
           navigate(`/my_map/${user.id}`);
-        } else return;
+        } else if (params.userID === user.id) {
+          initState();
+        }
       }
     };
 
@@ -245,20 +261,10 @@ const StoreMap = () => {
     firebase.updateDoc(url, newMap);
   };
 
-  const addNewMap = async (newMap: myMapContentType) => {
-    const room: userType[] = [
-      {
-        id: user.id,
-        name: user.name,
-        position: "",
-        img: user.userImg,
-        onLine: false,
-      },
-    ];
+  const setNewRoom = async (room: userType[]) => {
     if (params.userID) {
-      firebase.setUserMapRoom(params.userID, room);
+      await firebase.setUserMapRoom(params.userID, room);
     }
-    return await firebase.setMapDoc(newMap);
   };
 
   const submitMapHandler = async () => {
@@ -273,11 +279,21 @@ const StoreMap = () => {
       zoom: map.getZoom() as number,
       markers,
     };
+    const room: userType[] = [
+      {
+        id: user.id,
+        name: user.name,
+        position: "",
+        img: user.userImg,
+        onLine: false,
+      },
+    ];
 
     if (myMapContent.id) {
       updateMap(result);
     } else {
-      result = await addNewMap(result);
+      result = await firebase.setMapDoc(result);
+      setNewRoom(room);
     }
 
     setMyMapContent(result);
@@ -346,7 +362,7 @@ const StoreMap = () => {
     const usersRef = ref(database, "room/" + params.userID + "/users");
     onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
-      console.log(data, "listen");
+
       setRoomUsers(data);
     });
   };
@@ -359,21 +375,24 @@ const StoreMap = () => {
 
   const autoGetPosition = () => {
     userPositionTimer.current = setInterval(async () => {
-      const position = await getUserLocation(positionOptions);
+      const position = await getUserLocation(positionOptions).catch((e) => {
+        console.log(e);
+        clearInterval(userPositionTimer.current);
+        autoGetPosition();
+      });
       const url = `room/${params.userID}/users/${userIndex.current}`;
       firebase.updateUserMapRoom(url, { position: position });
     }, 2000);
   };
 
   const updateRoomUser = async (userID: string, position: positionType) => {
-    const users = await firebase.getUserMapRoom(userID);
-    console.log("users realtime", users);
-
     if (roomUsers) return;
+    const users = await firebase.getUserMapRoom(userID);
+
     userIndex.current = users.findIndex(
       (initUser: userType) => user.id === initUser.id
     );
-    console.log(userIndex.current, "from users");
+
     if (userIndex.current >= 0 && userIndex.current !== null) {
       const newUser = {
         ...users[userIndex.current],
@@ -382,10 +401,7 @@ const StoreMap = () => {
         img: user.userImg,
       };
       const url = `room/${userID}/users/${userIndex.current}`;
-      if (newUser) {
-        console.log(newUser, "updateRoomUser");
-        firebase.updateUserMapRoom(url, newUser);
-      }
+      firebase.updateUserMapRoom(url, newUser);
     } else {
       const mySelf = {
         id: user.id,
@@ -394,25 +410,33 @@ const StoreMap = () => {
         img: user.userImg,
         onLine: true,
       };
-
       userIndex.current = users.length;
-      console.log(users.length);
-      if (mySelf) {
-        const newUsers = [...users, mySelf];
-        firebase.setUserMapRoom(userID, newUsers);
-      }
+      const newUsers = [...users, mySelf];
+      firebase.setUserMapRoom(userID, newUsers);
     }
   };
 
   const joinMapHandler = async () => {
-    if (params.userID) {
+    if (!myMapContent.id) {
+      const room: userType[] = [
+        {
+          id: user.id,
+          name: user.name,
+          position: "",
+          img: user.userImg,
+          onLine: true,
+        },
+      ];
+      await setNewRoom(room);
+    }
+    const position: positionType = await getUserLocation(positionOptions);
+    if (params.userID && map && position) {
       listenRoomUsers();
-
-      const position: positionType = await getUserLocation(positionOptions);
       updateRoomUser(params.userID, position);
-      map?.setCenter(position);
+      map.setCenter(position);
       autoGetPosition();
     }
+
     setIsDragMap(false);
     setIsJoin(true);
   };

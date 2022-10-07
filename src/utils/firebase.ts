@@ -74,17 +74,13 @@ type dataType = {
 
 const firebase = {
   async signUp(user: userLogin) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        user.email,
-        user.password
-      );
-      const userID = userCredential.user.uid;
-      return userID;
-    } catch (e) {
-      throw e;
-    }
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      user.email,
+      user.password
+    );
+    const userID = userCredential.user.uid;
+    return userID;
   },
   async signIn(user: userLogin) {
     const userCredential = await signInWithEmailAndPassword(
@@ -95,18 +91,8 @@ const firebase = {
     const userID = userCredential.user.uid;
     return userID;
   },
-  async logout(): Promise<string> {
-    return new Promise((resolve) => {
-      signOut(auth)
-        .then(() => {
-          resolve("Logout");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
-        });
-    });
+  async logout() {
+    await signOut(auth);
   },
   async onAuth(): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -120,17 +106,10 @@ const firebase = {
       });
     });
   },
-  async getDoc(url: string): Promise<DocumentData | undefined> {
-    return new Promise(async (resolve) => {
-      const docRef = doc(db, url);
-      try {
-        const docSnap = await getDoc(docRef);
-        const data = docSnap.data();
-        resolve(data);
-      } catch (e) {
-        console.log(e);
-      }
-    });
+  async getDoc(url: string) {
+    const docRef = doc(db, url);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
   },
   async setDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {
@@ -370,8 +349,8 @@ const firebase = {
       }
     });
   },
-  async getMapDoc(id: string): Promise<myMapContentType[]> {
-    return new Promise(async (resolve, reject) => {
+  async getMapDoc(id: string) {
+    try {
       const q = query(collection(db, "maps"), where("ownerID", "==", id));
       const querySnapshot = await getDocs(q);
 
@@ -380,15 +359,15 @@ const firebase = {
         querySnapshot.forEach((doc) => {
           myMaps.push(doc.data() as myMapContentType);
         });
-        resolve(myMaps);
-      } else {
-        reject("error");
+
+        return myMaps;
       }
-    });
+    } catch (e) {
+      throw e;
+    }
   },
   async setUserMapRoom(id: string, data: userType[]): Promise<string> {
     return new Promise(async (resolve) => {
-      console.log(data);
       set(relRef(database, "room/" + id + "/users"), data);
       resolve("submit");
     });

@@ -13,13 +13,7 @@ const asyncUserAction = {
     return async (dispatch: AppDispatch) => {
       dispatch(userActions.loading(true));
       const signUp = async () => {
-        let userID;
-        try {
-          userID = await firebase.signUp(data);
-        } catch (e) {
-          console.log(e);
-        }
-
+        const userID = await firebase.signUp(data);
         if (userID) {
           const initUser = {
             id: userID,
@@ -80,7 +74,7 @@ const asyncUserAction = {
           ) {
             createMessage("error", dispatch, "帳號或密碼錯誤");
           }
-
+          console.log(e);
           dispatch(userActions.loading(false));
         }
       }
@@ -88,14 +82,9 @@ const asyncUserAction = {
   },
   logout() {
     return async (dispatch: AppDispatch) => {
-      const logout = async () => {
-        await firebase.logout();
-      };
-
       try {
-        await logout();
+        await firebase.logout();
         dispatch(userActions.logout());
-        createMessage("success", dispatch, "已成功登出");
       } catch (e) {
         console.log(e);
       }
@@ -103,12 +92,8 @@ const asyncUserAction = {
   },
   updateUser(id: string, data: object) {
     return async (dispatch: AppDispatch) => {
-      const update = () => {
-        firebase.updateDoc(`/users/${id}`, data);
-      };
-
       try {
-        update();
+        firebase.updateDoc(`/users/${id}`, data);
         dispatch(userActions.update(data));
       } catch (e) {
         console.log(e);

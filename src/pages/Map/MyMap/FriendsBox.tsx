@@ -102,6 +102,7 @@ const FriendsBox: FC<Props> = (props) => {
           usersInfoBoxes.map((user) => (
             <UserWrapper
               onClick={() => pantoUserHandler(user.position as positionType)}
+              key={user.id}
             >
               <UserImage src={user.img} $isOut={user.out} />
               <UserName>{user.name}</UserName>
