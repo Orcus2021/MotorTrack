@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components/macro";
-import { repairType, feeType } from "../../../types/recordType";
 import { Img } from "../../../components/style";
+import { feeType, repairType } from "../../../types/recordType";
 
-import repairIcon from "../../../assets/icon/repair.png";
 import feeIcon from "../../../assets/icon/moneyBag.png";
 import refuelIcon from "../../../assets/icon/refuel.png";
+import repairIcon from "../../../assets/icon/repair.png";
 
 const ContentWrapper = styled.tr`
   &:nth-child(odd) {
@@ -88,12 +88,13 @@ const ContentBox = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-
-const RecordItem: React.FC<{
+type Props = {
   record: repairType | feeType;
   onUpdate: (id: string, category: string) => void;
   rwd: boolean;
-}> = (props) => {
+};
+
+const RecordItem: React.FC<Props> = (props) => {
   const { record, onUpdate, rwd } = props;
   const updateHandler = () => {
     onUpdate(record.id, record.category);

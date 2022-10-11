@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components/macro";
-import Input from "../../../components/Input/Input";
-import brands from "../../../utils/brands";
+import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store/index";
-import { useForm, FormProvider } from "react-hook-form";
-import asyncCarAction from "../../../store/car/asyncCarAction";
-import { carType } from "../../../types/carType";
-import { createMessage } from "../../../utils/calcFunc";
+import styled from "styled-components/macro";
 import Button from "../../../components/Button/Button";
-import Brands from "./Brands";
-import { NeonText } from "../../../components/style";
+import Input from "../../../components/Input/Input";
 import InputBox from "../../../components/Input/InputBox";
+import { NeonText } from "../../../components/style";
+import asyncCarAction from "../../../store/car/asyncCarAction";
+import { useAppDispatch, useAppSelector } from "../../../store/index";
+import { carType } from "../../../types/carType";
+import brands from "../../../utils/brands";
+import { createMessage } from "../../../utils/calcFunc";
+import Brands from "./Brands";
 
 import logoIcon from "../../../assets/logo_white.png";
 
@@ -44,7 +44,7 @@ const BrandWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-const RightBx = styled.div`
+const RightBox = styled.div`
   display: flex;
   width: 290px;
   min-width: 290px;
@@ -54,7 +54,7 @@ const RightBx = styled.div`
     width: 100%;
   }
 `;
-const InputBx = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   position: relative;
   width: 250px;
@@ -64,7 +64,7 @@ const InputBx = styled.div`
     width: 100%;
   }
 `;
-const BtnBx = styled.div`
+const BtnBox = styled.div`
   display: flex;
   align-items: center;
 `;
@@ -108,7 +108,7 @@ const Title = styled(NeonText)`
   font-weight: 400;
 `;
 
-const BrandInputBx = styled.div`
+const BrandInputBox = styled.div`
   overflow: hidden;
   height: 0;
 `;
@@ -147,7 +147,7 @@ const AddCar = () => {
     createMessage("remind", dispatch, "已新增車輛");
     navigate("/car_manage/record");
   };
-  const goRecord = () => {
+  const goRecordHandler = () => {
     navigate("/car_manage/record");
   };
 
@@ -165,7 +165,7 @@ const AddCar = () => {
             <SubTitle $isError={typeof errors?.brand?.type === "string"}>
               {brandName.name || "廠牌(請選擇)"}
             </SubTitle>
-            <BrandInputBx>
+            <BrandInputBox>
               <Input
                 name="brand"
                 content="廠牌(請選擇)"
@@ -174,16 +174,16 @@ const AddCar = () => {
                 type="text"
                 readOnly={true}
               />
-            </BrandInputBx>
+            </BrandInputBox>
 
             <Brands onBrand={brandNameHandler} brandName={brandName} />
           </BrandWrapper>
-          <RightBx>
+          <RightBox>
             <LogoWrapper>
               <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
             </LogoWrapper>
 
-            <InputBx>
+            <InputWrapper>
               <InputBox
                 name="name"
                 content="暱稱"
@@ -204,8 +204,8 @@ const AddCar = () => {
                     : ""
                 }
               />
-            </InputBx>
-            <InputBx>
+            </InputWrapper>
+            <InputWrapper>
               <InputBox
                 name="plateNum"
                 content="車牌"
@@ -223,9 +223,8 @@ const AddCar = () => {
                     : ""
                 }
               />
-            </InputBx>
-
-            <InputBx>
+            </InputWrapper>
+            <InputWrapper>
               <InputBox
                 name="licenseDate"
                 content="行照發照日"
@@ -235,8 +234,8 @@ const AddCar = () => {
                 type="date"
                 message={errors.licenseDate && "尚未填寫"}
               />
-            </InputBx>
-            <InputBx>
+            </InputWrapper>
+            <InputWrapper>
               <InputBox
                 name="insuranceDate"
                 content="保險到期日"
@@ -246,16 +245,20 @@ const AddCar = () => {
                 type="date"
                 message={errors.insuranceDate && "尚未填寫"}
               />
-            </InputBx>
-            <BtnBx>
-              <Button label="返回" type="cancel" handleClick={goRecord} />
+            </InputWrapper>
+            <BtnBox>
+              <Button
+                label="返回"
+                type="cancel"
+                handleClick={goRecordHandler}
+              />
               <Button
                 label="新增"
                 type="primary"
                 handleClick={handleSubmit(createCar)}
               />
-            </BtnBx>
-          </RightBx>
+            </BtnBox>
+          </RightBox>
         </AddWrapper>
       </AddContainer>
     </FormProvider>

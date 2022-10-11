@@ -1,11 +1,10 @@
 import React, { FC, useEffect, useState } from "react";
-import styled from "styled-components/macro";
 import uuid from "react-uuid";
+import styled from "styled-components/macro";
 import { markerContentType, markerType } from "../../../types/mapType";
 
-import cancelWhiteIcon from "../../../assets/icon/multiply.png";
 import doneIcon from "../../../assets/icon/done.png";
-import markerIcon from "../../../assets/icon/marker.png";
+import cancelWhiteIcon from "../../../assets/icon/multiply.png";
 
 const Container = styled.div<{ $from: boolean }>`
   background-color: ${(props) => (props.$from ? "var(--secondBack)" : "#fff")};
@@ -14,6 +13,7 @@ const Container = styled.div<{ $from: boolean }>`
   align-items: center;
 `;
 const InputWrapper = styled.div`
+  min-width: 200px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -92,7 +92,7 @@ const Title = styled.p<{ $from: boolean }>`
   margin-bottom: 5px;
 `;
 
-type PropType = {
+type Props = {
   onSubmitMarker: (index: number | null, content: markerType) => void;
   onClear: () => void;
   marker: null | markerType;
@@ -100,7 +100,7 @@ type PropType = {
   from: string;
 };
 
-const InfoContent: FC<PropType> = (props) => {
+const InfoContent: FC<Props> = (props) => {
   const { onSubmitMarker, onClear, marker, markerIndex, from } = props;
 
   const [markerContent, setMarkerContent] = useState<markerContentType>({

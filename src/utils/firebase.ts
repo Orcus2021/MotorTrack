@@ -1,64 +1,60 @@
 import { initializeApp } from "firebase/app";
-import { userLogin } from "../types/userType";
-import { carType } from "../types/carType";
-import logoIcon from "../assets/icon/logo192.png";
-import { partsType, partType, repairType, feeType } from "../types/recordType";
-import { myMapContentType, userType } from "../types/mapType";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
 } from "firebase/auth";
 import {
-  getStorage,
-  uploadBytesResumable,
-  ref,
-  getDownloadURL,
-} from "firebase/storage";
+  child,
+  get,
+  getDatabase,
+  off,
+  push,
+  ref as relRef,
+  set,
+  update,
+} from "firebase/database";
 import {
-  getFirestore,
-  doc,
-  getDocs,
-  getDoc,
-  collection,
-  setDoc,
-  query,
-  where,
-  deleteDoc,
-  updateDoc,
-  DocumentData,
   arrayRemove,
+  collection,
+  deleteDoc,
+  doc,
   enableIndexedDbPersistence,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+  updateDoc,
+  where,
 } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import {
-  getDatabase,
-  ref as relRef,
-  set,
-  child,
-  push,
-  update,
-  onValue,
-  get,
-  off,
-} from "firebase/database";
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import logoIcon from "../assets/icon/logo192.png";
+import { carType } from "../types/carType";
+import { myMapContentType, userType } from "../types/mapType";
+import { feeType, partsType, partType, repairType } from "../types/recordType";
+import { userLogin } from "../types/userType";
 
 import swDev from "../swDev";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
-  authDomain: "motortrack-97569.firebaseapp.com",
-  databaseURL:
-    "https://motortrack-97569-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "motortrack-97569",
-  storageBucket: "motortrack-97569.appspot.com",
-  messagingSenderId: "899173634521",
-  appId: "1:899173634521:web:24142760923e9cddfe09c8",
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASEURL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDERID,
+  appId: process.env.REACT_APP_FIREBASE_APPID,
 };
-const messageKey =
-  "BMfPfF3tRqWFQxHBkwVfqa3-4xipfWPrTlq5Jo4CfQI-Z_egT-Cz16CCXKL_7njrfewWi5g_t5crdSfI2V06TwE";
+const messageKey = process.env.REACT_APP_FIREBASE_MESSAGEKEY;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -73,45 +69,26 @@ type dataType = {
 };
 
 const firebase = {
-  async signUp(user: userLogin): Promise<string> {
-    return new Promise((resolve, reject) => {
-      createUserWithEmailAndPassword(auth, user.email, user.password)
-        .then((userCredential) => {
-          const userID = userCredential.user.uid;
-          resolve(userID);
-        })
-        .catch((error) => {
-          const errorMessage = error.message;
-
-          reject(errorMessage);
-        });
-    });
+  async signUp(user: userLogin) {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      user.email,
+      user.password
+    );
+    const userID = userCredential.user.uid;
+    return userID;
   },
-  async signIn(user: userLogin): Promise<string> {
-    return new Promise((resolve, reject) => {
-      signInWithEmailAndPassword(auth, user.email, user.password)
-        .then((userCredential) => {
-          const userID = userCredential.user.uid;
-          resolve(userID);
-        })
-        .catch((error) => {
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
-    });
+  async signIn(user: userLogin) {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      user.email,
+      user.password
+    );
+    const userID = userCredential.user.uid;
+    return userID;
   },
-  async logout(): Promise<string> {
-    return new Promise((resolve) => {
-      signOut(auth)
-        .then(() => {
-          resolve("Logout");
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
-        });
-    });
+  async logout() {
+    await signOut(auth);
   },
   async onAuth(): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -125,13 +102,14 @@ const firebase = {
       });
     });
   },
-  async getDoc(url: string): Promise<DocumentData | undefined> {
+  async getDoc(url: string): Promise<object> {
     return new Promise(async (resolve) => {
-      const docRef = doc(db, url);
       try {
+        const docRef = doc(db, url);
         const docSnap = await getDoc(docRef);
-        const data = docSnap.data();
-        resolve(data);
+        if (docSnap.exists()) {
+          resolve(docSnap.data());
+        }
       } catch (e) {
         console.log(e);
       }
@@ -375,8 +353,8 @@ const firebase = {
       }
     });
   },
-  async getMapDoc(id: string): Promise<myMapContentType[]> {
-    return new Promise(async (resolve, reject) => {
+  async getMapDoc(id: string) {
+    try {
       const q = query(collection(db, "maps"), where("ownerID", "==", id));
       const querySnapshot = await getDocs(q);
 
@@ -385,15 +363,15 @@ const firebase = {
         querySnapshot.forEach((doc) => {
           myMaps.push(doc.data() as myMapContentType);
         });
-        resolve(myMaps);
-      } else {
-        reject("error");
+
+        return myMaps;
       }
-    });
+    } catch (e) {
+      throw e;
+    }
   },
   async setUserMapRoom(id: string, data: userType[]): Promise<string> {
     return new Promise(async (resolve) => {
-      console.log(data);
       set(relRef(database, "room/" + id + "/users"), data);
       resolve("submit");
     });
@@ -420,16 +398,7 @@ const firebase = {
         });
     });
   },
-  async listenUserMapRoom(id: string): Promise<userType[]> {
-    return new Promise(async (resolve) => {
-      const usersRef = relRef(database, "room/" + id + "/users");
-      onValue(usersRef, (snapshot) => {
-        const data = snapshot.val();
 
-        resolve(data);
-      });
-    });
-  },
   async getIdMapRoom(id: string, data: userType): Promise<string> {
     return new Promise(async (resolve) => {
       const newKey = push(child(relRef(database), "room/" + id + "/users")).key;

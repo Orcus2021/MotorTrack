@@ -1,20 +1,19 @@
-import React, { useEffect, useState, useMemo } from "react";
-import styled from "styled-components/macro";
-import brands from "../../../utils/brands";
-import Brands from "./Brands";
+import { useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../store/index";
-import { createMessage } from "../../../utils/calcFunc";
-import { useForm, FormProvider } from "react-hook-form";
-import { carAgeAndInspectionDay } from "../../../utils/calcFunc";
-import asyncCarAction from "../../../store/car/asyncCarAction";
+import styled from "styled-components/macro";
+import Button from "../../../components/Button/Button";
 import Input from "../../../components/Input/Input";
 import InputBox from "../../../components/Input/InputBox";
-import { carType } from "../../../types/carType";
-import Modal from "../../../components/Modal/Modal";
 import Confirm from "../../../components/Modal/Confirm";
-import Button from "../../../components/Button/Button";
+import Modal from "../../../components/Modal/Modal";
 import { NeonText } from "../../../components/style";
+import asyncCarAction from "../../../store/car/asyncCarAction";
+import { useAppDispatch, useAppSelector } from "../../../store/index";
+import { carType } from "../../../types/carType";
+import brands from "../../../utils/brands";
+import { carAgeAndInspectionDay, createMessage } from "../../../utils/calcFunc";
+import Brands from "./Brands";
 
 import logoIcon from "../../../assets/logo_white.png";
 
@@ -43,7 +42,7 @@ const EditWrapper = styled.div`
   }
 `;
 
-const RightBx = styled.div`
+const RightWrapper = styled.div`
   display: flex;
   width: 290px;
   min-width: 290px;
@@ -61,13 +60,12 @@ const CarInfo = styled.p`
 `;
 const BrandWrapper = styled.div`
   flex-grow: 1;
-  /* margin-right: 17px; */
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
-const InputBx = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   position: relative;
   width: 250px;
@@ -78,12 +76,12 @@ const InputBx = styled.div`
   }
 `;
 
-const BtnBx = styled.div`
+const BtnBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
-const LogoBx = styled.div`
+const LogoBox = styled.div`
   width: 100%;
   height: 100%;
   position: relative;
@@ -93,9 +91,7 @@ const LogoBx = styled.div`
 const LogoWrapper = styled.div`
   width: 250px;
   height: 100px;
-
   border-radius: 4px;
-  /* background-color: #ffffff8b; */
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
@@ -107,7 +103,7 @@ const LogoImg = styled.img`
   transform: translateX(-50%);
   height: 100%;
 `;
-const CarInfoBx = styled.div`
+const CarInfoBox = styled.div`
   width: 260px;
   display: flex;
   align-items: center;
@@ -122,7 +118,7 @@ const SubTitle = styled.span`
   color: #fff;
 `;
 
-const BrandInputBx = styled.div`
+const BrandInputBox = styled.div`
   overflow: hidden;
   height: 0;
 `;
@@ -150,18 +146,17 @@ const EditCar = () => {
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const initBrandName = car
-    ? { name: brands.get(car.brand)?.name, key: car.brand }
-    : { name: "", key: "" };
   const [closeEffect, setCloseEffect] = useState<boolean>(false);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [brandName, setBrandName] = useState<brandType>(
-    initBrandName as brandType
-  );
   const [carAge, setCarAge] = useState<string>(car?.age || "0");
   const [inspectionDay, setInspectionDay] = useState<string>(
     car?.inspectionDay || "0"
+  );
+  const initBrandName = car
+    ? { name: brands.get(car.brand)?.name, key: car.brand }
+    : { name: "", key: "" };
+  const [brandName, setBrandName] = useState<brandType>(
+    initBrandName as brandType
   );
   const initCar = useMemo(() => {
     return {
@@ -211,7 +206,7 @@ const EditCar = () => {
     createMessage("remind", dispatch, "已更新車輛");
     navigate("/car_manage/record");
   };
-  const callConfirm = () => {
+  const callConfirmHandler = () => {
     setShowConfirm(true);
   };
 
@@ -234,7 +229,7 @@ const EditCar = () => {
     }, 600);
   };
 
-  const goRecord = () => {
+  const goRecordHandler = () => {
     navigate("/car_manage/record");
   };
 
@@ -246,7 +241,7 @@ const EditCar = () => {
           <EditWrapper>
             <BrandWrapper>
               <BrandTitle>{brandName.name}</BrandTitle>
-              <BrandInputBx>
+              <BrandInputBox>
                 <Input
                   name="brand"
                   content="廠牌(請選擇)"
@@ -255,23 +250,23 @@ const EditCar = () => {
                   type="text"
                   readOnly={true}
                 />
-              </BrandInputBx>
+              </BrandInputBox>
               <Brands onBrand={brandNameHandler} brandName={brandName} />
             </BrandWrapper>
-            <RightBx>
+            <RightWrapper>
               <LogoWrapper>
-                <LogoBx>
+                <LogoBox>
                   <LogoImg src={brands.get(brandName.key)?.img || logoIcon} />
-                </LogoBx>
+                </LogoBox>
               </LogoWrapper>
-              <CarInfoBx>
+              <CarInfoBox>
                 <SubTitle>車齡 :</SubTitle>
                 <CarInfo>{carAge}</CarInfo>
                 <SubTitle>驗車日期:</SubTitle>
                 <CarInfo>{inspectionDay}</CarInfo>
-              </CarInfoBx>
+              </CarInfoBox>
 
-              <InputBx>
+              <InputWrapper>
                 <InputBox
                   name="name"
                   content="暱稱"
@@ -292,9 +287,9 @@ const EditCar = () => {
                       : ""
                   }
                 />
-              </InputBx>
+              </InputWrapper>
 
-              <InputBx>
+              <InputWrapper>
                 <InputBox
                   name="plateNum"
                   content="車牌"
@@ -315,9 +310,9 @@ const EditCar = () => {
                       : ""
                   }
                 />
-              </InputBx>
+              </InputWrapper>
 
-              <InputBx>
+              <InputWrapper>
                 <InputBox
                   name="licenseDate"
                   content="行照發照日"
@@ -327,9 +322,9 @@ const EditCar = () => {
                   calendarPosition="top"
                   message={errors.licenseDate && "尚未填寫"}
                 />
-              </InputBx>
+              </InputWrapper>
 
-              <InputBx>
+              <InputWrapper>
                 <InputBox
                   name="insuranceDate"
                   content="保險到期日"
@@ -339,17 +334,25 @@ const EditCar = () => {
                   calendarPosition="top"
                   message={errors.insuranceDate && "尚未填寫"}
                 />
-              </InputBx>
-              <BtnBx>
-                <Button label="返回" handleClick={goRecord} type="cancel" />
-                <Button label="刪除" handleClick={callConfirm} type="reject" />
+              </InputWrapper>
+              <BtnBox>
+                <Button
+                  label="返回"
+                  handleClick={goRecordHandler}
+                  type="cancel"
+                />
+                <Button
+                  label="刪除"
+                  handleClick={callConfirmHandler}
+                  type="reject"
+                />
                 <Button
                   label="更新"
                   handleClick={handleSubmit(editCarHandler)}
                   type="primary"
                 />
-              </BtnBx>
-            </RightBx>
+              </BtnBox>
+            </RightWrapper>
           </EditWrapper>
         </EditContainer>
       </FormProvider>

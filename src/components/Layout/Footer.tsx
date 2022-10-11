@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components/macro";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../store";
 
-import statusIcon from "../../assets/icon/chart-white.png";
-import recordIcon from "../../assets/icon/paper-white.png";
-import repairIcon from "../../assets/icon/repair-plus.png";
-import feeIcon from "../../assets/icon/moneyBag-plus.png";
-import refuelIcon from "../../assets/icon/refuel-plus.png";
-import mapIcon from "../../assets/icon/map.png";
-import stopWatchIcon from "../../assets/icon/stopwatch.png";
 import addRecordIcon from "../../assets/icon/add-record.png";
+import statusIcon from "../../assets/icon/chart-white.png";
+import mapIcon from "../../assets/icon/map.png";
+import feeIcon from "../../assets/icon/moneyBag-plus.png";
+import recordIcon from "../../assets/icon/paper-white.png";
+import refuelIcon from "../../assets/icon/refuel-plus.png";
+import repairIcon from "../../assets/icon/repair-plus.png";
 import shopIcon from "../../assets/icon/shop.png";
+import stopWatchIcon from "../../assets/icon/stopwatch.png";
 
 const FooterContainer = styled.div<{ $isAuth: boolean }>`
   position: relative;
@@ -46,7 +46,7 @@ const Nav = styled.li<{ $isSelect: boolean }>`
   border-radius: 50px;
   padding: ${(props) => (props.$isSelect ? "5px" : "0px")};
   background-color: ${(props) =>
-    props.$isSelect ? "var(--deepColor)" : "var(--mainBack)"};
+    props.$isSelect ? "var(--mainColor)" : "var(--mainBack)"};
   align-items: center;
   justify-content: flex-start;
   transition: 0.5s;
@@ -92,9 +92,6 @@ const Img = styled.img`
 `;
 const EditWrapper = styled.div<{ $isShow: boolean }>`
   position: absolute;
-  /* width: 100px; */
-  /* height: 100px; */
-  /* background-color: red; */
   right: 20px;
   bottom: 60px;
   transition: 0.3s;

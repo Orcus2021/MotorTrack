@@ -1,16 +1,14 @@
-import React, { useEffect } from "react";
-import Header from "./components/Layout/Header";
+import { useEffect, useRef } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { createGlobalStyle } from "styled-components/macro";
 import Footer from "./components/Layout/Footer";
+import Header from "./components/Layout/Header";
+import SlideMessage from "./components/SlideMessage";
 import { useAppDispatch, useAppSelector } from "./store";
 import asyncUserAction from "./store/user/asyncUserAction";
-import { Outlet } from "react-router-dom";
-import firebase from "./utils/firebase";
-import { useNavigate, useLocation } from "react-router-dom";
-import { createMessage, requestPermission } from "./utils/calcFunc";
-import { Reset } from "styled-reset";
-import { createGlobalStyle } from "styled-components/macro";
-import SlideMessage from "./components/SlideMessage";
 import { userActions } from "./store/user/userReducer";
+import { createMessage, requestPermission } from "./utils/calcFunc";
+import firebase from "./utils/firebase";
 
 export const GlobalStyle = createGlobalStyle`
 
@@ -23,25 +21,14 @@ export const GlobalStyle = createGlobalStyle`
   }
   :root{
    
-    --thirdColor:#2196f3;
-    /* --deepColor:#02697f;      */
-     --deepColor:#1d3557;
-     /* --deepColor:#051e34; */
-
-    
+   
+     --deepColor:#1d3557;        
      --mainColor:#4581ea;
      --lightColor:#a9c7fa;
 
      --secondColor:rgb(224, 195, 252);
-     /* --secondColor:#84fab0; */
-
-     --textColor:#e6fdff;
+    --textColor:#e6fdff;
     --textDeepColor:rgb(37, 87, 132);
-
-
-    /* --thirdColor:#00bcd4;
-    --secColor:#61dafb;
-    --secondColor:#00dfc4; */
 
     --errorColor:#ec5990;
     --errorSecondColor:rgb(225, 79, 222);
@@ -95,6 +82,7 @@ const App = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const isMountedPWA = useRef<boolean>(true);
   useEffect(() => {
     const auth = async () => {
       const userId = await firebase.onAuth().catch((msg) => {
@@ -120,7 +108,11 @@ const App = () => {
         console.log(msg);
       });
     };
-    onPWA();
+
+    if (isMountedPWA.current) {
+      onPWA();
+      isMountedPWA.current = false;
+    }
   }, []);
 
   useEffect(() => {
@@ -171,11 +163,11 @@ const App = () => {
     }
   }, [dispatch, user, isAuth]);
 
-  useEffect(() => {
-    if (isAuth) {
-      firebase.onMessageFromFCM();
-    }
-  }, [dispatch, isAuth]);
+  // useEffect(() => {
+  //   if (isAuth) {
+  //     firebase.onMessageFromFCM();
+  //   }
+  // }, [dispatch, isAuth]);
 
   return (
     <>

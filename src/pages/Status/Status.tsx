@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components/macro";
-import { useAppSelector, useAppDispatch } from "../../store";
-import { userActions } from "../../store/user/userReducer";
-import asyncUserAction from "../../store/user/asyncUserAction";
-import asyncCarAction from "../../store/car/asyncCarAction";
-import StatusInfo from "./StatusInfo";
-import { carAgeAndInspectionDay } from "../../utils/calcFunc";
-import { getTodayMs } from "../../utils/calcFunc";
-import Loading from "../../components/Loading/Loading";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components/macro";
+import Loading from "../../components/Loading/Loading";
+import { useAppDispatch, useAppSelector } from "../../store";
+import asyncCarAction from "../../store/car/asyncCarAction";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import { userActions } from "../../store/user/userReducer";
+import { carAgeAndInspectionDay, getTodayMs } from "../../utils/calcFunc";
 import HomeBack from "../Home/HomeBack";
+import StatusInfo from "./StatusInfo";
 
 import backImg from "../../assets/img/status-back.jpg";
 
-const Container = styled.div`
+const StatusContainer = styled.div`
   position: relative;
   width: 100%;
-
   min-height: calc(100vh - 68px);
   display: flex;
   flex-direction: row;
@@ -42,16 +40,13 @@ const BackView = styled.div`
 `;
 
 const Status = () => {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const cars = useAppSelector((state) => state.car.cars);
   const user = useAppSelector((state) => state.user.user);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const isLoading = useAppSelector((state) => state.user.isLoading);
-
-  const navigate = useNavigate();
-
   const [showContent, setShowContent] = useState<boolean>(false);
-
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(userActions.loading(true));
@@ -99,7 +94,7 @@ const Status = () => {
 
   return (
     <>
-      <Container onClick={closeDetailHandler}>
+      <StatusContainer onClick={closeDetailHandler}>
         <BackView />
         <HomeBack />
         <StatusInfo
@@ -107,7 +102,7 @@ const Status = () => {
           onShowSelectContent={showContentHandler}
           onCloseSelectContent={closeDetailHandler}
         />
-      </Container>
+      </StatusContainer>
       {isLoading && <Loading />}
     </>
   );

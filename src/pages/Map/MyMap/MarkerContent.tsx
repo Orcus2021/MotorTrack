@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import styled from "styled-components/macro";
 import { markerType } from "../../../types/mapType";
 
@@ -24,11 +24,11 @@ const Content = styled.p`
   font-size: 14px;
   color: #000;
 `;
-type PropType = {
+type Props = {
   marker: markerType;
 };
 
-const MarkerContent: FC<PropType> = (props) => {
+const MarkerContent: FC<Props> = (props) => {
   const { marker } = props;
   return (
     <Container>

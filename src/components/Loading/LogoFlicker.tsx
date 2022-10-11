@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 
 const Text = styled.span`
@@ -54,7 +53,7 @@ const Text = styled.span`
     }
   }
 `;
-const BackTextBox = styled.div`
+const BackTextBoxContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -68,7 +67,7 @@ const BackTextBox = styled.div`
 
 const LogoFlicker = () => {
   return (
-    <BackTextBox>
+    <BackTextBoxContainer>
       <Text>M</Text>
       <Text>o</Text>
       <Text>t</Text>
@@ -79,7 +78,7 @@ const LogoFlicker = () => {
       <Text>a</Text>
       <Text>c</Text>
       <Text>K</Text>
-    </BackTextBox>
+    </BackTextBoxContainer>
   );
 };
 

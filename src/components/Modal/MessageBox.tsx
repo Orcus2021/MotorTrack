@@ -14,7 +14,6 @@ const RemindContainer = styled.div<{ $style: styleType }>`
   background-color: var(--thirdBack);
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
   align-items: center;
   border-radius: 4px;
   @media screen and (max-width: 701px) {
@@ -22,7 +21,7 @@ const RemindContainer = styled.div<{ $style: styleType }>`
   }
 `;
 
-const LogoBx = styled.div`
+const LogoBox = styled.div`
   position: relative;
   width: 170px;
   height: 48px;
@@ -36,9 +35,9 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
 const Remind: React.FC<Props> = ({ setStyle, children }) => {
   return (
     <RemindContainer $style={setStyle}>
-      <LogoBx>
+      <LogoBox>
         <Img src={logoIcon} />
-      </LogoBx>
+      </LogoBox>
       {children}
     </RemindContainer>
   );

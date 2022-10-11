@@ -46,7 +46,7 @@ const asyncRecordAction = {
     return async (dispatch: AppDispatch) => {
       const update = async () => {
         const url = `/carsRecords/${carId}/repairRecords/${data.id}`;
-        const response = await firebase.setDoc(url, data);
+        await firebase.setDoc(url, data);
         const parts = { ...oldParts };
         // if (response) {} FIXME
         data.records.forEach((newPart: partType) => {

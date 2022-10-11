@@ -14,12 +14,12 @@ import StoreMap from "./pages/Map/StoreMap";
 import Mileage from "./pages/Mileage/Mileage";
 import MyMap from "./pages/Map/MyMap/MyMap";
 import NotFound from "./components/Layout/NotFound";
-import Test from "./Test";
+
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import Chart from "./pages/Chart/Chart";
-// import swDev from "./swDev";
+import swDev from "./swDev";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -33,7 +33,6 @@ root.render(
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
           <Route path="status" element={<Status />} />
-          <Route path="test" element={<Test />} />
           <Route path="store" element={<StoreMap />} />
           <Route path="my_map/:userID" element={<MyMap />} />
           <Route path="mileage" element={<Mileage />} />
@@ -49,7 +48,7 @@ root.render(
     </Provider>
   </BrowserRouter>
 );
-// swDev();
+swDev();
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA

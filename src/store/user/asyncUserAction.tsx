@@ -12,18 +12,8 @@ const asyncUserAction = {
   signUp(data: userLogin) {
     return async (dispatch: AppDispatch) => {
       dispatch(userActions.loading(true));
-      // dispatch(
-      //   userActions.showNotification({
-      //     status: "pending",
-      //     title: "Sending...",
-      //     message: "Sending user data!",
-      //   })
-      // );
       const signUp = async () => {
-        const userID = await firebase.signUp(data).catch((e) => {
-          throw new Error(e);
-        });
-
+        const userID = await firebase.signUp(data);
         if (userID) {
           const initUser = {
             id: userID,
@@ -57,10 +47,9 @@ const asyncUserAction = {
 
       const signIn = async () => {
         let userID = data;
+
         if (typeof data !== "string") {
-          userID = await firebase.signIn(data).catch((e) => {
-            throw new Error(e);
-          });
+          userID = await firebase.signIn(data);
         }
         if (typeof userID === "string") {
           dispatch(asyncCarAction.getCars(userID));
@@ -77,27 +66,25 @@ const asyncUserAction = {
           dispatch(carActions.selectCar(user.selectCar));
           await dispatch(asyncRecordAction.getAllRecords(user.selectCar));
         }
-      } catch (e: any) {
-        if (
-          e.message.includes("auth/user-not-found") ||
-          e.message.includes("auth/wrong-password")
-        ) {
-          createMessage("error", dispatch, "帳號或密碼錯誤");
+      } catch (e) {
+        if (e instanceof Error) {
+          if (
+            e.message.includes("auth/user-not-found") ||
+            e.message.includes("auth/wrong-password")
+          ) {
+            createMessage("error", dispatch, "帳號或密碼錯誤");
+          }
+          console.log(e);
+          dispatch(userActions.loading(false));
         }
-        dispatch(userActions.loading(false));
       }
     };
   },
   logout() {
     return async (dispatch: AppDispatch) => {
-      const logout = async () => {
-        await firebase.logout();
-      };
-
       try {
-        await logout();
+        await firebase.logout();
         dispatch(userActions.logout());
-        createMessage("success", dispatch, "已成功登出");
       } catch (e) {
         console.log(e);
       }
@@ -105,12 +92,8 @@ const asyncUserAction = {
   },
   updateUser(id: string, data: object) {
     return async (dispatch: AppDispatch) => {
-      const update = () => {
-        firebase.updateDoc(`/users/${id}`, data);
-      };
-
       try {
-        update();
+        firebase.updateDoc(`/users/${id}`, data);
         dispatch(userActions.update(data));
       } catch (e) {
         console.log(e);

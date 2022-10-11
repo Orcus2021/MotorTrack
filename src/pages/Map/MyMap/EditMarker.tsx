@@ -1,10 +1,10 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components/macro";
-import { markerType, markerContentType } from "../../../types/mapType";
+import { markerType } from "../../../types/mapType";
 import InfoContent from "./InfoContent";
 
-import markerIcon from "../../../assets/icon/marker.png";
 import editIcon from "../../../assets/icon/add-record.png";
+import markerIcon from "../../../assets/icon/marker.png";
 import trashIcon from "../../../assets/icon/trash.png";
 
 const EditWrapper = styled.div<{ $isShow: boolean }>`
@@ -98,7 +98,7 @@ const Input = styled.input`
   padding: 0 5px;
 `;
 
-type Prop = {
+type Props = {
   password: string | undefined;
   setPassword: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isEdit: boolean;
@@ -110,7 +110,7 @@ type Prop = {
   showMarkerBox: boolean;
 };
 
-const EditMarker: FC<Prop> = (props) => {
+const EditMarker: FC<Props> = (props) => {
   const {
     password,
     markers,

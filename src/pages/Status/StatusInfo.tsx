@@ -1,29 +1,28 @@
-import React, { useState, useEffect, FC } from "react";
-import PartDetail from "./PartDetail";
-import brands from "../../utils/brands";
-import { Img } from "../../components/style";
-import userIcon from "../../assets/img/dog.jpg";
-import styled from "styled-components/macro";
-import { useAppSelector, useAppDispatch } from "../../store";
-import { compareDateAndMileage } from "../../utils/calcFunc";
-import { partType, partsType } from "../../types/recordType";
-import Progress from "../../components/Progress";
-import { carType } from "../../types/carType";
-import SelectBox from "../../components/SelectBox";
-import { carActions } from "../../store/car/carReducer";
-import asyncUserAction from "../../store/user/asyncUserAction";
-import asyncRecordAction from "../../store/record/asyncRecordAction";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components/macro";
+import userIcon from "../../assets/img/dog.jpg";
+import Progress from "../../components/Progress";
+import SelectBox from "../../components/SelectBox";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import { Img } from "../../components/style";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { carActions } from "../../store/car/carReducer";
+import asyncRecordAction from "../../store/record/asyncRecordAction";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import { carType } from "../../types/carType";
+import { partsType, partType } from "../../types/recordType";
+import brands from "../../utils/brands";
+import { compareDateAndMileage } from "../../utils/calcFunc";
+import PartDetail from "./PartDetail";
 
-import returnIcon from "../../assets/icon/return.png";
-import dashboardIcon from "../../assets/icon/dashborad_white.png";
 import arrowImg from "../../assets/icon/arrow_down.png";
-const Container = styled.div`
+import dashboardIcon from "../../assets/icon/dashborad_white.png";
+import returnIcon from "../../assets/icon/return.png";
+const InfoContainer = styled.div`
   width: 410px;
   max-width: 410px;
   height: 100%;
-  /* margin-right: 30px; */
   overflow: hidden;
 
   border-top: 1px solid rgba(255, 255, 255, 0.3);
@@ -31,7 +30,6 @@ const Container = styled.div`
   backdrop-filter: blur(5px);
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 3px 3px 15px rgb(0, 0, 0);
-  /* background-color: var(--thirdBack); */
   border-radius: 8px;
   @media screen and (max-width: 701px) {
     width: 322px;
@@ -55,7 +53,7 @@ const InfoWrapper = styled.div`
     max-width: 322px;
   }
 `;
-const DetailBx = styled.div`
+const DetailBox = styled.div`
   display: flex;
   flex-direction: row;
   padding: 10px 10px 10px 0;
@@ -65,21 +63,19 @@ const DetailBx = styled.div`
     padding: 10px;
   }
 `;
-const ChartBx = styled.div`
+const ChartBox = styled.div`
   position: relative;
   height: 80px;
   width: 80px;
-
   background-color: var(--mainColor);
   border-radius: 50%;
   overflow: hidden;
   border-radius: 50%;
 `;
-const Detail = styled.div`
+const DetailWrapper = styled.div`
   flex-grow: 1;
-  /* padding: 0 20px; */
 `;
-const MileageBx = styled.div`
+const MileageBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -88,7 +84,7 @@ const MileageBx = styled.div`
   padding: 2px 10px;
   margin-bottom: 10px;
 `;
-const MileageIconBx = styled.div`
+const MileageIconBox = styled.div`
   width: 30px;
   height: 30px;
   position: relative;
@@ -102,7 +98,7 @@ const MileageIcon = styled.img`
 const MileageMsg = styled.p`
   font-size: 16px;
 `;
-const MessageBx = styled.div`
+const MessageBox = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -115,14 +111,12 @@ const Message = styled.p`
   font-size: 14px;
 `;
 const PartsWrapper = styled.div`
-  /* background-color: var(--thirdBack); */
   padding: 0 10px;
   width: 100%;
   margin-bottom: 10px;
   border-radius: 10px;
   height: 350px;
   overflow: overlay;
-  /* box-shadow: 3px 3px 15px rgb(0, 0, 0); */
   &::-webkit-scrollbar {
     width: 7px;
   }
@@ -134,7 +128,7 @@ const PartsWrapper = styled.div`
     background-color: var(--mainColor);
   }
 `;
-const LoadingBx = styled.div`
+const LoadingBox = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -163,11 +157,10 @@ const DisplayName = styled.div`
 
   justify-content: flex-start;
 `;
-const UserBx = styled.div`
+const UserBox = styled.div`
   height: 25px;
   width: 25px;
   position: relative;
-  /* margin-right: 10px; */
 `;
 const CarName = styled.p`
   width: 65px;
@@ -180,7 +173,6 @@ const CarName = styled.p`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  /* text-align: center; */
 `;
 
 const Content = styled.div`
@@ -268,7 +260,7 @@ const RecordBox = styled.div`
 const Line = styled.div`
   height: 1.8px;
   background-color: #ffffff76;
-  width: 80%;
+  width: calc(100% - 20px);
   border-radius: 5px;
 `;
 const InfoDetailWrapper = styled.div<{ $isDetail: boolean }>`
@@ -303,21 +295,23 @@ type progressDetailType = {
   message: string;
 };
 
-const StatusInfo: FC<{
+type Props = {
   showContent: boolean;
   onShowSelectContent: (e: React.MouseEvent) => void;
   onCloseSelectContent: () => void;
-}> = (props) => {
+};
+
+const StatusInfo: FC<Props> = (props) => {
   const { showContent, onShowSelectContent, onCloseSelectContent } = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const car = useAppSelector((state) => state.car.car);
   const cars = useAppSelector((state) => state.car.cars);
   const userImg = useAppSelector((state) => state.user.user.userImg);
+  const parts = useAppSelector((state) => state.record.parts);
   const [partStatus, setPartStatus] = useState<partType[][]>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [isBoxLoading, setIsBoxLoading] = useState<boolean>(false);
-  const parts = useAppSelector((state) => state.record.parts);
   const [progressDetail, setProgressDetail] = useState<progressDetailType>();
 
   useEffect(() => {
@@ -364,62 +358,58 @@ const StatusInfo: FC<{
     }, 1000);
   };
 
-  const setOptions = () => {
-    const options = cars.map((car) => (
-      <Content
-        onClick={() => {
-          selectMotorHandler(car.id, car.ownerId);
-        }}
-        key={car.id}
-      >
-        <SelectBrand>
-          <Img src={brands.get(car.brand)?.img} />
-        </SelectBrand>
-        <PlateNum>{car?.plateNum}:</PlateNum>
-        <CarName> {car?.name}</CarName>
-      </Content>
-    ));
-    return options;
-  };
   const goRecordHandler = () => {
     navigate("/car_manage/record");
   };
 
   return (
-    <Container>
+    <InfoContainer>
       <InfoDetailWrapper $isDetail={showDetail}>
         <InfoWrapper>
-          <DetailBx>
+          <DetailBox>
             <LeftBox>
-              <ChartBx>
+              <ChartBox>
                 <Img src={userImg || userIcon} />
-              </ChartBx>
+              </ChartBox>
             </LeftBox>
 
-            <Detail>
-              <MileageBx>
-                <MileageIconBx>
+            <DetailWrapper>
+              <MileageBox>
+                <MileageIconBox>
                   <MileageIcon src={dashboardIcon} />
-                </MileageIconBx>
+                </MileageIconBox>
                 <MileageMsg>{car?.mileage}公里</MileageMsg>
-              </MileageBx>
-              <MessageBx>
+              </MileageBox>
+              <MessageBox>
                 <Message>車齡:</Message>
                 <Message>{car?.age}</Message>
-              </MessageBx>
-              <MessageBx>
+              </MessageBox>
+              <MessageBox>
                 <Message>驗車時間:</Message>
                 <Message>{car?.inspectionDay}</Message>
-              </MessageBx>
-              <MessageBx>
+              </MessageBox>
+              <MessageBox>
                 <Message>保險時間:</Message>
                 <Message>{car?.insuranceDate}</Message>
-              </MessageBx>
+              </MessageBox>
 
               <NavWrapper>
                 <SelectWrapper>
                   <SelectBox
-                    options={setOptions()}
+                    options={cars.map((car) => (
+                      <Content
+                        onClick={() => {
+                          selectMotorHandler(car.id, car.ownerId);
+                        }}
+                        key={car.id}
+                      >
+                        <SelectBrand>
+                          <Img src={brands.get(car.brand)?.img} />
+                        </SelectBrand>
+                        <PlateNum>{car?.plateNum}:</PlateNum>
+                        <CarName> {car?.name}</CarName>
+                      </Content>
+                    ))}
                     onShow={onShowSelectContent}
                     icon={arrowImg}
                     showContent={showContent}
@@ -427,9 +417,9 @@ const StatusInfo: FC<{
                     border={false}
                   >
                     <DisplayName>
-                      <UserBx>
+                      <UserBox>
                         {car?.brand && <Img src={brands.get(car.brand)?.img} />}
-                      </UserBx>
+                      </UserBox>
                       <PlateNum>{car?.plateNum}:</PlateNum>
                       <CarName>{car?.name}</CarName>
                     </DisplayName>
@@ -439,18 +429,18 @@ const StatusInfo: FC<{
                   <RecordText>記錄去</RecordText>
                 </RecordBox>
               </NavWrapper>
-            </Detail>
-          </DetailBx>
+            </DetailWrapper>
+          </DetailBox>
           <Line />
           <PartsWrapper>
             {isBoxLoading && (
-              <LoadingBx>
+              <LoadingBox>
                 {Array(5)
                   .fill(null)
                   .map((_, index) => (
                     <Skeleton key={index} />
                   ))}
-              </LoadingBx>
+              </LoadingBox>
             )}
             {partStatus.length === 0 && !isBoxLoading && (
               <NoPartsWrapper>
@@ -489,7 +479,7 @@ const StatusInfo: FC<{
           />
         )}
       </InfoDetailWrapper>
-    </Container>
+    </InfoContainer>
   );
 };
 

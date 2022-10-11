@@ -1,11 +1,10 @@
-import React, { useRef, FC, useCallback, useState } from "react";
-import { positionType } from "../../../types/mapType";
-import styled from "styled-components/macro";
 import { Autocomplete } from "@react-google-maps/api";
+import React, { FC, useCallback, useRef } from "react";
+import styled from "styled-components/macro";
+import { positionType } from "../../../types/mapType";
 
-import searchIcon from "../../../assets/icon/search.png";
-import directionIcon from "../../../assets/icon/direction.png";
 import directionBlackIcon from "../../../assets/icon/direction-black.png";
+import searchIcon from "../../../assets/icon/search.png";
 
 const Container = styled.div`
   position: absolute;
@@ -60,13 +59,13 @@ const DirectionWrapper = styled.div<{ $isDirection: boolean }>`
     background-color: var(--mainColor);
   }
 `;
-type PropType = {
+type Props = {
   onMarker: React.Dispatch<React.SetStateAction<positionType | null>>;
   onDirection: () => void;
   isDirection: boolean;
 };
 
-const SearchBar: FC<PropType> = (props) => {
+const SearchBar: FC<Props> = (props) => {
   const { onMarker, onDirection, isDirection } = props;
   const searchBar = useRef<HTMLInputElement | null>(null);
   const searchResult = useRef<google.maps.places.PlaceResult | null>(null);

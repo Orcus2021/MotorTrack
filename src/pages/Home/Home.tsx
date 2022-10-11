@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import styled from "styled-components/macro";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components/macro";
 import HomeLoading from "../../components/Loading/HomeLoading";
 
 import bikeImg from "../../assets/img/bike_blue_1.png";
@@ -66,12 +66,10 @@ const Button = styled.button`
     transform: translateY(-30px);
   }
 `;
-const BackImg = styled.img<{ $deg: number }>`
+const BackImg = styled.img`
   max-width: 80%;
   min-width: 600px;
   object-fit: contain;
-  transform: translateX();
-  transform: ${(props) => `translateX(${props.$deg}px)`};
   @media screen and (max-width: 701px) {
     max-width: 90%;
     min-width: 300px;
@@ -145,12 +143,13 @@ const Text = styled.span`
   }
 `;
 
+const title = "MotorTrack";
+
 const Home = () => {
   const navigate = useNavigate();
   const home = useRef<HTMLDivElement>(null);
   const isAuth = useAppSelector((statue) => statue.user.isAuth);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [imgDeg, setImgDeg] = useState<number>(0);
   const [showHomePage, setShowHomePage] = useState<boolean>(false);
 
   useEffect(() => {
@@ -170,40 +169,21 @@ const Home = () => {
       navigate("/login");
     }
   };
-  const detectMouse = (e: React.MouseEvent) => {
-    if (home.current) {
-      const halfView = home.current?.clientWidth / 2;
-      if (e.clientX > halfView) {
-        const deg = Math.floor(((e.clientX - halfView) * 30) / halfView);
-        setImgDeg(deg);
-      } else {
-        const deg = (30 - Math.floor((e.clientX * 30) / halfView)) * -1;
-        setImgDeg(deg);
-      }
-    }
-  };
 
   return (
     <>
       {isLoading && <HomeLoading />}
       {showHomePage && (
-        <Container ref={home} onMouseMove={detectMouse}>
+        <Container ref={home}>
           <BackTextBox>
-            <Text>M</Text>
-            <Text>o</Text>
-            <Text>t</Text>
-            <Text>o</Text>
-            <Text>r</Text>
-            <Text>T</Text>
-            <Text>r</Text>
-            <Text>a</Text>
-            <Text>c</Text>
-            <Text>K</Text>
+            {title.split("").map((letter, index) => (
+              <Text key={index}>{letter}</Text>
+            ))}
           </BackTextBox>
           <Content>
             <Title>READY TO TRACK</Title>
             <Button onClick={goLoginHandler}>開始記錄</Button>
-            <BackImg src={bikeImg} $deg={imgDeg} />
+            <BackImg src={bikeImg} />
           </Content>
         </Container>
       )}

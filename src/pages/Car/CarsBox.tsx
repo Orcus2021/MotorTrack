@@ -1,17 +1,15 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import styled from "styled-components/macro";
 import Card from "../../components/Layout/Card";
 import { Img } from "../../components/style";
 import { useAppSelector } from "../../store";
 import brands from "../../utils/brands";
 
-const CarsWrapper = styled.div`
-  /* background-color: #9d9d9d1d; */
+const CarsContainer = styled.div`
   border-radius: 8px;
   padding: 10px 20px;
   min-width: 256px;
   height: calc(100% - 285px);
-  /* background-color: red; */
   &::-webkit-scrollbar {
     width: 7px;
     position: fixed;
@@ -37,7 +35,7 @@ const CarInfoBx = styled.div`
   width: 100%;
 `;
 
-const ImgBx = styled.div`
+const ImgBox = styled.div`
   flex-shrink: 0;
   width: 25px;
   height: 25px;
@@ -62,28 +60,29 @@ const CarInfo = styled.p`
   white-space: nowrap;
 `;
 
-const CarsBox: FC<{
+type Props = {
   onSelect: (id: string, ownerId: string) => Promise<void>;
-}> = (props) => {
+};
+const CarsBox: FC<Props> = (props) => {
   const { onSelect } = props;
   const cars = useAppSelector((status) => status.car.cars);
   const carID = useAppSelector((state) => state.car.car?.id);
   return (
-    <CarsWrapper>
+    <CarsContainer>
       {cars.map((car) => (
         <CarWrapper key={car.id} onClick={() => onSelect(car.id, car.ownerId)}>
           <Card hover={true} isSelect={car.id === carID}>
             <CarInfoBx>
-              <ImgBx>
+              <ImgBox>
                 <Img src={brands.get(car.brand)?.img} />
-              </ImgBx>
+              </ImgBox>
               <CarNum>{car.plateNum}</CarNum>
               <CarInfo key={car.id}>{car.name}</CarInfo>
             </CarInfoBx>
           </Card>
         </CarWrapper>
       ))}
-    </CarsWrapper>
+    </CarsContainer>
   );
 };
 

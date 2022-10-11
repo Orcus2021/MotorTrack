@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components/macro";
 
 const BackTextBox = styled.div`
@@ -38,20 +37,14 @@ const Text = styled.span`
     }
   }
 `;
+const title = "MotorTrack";
 
 const HomeBack = () => {
   return (
     <BackTextBox>
-      <Text>M</Text>
-      <Text>o</Text>
-      <Text>t</Text>
-      <Text>o</Text>
-      <Text>r</Text>
-      <Text>T</Text>
-      <Text>r</Text>
-      <Text>a</Text>
-      <Text>c</Text>
-      <Text>K</Text>
+      {title.split("").map((letter, index) => (
+        <Text key={index}>{letter}</Text>
+      ))}
     </BackTextBox>
   );
 };

@@ -1,7 +1,6 @@
-import React from "react";
 import styled from "styled-components/macro";
 
-const SkeletonWrapper = styled.div`
+const SkeletonContainer = styled.div`
   width: 100%;
   height: 30px;
   padding: 0px 10px;
@@ -100,13 +99,13 @@ const SkeletonBarShot = styled.div`
 
 const Skeleton = () => {
   return (
-    <SkeletonWrapper>
+    <SkeletonContainer>
       <SkeletonBarShot />
       <SkeletonBar />
       <SkeletonBar />
       <SkeletonBar />
       <SkeletonBarShot />
-    </SkeletonWrapper>
+    </SkeletonContainer>
   );
 };
 

@@ -1,12 +1,14 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import styled from "styled-components/macro";
-import { NeonText } from "../../../components/style";
 import Button from "../../../components/Button/Button";
+import { NeonText } from "../../../components/style";
 import { myMapContentType } from "../../../types/mapType";
+import { useAppSelector } from "../../../store";
+import { useParams } from "react-router-dom";
 
-import markerIcon from "../../../assets/icon/marker.png";
-import friendIcon from "../../../assets/icon/friends.png";
 import editIcon from "../../../assets/icon/add-record.png";
+import friendIcon from "../../../assets/icon/friends.png";
+import markerIcon from "../../../assets/icon/marker.png";
 
 const TitleWrapper = styled.div`
   width: 90%;
@@ -15,6 +17,9 @@ const TitleWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   position: relative;
+  @media screen and (max-width: 701px) {
+    width: 95%;
+  }
 `;
 
 const PageTitle = styled(NeonText)`
@@ -54,8 +59,7 @@ const Img = styled.img`
   height: 22px;
   object-fit: cover;
 `;
-type PropType = {
-  isSelf: boolean;
+type Props = {
   myMapContent: myMapContentType;
   isEdit: boolean;
   showMarkerBox: boolean;
@@ -69,9 +73,8 @@ type PropType = {
   onShowMarkerBox: () => void;
   onShowFriendsBox: () => void;
 };
-const Title: FC<PropType> = (props) => {
+const Title: FC<Props> = (props) => {
   const {
-    isSelf,
     myMapContent,
     isEdit,
     isJoin,
@@ -85,7 +88,10 @@ const Title: FC<PropType> = (props) => {
     onShowMarkerBox,
     onShowFriendsBox,
   } = props;
-
+  const userState = useAppSelector((state) => state.user);
+  const { isAuth, user } = userState;
+  const params = useParams();
+  const isSelf = params.userID === user.id && isAuth;
   const editHandler = () => {
     onEdit();
   };

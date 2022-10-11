@@ -1,22 +1,21 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
-import styled from "styled-components/macro";
 import {
   GoogleMap,
-  useJsApiLoader,
   InfoWindow,
   Marker,
+  useJsApiLoader,
 } from "@react-google-maps/api";
-import { NeonText } from "../../components/style";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Loading from "../../components/Loading/Loading";
+import styled from "styled-components/macro";
 import Circle from "../../components/Loading/Circle";
-import { useAppSelector, useAppDispatch } from "../../store";
-import { createMessage, getUserLocation } from "../../utils/calcFunc";
+import Loading from "../../components/Loading/Loading";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { positionType } from "../../types/mapType";
+import { createMessage, getUserLocation } from "../../utils/calcFunc";
 
 import personIcon from "../../assets/icon/marker-person.png";
 
-const Container = styled.div`
+const StoreContainer = styled.div`
   position: relative;
   width: 100%;
   min-height: calc(100vh - 68px);
@@ -26,22 +25,26 @@ const Container = styled.div`
   padding: 10px;
 `;
 const SearchButton = styled.div`
-  position: absolute;
-  top: 60px;
-  left: 50%;
   width: 164px;
-  transform: translateX(-50%);
+
   font-size: 16px;
   padding: 5px 10px;
   background-color: var(--mainColor);
   border-radius: 8px;
   z-index: 1;
+  margin-bottom: 10px;
   box-shadow: 0px 0px 5px rgb(0, 0, 0);
   display: flex;
   justify-content: center;
   cursor: pointer;
   &:hover {
     background-color: #3464a5;
+  }
+  @media screen and (max-width: 701px) {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 `;
 const MapWrapper = styled.div`
@@ -62,7 +65,7 @@ const MapWrapper = styled.div`
   }
 
   @media screen and (max-width: 701px) {
-    height: calc(100vh - 201px);
+    height: calc(100vh - 161px);
     width: 95%;
   }
 `;
@@ -86,7 +89,7 @@ const List = styled.div<{ $isSelected: boolean }>`
   @media screen and (max-width: 701px) {
     left: 50%;
     transform: translateX(-50%);
-    top: 104px;
+    top: 64px;
   }
 `;
 
@@ -130,10 +133,6 @@ const NavToGoogle = styled.div`
   padding: 2px 5px;
   cursor: pointer;
 `;
-const PageTitle = styled(NeonText)`
-  font-size: 22px;
-  margin-bottom: 10px;
-`;
 
 const LoadingWrapper = styled.div`
   width: 22px;
@@ -175,6 +174,17 @@ const mapOption = {
 };
 
 type GoogleMapType = google.maps.Map;
+type markerType = {
+  name: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  place_id: string;
+  vicinity: string;
+};
 
 const StoreMap = () => {
   const mapRef = useRef<GoogleMapType>();
@@ -183,10 +193,10 @@ const StoreMap = () => {
   const isOffline = useAppSelector((state) => state.user.isOffline);
   const [location, setLocation] = useState<positionType | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [markers, setMarkers] = useState<{ [index: string]: any }[]>([]);
+  const [markers, setMarkers] = useState<markerType[]>([]);
   const [searchLoading, setSearchLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [showNotify, setShowNotify] = useState<boolean>(false);
+  const [showNoStore, setShowNoStore] = useState<boolean>(false);
 
   const onMapLoad = useCallback((map: GoogleMapType) => {
     mapRef.current = map;
@@ -218,15 +228,17 @@ const StoreMap = () => {
       `https://us-central1-motortrack-97569.cloudfunctions.net/getUserNearby?lat=${lat}&lng=${lng}`
     );
 
-    const result = await response.json();
+    if (response.ok) {
+      const result: { results: markerType[] } = await response.json();
 
-    if (result.results.length > 0) {
-      setMarkers(result.results);
-      setShowNotify(false);
-    } else {
-      setShowNotify(true);
+      if (result.results.length > 0) {
+        setMarkers(result.results);
+        setShowNoStore(false);
+      } else {
+        setShowNoStore(true);
+      }
+      setSearchLoading(false);
     }
-    setSearchLoading(false);
   };
   const searchStoreHandler = async () => {
     setSearchLoading(true);
@@ -236,7 +248,7 @@ const StoreMap = () => {
       maximumAge: 0,
     };
     const position = await getUserLocation(options);
-    if (position.lat) {
+    if (position.lat && position.lng) {
       setLocation(position);
       getNearBy(position.lat, position.lng);
     }
@@ -251,8 +263,7 @@ const StoreMap = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <Container>
-        <PageTitle>商家地圖</PageTitle>
+      <StoreContainer>
         <SearchButton onClick={searchStoreHandler}>
           {searchLoading ? (
             <LoadingWrapper>
@@ -281,7 +292,7 @@ const StoreMap = () => {
                 />
               )}
               {markers.length > 0 &&
-                markers.map((marker: { [index: string]: any }) => {
+                markers.map((marker: markerType) => {
                   if (marker?.place_id) {
                     const { place_id, geometry, name } = marker;
                     return (
@@ -310,10 +321,8 @@ const StoreMap = () => {
 
         {markers.length > 0 &&
           markers
-            .filter(
-              (marker: { [index: string]: any }) => marker.place_id === selected
-            )
-            .map((marker: { [index: string]: any }) => {
+            .filter((marker: markerType) => marker.place_id === selected)
+            .map((marker: markerType) => {
               const { name, place_id, vicinity } = marker;
               return (
                 <List
@@ -335,12 +344,12 @@ const StoreMap = () => {
                 </List>
               );
             })}
-        {showNotify && (
+        {showNoStore && (
           <List $isSelected={false}>
             <CloseStore>附近店家尚未營業</CloseStore>
           </List>
         )}
-      </Container>
+      </StoreContainer>
     </>
   );
 };

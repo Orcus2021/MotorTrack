@@ -1,9 +1,9 @@
 import React, { HTMLAttributes } from "react";
-import parts from "../utils/parts";
-import { Img } from "../components/style";
 import styled from "styled-components/macro";
+import { Img } from "../components/style";
+import parts from "../utils/parts";
 
-const PartsBx = styled.div`
+const ProgressContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: row;
@@ -18,7 +18,7 @@ const PartsBx = styled.div`
   cursor: pointer;
 `;
 
-const IconBx = styled.span`
+const IconBox = styled.span`
   position: relative;
   width: 30px;
   height: 30px;
@@ -114,12 +114,12 @@ const Message = styled.p`
   padding-left: 5px;
   margin-bottom: 5px;
 `;
-const PercentBx = styled.div`
+const PercentBox = styled.div`
   flex-grow: 1;
   padding: 0 10px;
 `;
 
-const Return = styled.div<{ $direction: string }>`
+const ReturnBox = styled.div<{ $direction: string }>`
   width: 15px;
   height: 15px;
   position: relative;
@@ -151,11 +151,11 @@ const Progress: React.FC<Props> = ({
   handleClick,
 }) => {
   return (
-    <PartsBx onClick={handleClick}>
-      <IconBx>
+    <ProgressContainer onClick={handleClick}>
+      <IconBox>
         <Img src={parts.get(category)?.icon} />
-      </IconBx>
-      <PercentBx>
+      </IconBox>
+      <PercentBox>
         <Message>
           {parts.get(category)?.name}: {message}
         </Message>
@@ -166,13 +166,13 @@ const Progress: React.FC<Props> = ({
             $endColor={endColor}
           />
         </Percent>
-      </PercentBx>
+      </PercentBox>
 
       <Value $isAlert={percent === 0}>{percent}%</Value>
-      <Return $direction={arrowDirection}>
+      <ReturnBox $direction={arrowDirection}>
         <Img src={returnIcon} />
-      </Return>
-    </PartsBx>
+      </ReturnBox>
+    </ProgressContainer>
   );
 };
 

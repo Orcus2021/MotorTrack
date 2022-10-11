@@ -1,17 +1,16 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import styled from "styled-components/macro";
 import { Img } from "../../components/style";
 import { useAppSelector } from "../../store";
 import brands from "../../utils/brands";
 
-const SubCarsWrapper = styled.div<{ $isShow: boolean }>`
+const SubCarsContainer = styled.div<{ $isShow: boolean }>`
   left: ${(props) => (props.$isShow ? "65px" : " -100%")};
   width: 150px;
   position: absolute;
   top: 290px;
   backdrop-filter: blur(5px);
   border-radius: 0 8px 8px 0;
-  /* background: rgba(255, 255, 255, 0.15); */
   background: var(--deepColor);
   overflow: overlay;
   z-index: 2;
@@ -27,12 +26,12 @@ const SubCarWrapper = styled.div<{ $isSelect: boolean }>`
     background-color: var(--mainColor);
   }
 `;
-const CarInfoBx = styled.div`
+const CarInfoBox = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
 `;
-const SubImgBx = styled.div`
+const SubImgBox = styled.div`
   width: 22px;
   height: 22px;
   position: relative;
@@ -56,19 +55,21 @@ const SubCarInfo = styled.p`
   white-space: nowrap;
 `;
 
-const SubCarsBox: FC<{
+type Props = {
   showCars: boolean;
   onSelect: (id: string, ownerId: string) => Promise<void>;
   onShow: () => void;
   onClose: () => void;
-}> = (props) => {
+};
+
+const SubCarsBox: FC<Props> = (props) => {
   const { showCars, onSelect, onShow, onClose } = props;
   const cars = useAppSelector((status) => status.car.cars);
 
   const carID = useAppSelector((state) => state.car.car?.id);
 
   return (
-    <SubCarsWrapper $isShow={showCars} onMouseLeave={onClose}>
+    <SubCarsContainer $isShow={showCars} onMouseLeave={onClose}>
       {cars.map((car) => (
         <SubCarWrapper
           $isSelect={car.id === carID}
@@ -78,16 +79,16 @@ const SubCarsBox: FC<{
             onShow();
           }}
         >
-          <CarInfoBx>
-            <SubImgBx>
+          <CarInfoBox>
+            <SubImgBox>
               <Img src={brands.get(car.brand)?.img} />
-            </SubImgBx>
+            </SubImgBox>
             <SubCarNum>{car.plateNum}</SubCarNum>
             <SubCarInfo key={car.id}>{car.name}</SubCarInfo>
-          </CarInfoBx>
+          </CarInfoBox>
         </SubCarWrapper>
       ))}
-    </SubCarsWrapper>
+    </SubCarsContainer>
   );
 };
 

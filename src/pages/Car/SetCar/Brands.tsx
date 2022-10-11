@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 import styled from "styled-components/macro";
-import brands, { brandsMapType } from "../../../utils/brands";
-import { Img } from "../../../components/style";
 import Card from "../../../components/Layout/Card";
+import { Img } from "../../../components/style";
+import brands, { brandsMapType } from "../../../utils/brands";
 
-const BrandBx = styled.div`
+const BrandsContainer = styled.div`
   border: 2px solid #a9c7fae1;
   width: 100%;
   height: 400px;
@@ -18,7 +18,6 @@ const BrandBx = styled.div`
   gap: 10px;
   padding: 10px;
   background: #a9c7fa1a;
-  /* box-shadow: "3px 3px 15px rgb(0, 0, 0)"; */
   &::-webkit-scrollbar {
     width: 7px;
     position: fixed;
@@ -40,10 +39,9 @@ const BrandCard = styled.div<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-
   cursor: pointer;
 `;
-const ImgBx = styled.div`
+const ImgBox = styled.div`
   width: 80px;
   height: 80px;
   background-color: #ffffff8b;
@@ -63,18 +61,17 @@ const Name = styled.p`
   font-size: 12px;
 `;
 
-// const CardWrapper=styled.div`
-
-// `
-type brandType = { name: string; key: string };
-const Brands: React.FC<{
+type Props = {
   onBrand: (name: string, key: string) => void;
   brandName: brandType;
-}> = (props) => {
+};
+
+type brandType = { name: string; key: string };
+const Brands: React.FC<Props> = (props) => {
   const { onBrand, brandName } = props;
   const allBrands = useRef<[string, brandsMapType][]>(Array.from(brands));
   return (
-    <BrandBx>
+    <BrandsContainer>
       {allBrands.current.map((brand) => {
         return (
           <Card
@@ -90,15 +87,15 @@ const Brands: React.FC<{
                 onBrand(brand[1].name, brand[0]);
               }}
             >
-              <ImgBx>
+              <ImgBox>
                 <BrandImg src={brand[1].img} />
-              </ImgBx>
+              </ImgBox>
               <Name>{brand[1].name}</Name>
             </BrandCard>
           </Card>
         );
       })}
-    </BrandBx>
+    </BrandsContainer>
   );
 };
 

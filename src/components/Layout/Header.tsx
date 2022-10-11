@@ -1,16 +1,15 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "../../store/index";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components/macro";
-import { useAppDispatch } from "../../store/index";
+import { useAppDispatch, useAppSelector } from "../../store/index";
 import { userActions } from "../../store/user/userReducer";
 import { createMessage } from "../../utils/calcFunc";
 import { Img } from "../style";
 
-import logoImg from "../../assets/logo_white.png";
-import PersonIcon from "../../assets/icon/person.png";
 import menuIcon from "../../assets/icon/hamburger.png";
 import logoIcon from "../../assets/icon/logo192.png";
+import PersonIcon from "../../assets/icon/person.png";
+import logoImg from "../../assets/logo_white.png";
 
 const HeaderContainer = styled.div<{
   $isModify: boolean;
@@ -68,14 +67,14 @@ const NavProfile = styled.div`
 const Nav = styled.p<{ $isSelected: boolean }>`
   cursor: pointer;
   margin-right: 10px;
-  color: ${(props) => (props.$isSelected ? "var(--mainColor)" : "#fff")};
+  color: ${(props) => (props.$isSelected ? "var(--lightColor)" : "#fff")};
   border-top: transparent;
   padding: 2px 0;
   border-bottom: solid 2px
-    ${(props) => (props.$isSelected ? "var(--mainColor)" : "transparent")};
+    ${(props) => (props.$isSelected ? "var(--lightColor)" : "transparent")};
   &:hover {
-    color: var(--mainColor);
-    border-bottom: solid 2px var(--mainColor);
+    color: var(--lightColor);
+    border-bottom: solid 2px var(--lightColor);
   }
   @media screen and (max-width: 701px) {
     display: none;

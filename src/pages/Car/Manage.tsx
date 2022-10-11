@@ -1,29 +1,28 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components/macro";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import asyncRecordAction from "../../store/record/asyncRecordAction";
-import { useAppSelector, useAppDispatch } from "../../store";
-import { carActions } from "../../store/car/carReducer";
-import { userActions } from "../../store/user/userReducer";
-import asyncUserAction from "../../store/user/asyncUserAction";
-import { Img } from "../../components/style";
-import { NeonText } from "../../components/style";
-import SubCarsBox from "./SubCarsBox";
-import CarsBox from "./CarsBox";
 import Loading from "../../components/Loading/Loading";
+import { Img, NeonText } from "../../components/style";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { carActions } from "../../store/car/carReducer";
+import asyncRecordAction from "../../store/record/asyncRecordAction";
+import asyncUserAction from "../../store/user/asyncUserAction";
+import { userActions } from "../../store/user/userReducer";
+import CarsBox from "./CarsBox";
+import SubCarsBox from "./SubCarsBox";
 
 import barIcon from "../../assets/icon/bar.png";
-import chartIcon from "../../assets/icon/chart.png";
 import chartWhiteIcon from "../../assets/icon/chart-white.png";
-import recordIcon from "../../assets/icon/paper.png";
-import recordWhiteIcon from "../../assets/icon/paper-white.png";
-import addIcon from "../../assets/icon/plus.png";
-import addWhiteIcon from "../../assets/icon/plus-white2.png";
-import setIcon from "../../assets/icon/setting.png";
-import setWhiteIcon from "../../assets/icon/setting-white.png";
+import chartIcon from "../../assets/icon/chart.png";
 import bikeIcon from "../../assets/icon/motorbike.png";
-import backImg from "../../assets/img/back-bike3.jpg";
+import recordWhiteIcon from "../../assets/icon/paper-white.png";
+import recordIcon from "../../assets/icon/paper.png";
+import addWhiteIcon from "../../assets/icon/plus-white2.png";
+import addIcon from "../../assets/icon/plus.png";
+import setWhiteIcon from "../../assets/icon/setting-white.png";
+import setIcon from "../../assets/icon/setting.png";
 import navIcon from "../../assets/icon/triangle.png";
+import backImg from "../../assets/img/back-bike3.jpg";
 
 const RecordContainer = styled.div`
   display: flex;
@@ -95,7 +94,6 @@ const MainWrapper = styled.div<{ $isNav: boolean }>`
   width: ${(props) =>
     props.$isNav ? "calc(100% - 256px)" : "calc(100% - 65px)"};
   margin-left: ${(props) => (props.$isNav ? "256px" : "65px")};
-  /* background: #f5f5f5; */
   transition: 0.3s;
   display: flex;
   flex-direction: column;

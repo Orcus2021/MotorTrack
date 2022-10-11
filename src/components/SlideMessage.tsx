@@ -1,21 +1,25 @@
-import React from "react";
 import styled from "styled-components/macro";
 import cancelIcon from "../assets/icon/cancel-black.png";
-import { Img } from "./style";
+import { useAppDispatch, useAppSelector } from "../store";
 import { userActions } from "../store/user/userReducer";
-import { useAppSelector, useAppDispatch } from "../store";
+import { Img } from "./style";
 
-const Container = styled.div<{
+const SlideContainer = styled.div<{
   $isShow: boolean | undefined;
   $isError: boolean;
+  $isAlert: boolean;
 }>`
   position: fixed;
   height: 50px;
   top: 68px;
   right: -100%;
+
   ${(props) => props.$isShow && "right: 10px;"}
-  background-color:${(props) =>
-    props.$isError ? "var(--errorColor)" : "var(--lightColor)"};
+  background-color:${(props) => {
+    if (props.$isError) return "var(--errorColor)";
+    if (props.$isAlert) return "#ffee8b";
+    return "var(--lightColor)";
+  }};
   border-radius: 4px;
   width: 200px;
   display: flex;
@@ -30,8 +34,7 @@ const Message = styled.p`
   position: relative;
   top: -5px;
 `;
-// mix-blend-mode: screen;
-const IconBx = styled.div`
+const IconBox = styled.div`
   width: 20px;
   height: 20px;
   position: relative;
@@ -51,15 +54,16 @@ const SlideMessage = () => {
   };
 
   return (
-    <Container
+    <SlideContainer
       $isShow={notification?.status}
       $isError={notification?.type === "error"}
+      $isAlert={notification?.type === "alert"}
     >
-      <IconBx onClick={closeHandler}>
+      <IconBox onClick={closeHandler}>
         <Icon src={cancelIcon} />
-      </IconBx>
+      </IconBox>
       <Message>{notification?.message}</Message>
-    </Container>
+    </SlideContainer>
   );
 };
 

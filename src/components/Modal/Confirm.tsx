@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components/macro";
-import MessageBox from "./MessageBox";
 import Button from "../Button/Button";
+import MessageBox from "./MessageBox";
 
-const BtnBx = styled.div`
+const BtnBox = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -31,10 +31,10 @@ const Confirm: React.FC<{ onClose: () => void; onDelete: () => void }> = (
   return (
     <MessageBox setStyle={{ width: 400, height: 200 }}>
       <Message>確定要刪除嗎?</Message>
-      <BtnBx>
+      <BtnBox>
         <Button label="刪除" type="reject" handleClick={deleteHandler} />
         <Button label="取消" type="cancel" handleClick={rejectHandler} />
-      </BtnBx>
+      </BtnBox>
     </MessageBox>
   );
 };

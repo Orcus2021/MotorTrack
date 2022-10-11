@@ -1,6 +1,8 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components/macro";
 import Button from "../../../components/Button/Button";
+import { createMessage } from "../../../utils/calcFunc";
+import { useAppDispatch } from "../../../store";
 
 const Container = styled.div`
   display: flex;
@@ -23,14 +25,15 @@ const Input = styled.input`
       0 0 8px rgba(102, 175, 233, 0.6);
   }
 `;
-type PropType = {
+type Props = {
   password: string;
   onClose: () => void;
 };
 
-const Confirm: FC<PropType> = (props) => {
+const Confirm: FC<Props> = (props) => {
   const { password, onClose } = props;
   const [selfPassword, setSelfPassword] = useState<string>("");
+  const dispatch = useAppDispatch();
   const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelfPassword(e.target.value);
   };
@@ -38,7 +41,7 @@ const Confirm: FC<PropType> = (props) => {
     if (selfPassword === password) {
       onClose();
     } else {
-      console.log("wrong");
+      createMessage("error", dispatch, "密碼錯誤");
     }
   };
   return (
