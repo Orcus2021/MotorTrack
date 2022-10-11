@@ -1,5 +1,4 @@
 import ReactECharts from "echarts-for-react";
-import { useMemo } from "react";
 import { useAppSelector } from "../../store";
 import { feeType, repairType } from "../../types/recordType";
 

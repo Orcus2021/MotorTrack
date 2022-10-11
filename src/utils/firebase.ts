@@ -11,7 +11,6 @@ import {
   get,
   getDatabase,
   off,
-  onValue,
   push,
   ref as relRef,
   set,
@@ -22,7 +21,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  DocumentData,
   enableIndexedDbPersistence,
   getDoc,
   getDocs,
@@ -48,17 +46,15 @@ import { userLogin } from "../types/userType";
 import swDev from "../swDev";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDc2tuIBAOCWM1TcRwk8M5GMzBCDQAynKc",
-  authDomain: "motortrack-97569.firebaseapp.com",
-  databaseURL:
-    "https://motortrack-97569-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "motortrack-97569",
-  storageBucket: "motortrack-97569.appspot.com",
-  messagingSenderId: "899173634521",
-  appId: "1:899173634521:web:24142760923e9cddfe09c8",
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASEURL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDERID,
+  appId: process.env.REACT_APP_FIREBASE_APPID,
 };
-const messageKey =
-  "BMfPfF3tRqWFQxHBkwVfqa3-4xipfWPrTlq5Jo4CfQI-Z_egT-Cz16CCXKL_7njrfewWi5g_t5crdSfI2V06TwE";
+const messageKey = process.env.REACT_APP_FIREBASE_MESSAGEKEY;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -106,10 +102,18 @@ const firebase = {
       });
     });
   },
-  async getDoc(url: string) {
-    const docRef = doc(db, url);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
+  async getDoc(url: string): Promise<object> {
+    return new Promise(async (resolve) => {
+      try {
+        const docRef = doc(db, url);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          resolve(docSnap.data());
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    });
   },
   async setDoc(url: string, data: object): Promise<string> {
     return new Promise(async (resolve) => {

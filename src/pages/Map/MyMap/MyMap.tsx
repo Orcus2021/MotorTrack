@@ -9,11 +9,9 @@ import {
 } from "@react-google-maps/api";
 import Loading from "../../../components/Loading/Loading";
 import EditMarker from "./EditMarker";
-import Circle from "../../../components/Loading/Circle";
 import UserMarker from "./UserMarker";
 import Confirm from "./Confirm";
 import InfoContent from "./InfoContent";
-import MarkerContent from "./MarkerContent";
 import SearchBar from "./SearchBar";
 import Title from "./Title";
 import ScheduleMarker from "./ScheduleMarker";
@@ -180,7 +178,7 @@ const StoreMap = () => {
       }
     };
 
-    const initState = () => {
+    const initMyMapState = () => {
       setIsPassword(false);
       setDirectionResponse(null);
       setSelectMarker(null);
@@ -210,7 +208,7 @@ const StoreMap = () => {
         } else if (params.userID !== user.id) {
           navigate(`/my_map/${user.id}`);
         } else if (params.userID === user.id) {
-          initState();
+          initMyMapState();
         }
       }
     };
@@ -473,7 +471,7 @@ const StoreMap = () => {
     []
   );
 
-  const calculateDirection = async () => {
+  const setDirection = async () => {
     let dirOption: google.maps.DirectionsRequest | undefined = {
       travelMode: google.maps.TravelMode.DRIVING,
       origin: markers[0].position,
@@ -503,7 +501,7 @@ const StoreMap = () => {
     if (directionResponse) {
       setDirectionResponse(null);
     } else {
-      calculateDirection();
+      setDirection();
     }
   };
 

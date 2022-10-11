@@ -91,6 +91,12 @@ const Login = () => {
     setValue,
     formState: { errors },
   } = methods;
+  useEffect(() => {
+    reset({
+      email: "eee@test.com",
+      password: "1qaz2wsx",
+    });
+  }, [reset]);
 
   const showSingUpHandler = () => {
     if (isSignUp) {

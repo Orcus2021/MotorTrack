@@ -46,7 +46,7 @@ const Nav = styled.li<{ $isSelect: boolean }>`
   border-radius: 50px;
   padding: ${(props) => (props.$isSelect ? "5px" : "0px")};
   background-color: ${(props) =>
-    props.$isSelect ? "var(--deepColor)" : "var(--mainBack)"};
+    props.$isSelect ? "var(--mainColor)" : "var(--mainBack)"};
   align-items: center;
   justify-content: flex-start;
   transition: 0.5s;

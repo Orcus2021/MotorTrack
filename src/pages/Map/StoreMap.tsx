@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components/macro";
 import Circle from "../../components/Loading/Circle";
 import Loading from "../../components/Loading/Loading";
-import { NeonText } from "../../components/style";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { positionType } from "../../types/mapType";
 import { createMessage, getUserLocation } from "../../utils/calcFunc";

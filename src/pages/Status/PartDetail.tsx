@@ -65,7 +65,7 @@ const ListTitle = styled.p`
   font-size: 14px;
 
   padding: 10px;
-  padding-left: 20px;
+
   color: #fff;
 `;
 const MessageDetail = styled.p`
@@ -88,11 +88,8 @@ const ListTitleBox = styled.div`
 const Line = styled.div`
   height: 1.8px;
   background-color: #ffffff76;
-  width: 75%;
+  width: calc(100% - 86px);
   border-radius: 5px;
-  @media screen and (max-width: 701px) {
-    width: 75%;
-  }
 `;
 const ArrowImg = styled.img`
   width: 15px;
