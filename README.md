@@ -1,70 +1,82 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center">
+  <br>
+  <a href="https://motortrack-97569.web.app"><img src="https://firebasestorage.googleapis.com/v0/b/motortrack-97569.appspot.com/o/logo%2Flogo192.png?alt=media&token=d62d2441-4129-4607-8df2-63ba9aaeb96c" alt="MotorTrack" width="200"></a>
+  <br>
+  MotorTrack
+  <br>
+</h1>
 
-## Available Scripts
+<h4 align="center">All-in-one progressive web app for motorcycle lovers. Main features include offline maintenance records,<br/> inspection and insurance notification (through Service Workers), and real-time interactive location tracking on Google Maps.</h4>
 
-In the project directory, you can run:
+<!-- <p align="center">
+  <a href="https://badge.fury.io/js/electron-markdownify">
+    <img src="https://badge.fury.io/js/electron-markdownify.svg"
+         alt="Gitter">
+  </a>
+  <a href="https://gitter.im/amitmerchant1990/electron-markdownify"><img src="https://badges.gitter.im/amitmerchant1990/electron-markdownify.svg"></a>
+  <a href="https://saythanks.io/to/bullredeyes@gmail.com">
+      <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
+  </a>
+  <a href="https://www.paypal.me/AmitMerchant">
+    <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat">
+  </a>
+</p> -->
 
-### `npm start`
+<p align="center">
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#key-features">Key Features</a> •
+  <a href="#demo">Demo</a> •
+  <a href="https://motortrack-97569.web.app">Link</a>
+</p>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech Stack
+<span><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"></span>
+<span><img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white"></span>
+<img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black">
+<img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white">
+<img src="https://img.shields.io/badge/storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=white">
+<img src="https://firebasestorage.googleapis.com/v0/b/motortrack-97569.appspot.com/o/logo%2Fpwa.jpg?alt=media&token=c60447ae-76fa-4e5e-b182-19331cf349a9">
+## Key Features
 
-### `npm test`
+* Developed with TypeScript and React.js.
+* Utilized Redux for state management.
+* Organized UI components systematically with Storybook.
+* Utilized manifest file to make the website installable on the user's desktop or mobile device as a progressive web app (PWA).
+* Utilized React Hook Form for form data validations and management.
+* Accomplished SPA experience with React-Router.
+* Utilized Styled Components for RWD layout, CSS animation for animation.
+* Utilized Service Workers to keep the website working when the device is offline and receive notifications from a server in the background.
+* Utilized Custom Hook to share the same logic with the components.
+* Realized user and other members' location displayed on google maps in real-time through Google Maps API and listening to the Firebase Realtime Database.
+* Realized relevant orientation of user displayed on the map via calculation when user location out of map boundary.
+* Visualized routes between places with Google Maps Direction API.
+* Developed scooter or motorcycle maintenance records editing/publishing and tracking the status of the parts with Firebase Firestore Database.
+* Utilized Echarts for expenses chart.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Demo
 
-### `npm run build`
+> Recorded the maintenance records of the motorbike parts when the device is offline.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+> Tracked user and other members' location on google map by Geolocation API in real-time.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> Edited the journey on user's map.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> Recorded user's distance and updated the mileages.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## License
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+MIT
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+> [amitmerchant.com](https://www.amitmerchant.com) &nbsp;&middot;&nbsp;
+> GitHub [@amitmerchant1990](https://github.com/amitmerchant1990) &nbsp;&middot;&nbsp;
+> Twitter [@amit_merchant](https://twitter.com/amit_merchant)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
