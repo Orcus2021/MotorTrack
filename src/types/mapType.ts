@@ -21,6 +21,7 @@ export type userType = {
   img: string;
   onLine: boolean;
   out?: boolean;
+  initPosition?: positionType;
 };
 export type myMapContentType = {
   name: string;

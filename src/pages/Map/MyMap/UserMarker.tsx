@@ -143,6 +143,9 @@ const UserMarker: FC<Props> = (props) => {
       .filter((user) => user.onLine)
       .map((user) => {
         user.out = false;
+        if (user.position) {
+          user.initPosition = user.position;
+        }
         const newPosition = getPositionOnBound(
           boundAndCenter.bounds,
           user,
