@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from "./App";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Profile/Login";
@@ -19,7 +18,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import Chart from "./pages/Chart/Chart";
-import swDev from "./swDev";
+// import swDev from "./swDev";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -48,8 +47,4 @@ root.render(
     </Provider>
   </BrowserRouter>
 );
-swDev();
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
-// serviceWorkerRegistration.register();
+// swDev();

@@ -39,7 +39,7 @@ const UsersBox = styled.div`
     background-color: var(--mainColor);
   }
   @media screen and (max-width: 701px) {
-    height: calc(100vh - 345px);
+    max-height: calc(100vh - 345px);
     width: 95%;
   }
 `;
@@ -101,7 +101,9 @@ const FriendsBox: FC<Props> = (props) => {
         {usersInfoBoxes && usersInfoBoxes.length > 0 ? (
           usersInfoBoxes.map((user) => (
             <UserWrapper
-              onClick={() => pantoUserHandler(user.position as positionType)}
+              onClick={() =>
+                pantoUserHandler(user.initPosition as positionType)
+              }
               key={user.id}
             >
               <UserImage src={user.img} $isOut={user.out} />

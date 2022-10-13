@@ -19,7 +19,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../../store";
 import { createMessage, getUserLocation } from "../../../utils/calcFunc";
 import firebase, { database } from "../../../utils/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, onDisconnect } from "firebase/database";
 import {
   markerType,
   positionType,
@@ -27,6 +27,7 @@ import {
   userType,
   boundType,
 } from "../../../types/mapType";
+import { disconnect } from "process";
 
 const MyMapContainer = styled.div`
   position: relative;
@@ -116,6 +117,7 @@ const StoreMap = () => {
   const dispatch = useAppDispatch();
   const params = useParams();
   const userIndex = useRef<number | null>(null);
+  const disconnectRef = useRef<ReturnType<typeof onDisconnect>>();
   const userPositionTimer = useRef<ReturnType<typeof setInterval>>();
   const [boundAndCenter, setBoundAndCenter] =
     useState<{ bounds: boundType; center: positionType }>();
@@ -151,7 +153,7 @@ const StoreMap = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLEMAP as string,
     libraries,
   });
   //AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI
@@ -365,6 +367,15 @@ const StoreMap = () => {
     });
   };
 
+  const listenOnDisconnect = (index: number) => {
+    const url = `room/${params.userID}/users/${index}`;
+
+    const usersRef = ref(database, url);
+
+    disconnectRef.current = onDisconnect(usersRef);
+    disconnectRef.current.update({ onLine: false });
+  };
+
   useEffect(() => {
     if (userIndex.current !== null && !isDragMap && roomUsers) {
       map?.panTo(roomUsers[userIndex.current].position as positionType);
@@ -378,8 +389,10 @@ const StoreMap = () => {
         clearInterval(userPositionTimer.current);
         autoGetPosition();
       });
-      const url = `room/${params.userID}/users/${userIndex.current}`;
-      firebase.updateUserMapRoom(url, { position: position });
+      if (position && userIndex.current) {
+        const url = `room/${params.userID}/users/${userIndex.current}`;
+        firebase.updateUserMapRoom(url, { position: position });
+      }
     }, 2000);
   };
 
@@ -412,6 +425,7 @@ const StoreMap = () => {
       const newUsers = [...users, mySelf];
       firebase.setUserMapRoom(userID, newUsers);
     }
+    return userIndex.current;
   };
 
   const joinMapHandler = async () => {
@@ -427,16 +441,22 @@ const StoreMap = () => {
       ];
       await setNewRoom(room);
     }
-    const position: positionType = await getUserLocation(positionOptions);
-    if (params.userID && map && position) {
-      listenRoomUsers();
-      updateRoomUser(params.userID, position);
-      map.setCenter(position);
-      autoGetPosition();
+    try {
+      const position: positionType = await getUserLocation(positionOptions);
+      if (params.userID && map && position) {
+        listenRoomUsers();
+        const index = await updateRoomUser(params.userID, position);
+        map.setCenter(position);
+        autoGetPosition();
+        if (index !== undefined) {
+          listenOnDisconnect(index);
+        }
+      }
+      setIsDragMap(false);
+      setIsJoin(true);
+    } catch (e) {
+      console.log(e);
     }
-
-    setIsDragMap(false);
-    setIsJoin(true);
   };
   const leaveMapHandler = () => {
     const url = `room/${params.userID}/users`;
@@ -447,7 +467,7 @@ const StoreMap = () => {
     const updateUrl = `room/${params.userID}/users/${userIndex.current}`;
 
     firebase.updateUserMapRoom(updateUrl, mySelf);
-
+    disconnectRef.current?.cancel();
     userIndex.current = null;
     clearInterval(userPositionTimer.current);
     setRoomUsers(null);
