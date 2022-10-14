@@ -1,7 +1,5 @@
 const functions = require("firebase-functions");
 const https = require("https");
-// const express = require("express");
-// const app = express();
 const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const cors = require("cors")({ origin: true });
@@ -189,11 +187,10 @@ function sendFcmMessage(fcmMessage) {
       hostname: HOST,
       path: PATH,
       method: "POST",
-      // [START use_access_token]
+
       headers: {
         Authorization: "Bearer " + accessToken,
       },
-      // [END use_access_token]
     };
 
     const request = https.request(options, function (resp) {

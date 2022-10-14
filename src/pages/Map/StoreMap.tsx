@@ -204,10 +204,10 @@ const StoreMap = () => {
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLEMAP as string,
     libraries,
   });
-  // "AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI"
+
   useEffect(() => {
     if (isLoaded && !isOffline) {
       setTimeout(() => {

@@ -63,7 +63,7 @@ const PieChar = () => {
           normal: {
             formatter: "{title|{b} :}\n{value|${c}({d}%)}",
             color: "#fff",
-            // position: "inside",
+
             rich: {
               title: {
                 color: "#fff",

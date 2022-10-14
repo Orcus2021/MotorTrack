@@ -73,13 +73,6 @@ const Btn = styled.button<{ $type: string; $size: string }>`
   }
 `;
 
-// const ImgBx = styled.span`
-//   width: 20px;
-//   height: 20px;
-//   display: inline-block;
-//   position: relative;
-// `;
-
 export interface Props extends HTMLAttributes<HTMLButtonElement> {
   label: string;
   type: "primary" | "reject" | "cancel";
@@ -92,17 +85,12 @@ const Button: React.FC<Props> = ({
   label = "確認",
   type = "primary",
   size = "medium",
-  // icon,
+
   handleClick,
 }) => {
   return (
     <Btn $type={type} onClick={handleClick} $size={size}>
       {label}
-      {/* {icon && (
-        <ImgBx>
-          <Img src={icon} />
-        </ImgBx>
-      )} */}
     </Btn>
   );
 };

@@ -48,7 +48,7 @@ const asyncRecordAction = {
         const url = `/carsRecords/${carId}/repairRecords/${data.id}`;
         await firebase.setDoc(url, data);
         const parts = { ...oldParts };
-        // if (response) {} FIXME
+
         data.records.forEach((newPart: partType) => {
           const partIndex = parts[newPart.category].findIndex(
             (part) => part.recordID === data.id

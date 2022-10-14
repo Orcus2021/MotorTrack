@@ -1,4 +1,3 @@
-// import React from "react";
 import Input, { Props } from "../components/Input/Input";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import InputFormProvider from "../Hook/InputFormProvider";

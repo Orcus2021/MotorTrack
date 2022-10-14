@@ -1,20 +1,11 @@
 import MessageBox, { Props } from "../components/Modal/MessageBox";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { GlobalStyle } from "../App";
-// import Button from "../components/Button";
 
 const meta: Meta = {
   title: "MessageBox",
   component: MessageBox,
-  argTypes: {
-    // handleClick: { action: "clicked" },
-    // category: {
-    //   control: {
-    //     type: "select",
-    //     options: categoryArr,
-    //   },
-    // },
-  },
+  argTypes: {},
   decorators: [
     (story) => (
       <>

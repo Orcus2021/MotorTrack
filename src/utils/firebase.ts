@@ -56,7 +56,6 @@ const firebaseConfig = {
 };
 const messageKey = process.env.REACT_APP_FIREBASE_MESSAGEKEY;
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -129,7 +128,6 @@ const firebase = {
     return new Promise(async (resolve) => {
       const ref = doc(db, url);
       try {
-        // FIXME
         resolve("Update doc already");
         await updateDoc(ref, data);
       } catch (e) {

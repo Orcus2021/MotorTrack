@@ -72,7 +72,6 @@ const SpanFloat = styled.span<{
   background-color: ${(props) => (props.$isError ? "var(--errorColor)" : "")};
 `;
 
-// FIXME
 export type Props = {
   name: string;
   content: string;

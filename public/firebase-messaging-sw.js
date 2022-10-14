@@ -38,13 +38,12 @@ this.addEventListener("activate", (event) => {
     caches.keys().then(function (cacheNames) {
       let promiseArr = cacheNames.map((item) => {
         if (item !== cacheData) {
-          // Delete that cached file
           return caches.delete(item);
         }
       });
       return Promise.all(promiseArr);
     })
-  ); // end e.waitUntil
+  );
 });
 
 this.addEventListener("fetch", (event) => {
@@ -58,10 +57,7 @@ this.addEventListener("fetch", (event) => {
         return (
           response ||
           fetch(event.request).then((res) =>
-            // 存 caches 之前，要先打開 caches.open(dataCacheName)
             caches.open(dynamicCache).then(function (cache) {
-              // cache.put(key, value)
-              // 下一次 caches.match 會對應到 event.request
               cache.put(event.request, res.clone());
               return res;
             })
@@ -73,28 +69,8 @@ this.addEventListener("fetch", (event) => {
 });
 
 messaging.onBackgroundMessage(function (payload) {
-  console.log(payload);
   this.registration.showNotification(payload.notification.title, {
     body: payload.notification.body,
     icon: "logo192.png",
   });
 });
-// self.addEventListener('fetch',function(e){
-
-//   e.respondWith(
-//   caches.match(e.request).then(function(resp) {
-//       console.log("Response from Cache",resp)
-//       return resp || fetch(e.request)
-//       .then(function(response) {
-//           return caches.open(cacheName).then(function(cache)
-//           {
-//            cache.put(e.request,response.clone());
-//            return response;
-//           });
-//      });
-//   })
-//   .catch(function() {
-//     return console.log("Error Fallback");
-//   })
-// );
-// })

@@ -1,22 +1,11 @@
 import ButtonBox, { Props } from "../components/Button/ButtonBox";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { GlobalStyle } from "../App";
-// import Button from "../components/Button";
-import * as ButtonStories from "./Button.stories";
 
 const meta: Meta = {
   title: "ButtonBox",
   component: ButtonBox,
-  argTypes: {
-    // buttons: { action: "clicked" },
-    // type: {
-    //   control: {
-    //     defaultValue: "alert",
-    //     options: ["alert", "prompt", "custom"],
-    //     type: "radio",
-    //   },
-    // },
-  },
+  argTypes: {},
   decorators: [
     (story) => (
       <>

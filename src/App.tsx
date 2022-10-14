@@ -163,12 +163,6 @@ const App = () => {
     }
   }, [dispatch, user, isAuth]);
 
-  // useEffect(() => {
-  //   if (isAuth) {
-  //     firebase.onMessageFromFCM();
-  //   }
-  // }, [dispatch, isAuth]);
-
   return (
     <>
       <GlobalStyle />
