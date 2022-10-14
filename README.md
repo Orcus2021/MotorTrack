@@ -1,70 +1,67 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center">
+  <br>
+  <a href="https://motortrack-97569.web.app"><img src="https://firebasestorage.googleapis.com/v0/b/motortrack-97569.appspot.com/o/logo%2Flogo192.png?alt=media&token=d62d2441-4129-4607-8df2-63ba9aaeb96c" alt="MotorTrack" width="200"></a>
+  <br>
+  MotorTrack
+  <br>
+</h1>
 
-## Available Scripts
+<h4 align="center">All-in-one progressive web app for motorcycle lovers. Main features include offline maintenance records,<br/> inspection and insurance notification (through Service Workers), and real-time interactive location tracking on Google Maps.</h4>
 
-In the project directory, you can run:
+<p align="center">
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#key-features">Key Features</a> •
+  <a href="#key-features">Flow Chart</a> •
+  <a href="#demo">Demo</a> •
+  <a href="https://motortrack-97569.web.app">Link</a>
+</p>
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Tech Stack
+<span><img src="https://firebasestorage.googleapis.com/v0/b/motortrack-97569.appspot.com/o/logo%2Fpwa.jpg?alt=media&token=c60447ae-76fa-4e5e-b182-19331cf349a9"></span>
+<span><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"></span>
+<span><img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white"></span>
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white">
+<img src="https://img.shields.io/badge/storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=white">
+<img src="https://img.shields.io/badge/styled--components-DB7093?style=for-the-badge&logo=styled-components&logoColor=white">
+<img src="https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white">
+<img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E">
+<img src="https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black">
+## Key Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* Developed with **TypeScript** and **React.js**.
+* Utilized **Redux** for state management.
+* Organized UI components systematically with **Storybook**.
+* Utilized manifest file to make the website installable on the user's desktop or mobile device as a progressive web app **(PWA)**.
+* Utilized **React Hook Form** for form data validations and management.
+* Accomplished SPA experience with **React-Router**.
+* Utilized **Styled Components** for RWD layout, **CSS animation** for animation.
+* Utilized **Service Workers** to keep the website working when the device is offline and receive notifications from a server in the background.
+* Utilized Custom Hook to share the same logic with the components.
+* Realized user and other members' location displayed on google maps in real-time through **Google Maps API** and listening to the **Firebase Realtime Database**.
+* Realized relevant orientation of user displayed on the map via calculation when user location out of map boundary.
+* Visualized routes between places with **Google Maps Direction API**.
+* Developed scooter or motorcycle maintenance records editing/publishing and tracking the status of the parts with **Firebase Firestore Database**.
+* Utilized **Echarts** for expenses chart.
 
-### `npm test`
+## Flow Chart
+<img src="https://firebasestorage.googleapis.com/v0/b/motortrack-97569.appspot.com/o/logo%2Fuser.jpg?alt=media&token=a42e7fa8-f5d6-4bbd-b8bb-8312d1e5c353">
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Demo
 
-### `npm run build`
+> Recorded the maintenance records of the motorbike parts when the device is offline.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<img src="https://github.com/Orcus2021/Storage/blob/main/offline.gif?raw=true" width="760">
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+> Tracked user and other members' location on google map by Geolocation API in real-time.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<img src="https://github.com/Orcus2021/Storage/blob/main/realtime.gif?raw=true"  width="760">
 
-### `npm run eject`
+> Edited the journey on user's map.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+<img src="https://github.com/Orcus2021/Storage/blob/main/edit-map.gif?raw=true"  width="760">
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+> Recorded user's distance and updated the mileages.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<img src="https://github.com/Orcus2021/Storage/blob/main/track-distance.gif?raw=true"  width="760">
