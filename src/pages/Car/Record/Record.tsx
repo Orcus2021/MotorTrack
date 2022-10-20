@@ -213,7 +213,7 @@ const Record = () => {
   const clearUpdateIdHandler = () => {
     setUpdate("");
   };
-
+  console.log(expenses);
   const CardInfo = [
     { title: "總費用", icon: allIcon, expense: expenses.allExpenses },
     { title: "維修", icon: repairIcon, expense: expenses.repairExpenses },

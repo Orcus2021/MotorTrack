@@ -214,6 +214,7 @@ const Repair: React.FC<{
     if (record?.mileage === carMileage) {
       dispatch(asyncCarAction.updateCar(carID, { mileage: secondMileage }));
     }
+    console.log(record);
     dispatch(
       asyncRecordAction.deleteRepair(
         carID as string,

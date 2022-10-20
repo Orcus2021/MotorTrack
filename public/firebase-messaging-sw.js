@@ -14,8 +14,8 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-let cacheData = "appV1";
-const dynamicCache = "appV1-dynamic";
+let cacheData = "appV1.2";
+const dynamicCache = "appV1.2-dynamic";
 this.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(cacheData).then((cache) => {

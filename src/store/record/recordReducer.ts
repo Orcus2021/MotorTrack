@@ -24,6 +24,12 @@ const recordSlice = createSlice({
   name: "record",
   initialState: initialRecord,
   reducers: {
+    setAllRecords(state, action) {
+      state.fee = action.payload.fee;
+      state.parts = action.payload.parts;
+      state.refuel = action.payload.refuel;
+      state.repair = action.payload.repair;
+    },
     addRepair(state, action) {
       state.repair.push(action.payload);
       action.payload.records.forEach((record: partType) => {
@@ -35,12 +41,8 @@ const recordSlice = createSlice({
           state.parts[record.category] = [record];
         }
       });
-    },
-    setAllRecords(state, action) {
-      state.fee = action.payload.fee;
-      state.parts = action.payload.parts;
-      state.refuel = action.payload.refuel;
-      state.repair = action.payload.repair;
+      state.expenses.repairExpenses += action.payload.amount;
+      state.expenses.allExpenses += action.payload.amount;
     },
     updateRepair(state, action) {
       const recordIndex = state.repair.findIndex(
@@ -50,6 +52,10 @@ const recordSlice = createSlice({
         ...state.repair[recordIndex],
         ...action.payload,
       };
+      const newRepairExpenses = selectAnnualExpenses(state.repair, undefined);
+      const diffAmount = newRepairExpenses - state.expenses.repairExpenses;
+      state.expenses.repairExpenses = newRepairExpenses;
+      state.expenses.allExpenses += diffAmount;
       action.payload.records.forEach((newPart: partType) => {
         const partIndex = state.parts[newPart.category].findIndex(
           (part) => part.recordID === action.payload.id
@@ -59,16 +65,19 @@ const recordSlice = createSlice({
     },
     deleteRepair(state, action) {
       const oldRecord = state.repair.find(
-        (record) => record.id === action.payload
+        (record) => record.id === action.payload.recordID
       );
       state.repair = state.repair.filter(
-        (record) => record.id !== action.payload
+        (record) => record.id !== action.payload.recordID
       );
       oldRecord?.records.forEach((oldPart: partType) => {
         state.parts[oldPart.category] = state.parts[oldPart.category].filter(
-          (part) => part.recordID !== action.payload
+          (part) => part.recordID !== action.payload.recordID
         );
       });
+
+      state.expenses.repairExpenses -= action.payload.amount;
+      state.expenses.allExpenses -= action.payload.amount;
     },
     deletePart(state, action) {
       state.parts[action.payload.category] = state.parts[
@@ -78,9 +87,12 @@ const recordSlice = createSlice({
     addExpense(state, action) {
       if (action.payload.category === "refuel") {
         state.refuel.push(action.payload);
+        state.expenses.refuelExpenses += action.payload.amount;
       } else {
         state.fee.push(action.payload);
+        state.expenses.feeExpenses += action.payload.amount;
       }
+      state.expenses.allExpenses += action.payload.amount;
     },
     getYearExpense(state, action) {
       const feeExpenses = selectAnnualExpenses(state.fee, action.payload);
@@ -107,6 +119,7 @@ const recordSlice = createSlice({
       state.expenses.selectYear = "all";
     },
     updateExpense(state, action) {
+      let diffAmount;
       if (action.payload.category === "refuel") {
         const recordIndex = state.refuel.findIndex(
           (record) => record.id === action.payload.id
@@ -115,6 +128,9 @@ const recordSlice = createSlice({
           ...state.refuel[recordIndex],
           ...action.payload,
         };
+        const refuelExpenses = selectAnnualExpenses(state.refuel, undefined);
+        diffAmount = refuelExpenses - state.expenses.refuelExpenses;
+        state.expenses.refuelExpenses = refuelExpenses;
       } else {
         const recordIndex = state.fee.findIndex(
           (record) => record.id === action.payload.id
@@ -123,18 +139,25 @@ const recordSlice = createSlice({
           ...state.fee[recordIndex],
           ...action.payload,
         };
+        const feeExpenses = selectAnnualExpenses(state.fee, undefined);
+        diffAmount = feeExpenses - state.expenses.feeExpenses;
+        state.expenses.feeExpenses = feeExpenses;
       }
+      state.expenses.allExpenses += diffAmount;
     },
     deleteExpense(state, action) {
       if (action.payload.category === "refuel") {
         state.refuel = state.refuel.filter(
           (record) => record.id !== action.payload.id
         );
+        state.expenses.refuelExpenses -= action.payload.amount;
       } else {
         state.fee = state.fee.filter(
           (record) => record.id !== action.payload.id
         );
+        state.expenses.feeExpenses -= action.payload.amount;
       }
+      state.expenses.allExpenses -= action.payload.amount;
     },
     clearAllRecord(state) {
       state.fee = [] as feeType[];

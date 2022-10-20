@@ -17,10 +17,5 @@
     "jsx": "react-jsx",
     "outDir": "./dist/"
   },
-  "include": [
-    "src",
-    "react-app-env.d.ts",
-    "custom.d.ts",
-    "../../../../FrontEnd/2.React/pwa-app/public/firebase-messaging-sw.js"
-  ]
+  "include": ["src", "react-app-env.d.ts", "custom.d.ts"]
 }

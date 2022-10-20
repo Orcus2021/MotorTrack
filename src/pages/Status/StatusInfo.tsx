@@ -19,6 +19,7 @@ import PartDetail from "./PartDetail";
 import arrowImg from "../../assets/icon/arrow_down.png";
 import dashboardIcon from "../../assets/icon/dashborad_white.png";
 import returnIcon from "../../assets/icon/return.png";
+import logoIcon from "../../assets/icon/logo192.png";
 const InfoContainer = styled.div`
   width: 410px;
   max-width: 410px;
@@ -226,6 +227,7 @@ const NavWrapper = styled.div`
 const RecordText = styled.p`
   font-size: 16px;
 `;
+
 const RecordBox = styled.div`
   width: 70px;
   background-color: var(--mainColor);
@@ -289,6 +291,20 @@ const RemindMessage = styled.p`
   font-size: 22px;
   opacity: 0.5;
 `;
+
+const NoCarWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+const NoCarBtn = styled(RecordBox)`
+  width: 90px;
+  margin-left: 0px;
+  margin-top: 10px;
+`;
+
 type progressDetailType = {
   index: number;
   percent: number;
@@ -361,6 +377,9 @@ const StatusInfo: FC<Props> = (props) => {
   const goRecordHandler = () => {
     navigate("/car_manage/record");
   };
+  const goCreateCar = () => {
+    navigate("/car_manage/add");
+  };
 
   return (
     <InfoContainer>
@@ -369,66 +388,77 @@ const StatusInfo: FC<Props> = (props) => {
           <DetailBox>
             <LeftBox>
               <ChartBox>
-                <Img src={userImg || userIcon} />
+                <Img src={userImg || logoIcon} />
               </ChartBox>
             </LeftBox>
 
             <DetailWrapper>
-              <MileageBox>
-                <MileageIconBox>
-                  <MileageIcon src={dashboardIcon} />
-                </MileageIconBox>
-                <MileageMsg>{car?.mileage}公里</MileageMsg>
-              </MileageBox>
-              <MessageBox>
-                <Message>車齡:</Message>
-                <Message>{car?.age}</Message>
-              </MessageBox>
-              <MessageBox>
-                <Message>驗車時間:</Message>
-                <Message>{car?.inspectionDay}</Message>
-              </MessageBox>
-              <MessageBox>
-                <Message>保險時間:</Message>
-                <Message>{car?.insuranceDate}</Message>
-              </MessageBox>
+              {cars.length > 0 ? (
+                <>
+                  <MileageBox>
+                    <MileageIconBox>
+                      <MileageIcon src={dashboardIcon} />
+                    </MileageIconBox>
+                    <MileageMsg>{car?.mileage}公里</MileageMsg>
+                  </MileageBox>
+                  <MessageBox>
+                    <Message>車齡:</Message>
+                    <Message>{car?.age}</Message>
+                  </MessageBox>
+                  <MessageBox>
+                    <Message>驗車時間:</Message>
+                    <Message>{car?.inspectionDay}</Message>
+                  </MessageBox>
+                  <MessageBox>
+                    <Message>保險時間:</Message>
+                    <Message>{car?.insuranceDate}</Message>
+                  </MessageBox>
 
-              <NavWrapper>
-                <SelectWrapper>
-                  <SelectBox
-                    options={cars.map((car) => (
-                      <Content
-                        onClick={() => {
-                          selectMotorHandler(car.id, car.ownerId);
-                        }}
-                        key={car.id}
+                  <NavWrapper>
+                    <SelectWrapper>
+                      <SelectBox
+                        options={cars.map((car) => (
+                          <Content
+                            onClick={() => {
+                              selectMotorHandler(car.id, car.ownerId);
+                            }}
+                            key={car.id}
+                          >
+                            <SelectBrand>
+                              <Img src={brands.get(car.brand)?.img} />
+                            </SelectBrand>
+                            <PlateNum>{car?.plateNum}:</PlateNum>
+                            <CarName> {car?.name}</CarName>
+                          </Content>
+                        ))}
+                        onShow={onShowSelectContent}
+                        icon={arrowImg}
+                        showContent={showContent}
+                        width="200px"
+                        border={false}
                       >
-                        <SelectBrand>
-                          <Img src={brands.get(car.brand)?.img} />
-                        </SelectBrand>
-                        <PlateNum>{car?.plateNum}:</PlateNum>
-                        <CarName> {car?.name}</CarName>
-                      </Content>
-                    ))}
-                    onShow={onShowSelectContent}
-                    icon={arrowImg}
-                    showContent={showContent}
-                    width="200px"
-                    border={false}
-                  >
-                    <DisplayName>
-                      <UserBox>
-                        {car?.brand && <Img src={brands.get(car.brand)?.img} />}
-                      </UserBox>
-                      <PlateNum>{car?.plateNum}:</PlateNum>
-                      <CarName>{car?.name}</CarName>
-                    </DisplayName>
-                  </SelectBox>
-                </SelectWrapper>
-                <RecordBox onClick={goRecordHandler}>
-                  <RecordText>記錄去</RecordText>
-                </RecordBox>
-              </NavWrapper>
+                        <DisplayName>
+                          <UserBox>
+                            {car?.brand && (
+                              <Img src={brands.get(car.brand)?.img} />
+                            )}
+                          </UserBox>
+                          <PlateNum>{car?.plateNum}:</PlateNum>
+                          <CarName>{car?.name}</CarName>
+                        </DisplayName>
+                      </SelectBox>
+                    </SelectWrapper>
+                    <RecordBox onClick={goRecordHandler}>
+                      <RecordText>記錄去</RecordText>
+                    </RecordBox>
+                  </NavWrapper>
+                </>
+              ) : (
+                <NoCarWrapper>
+                  <RemindMessage>無車輛紀錄</RemindMessage>
+                  <NoCarBtn onClick={goCreateCar}>新增車輛</NoCarBtn>
+                </NoCarWrapper>
+              )}
             </DetailWrapper>
           </DetailBox>
           <Line />

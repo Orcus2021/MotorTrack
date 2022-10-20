@@ -211,11 +211,19 @@ const Profile = () => {
   };
 
   const updateTokenAndRemind = (token: string) => {
-    const found = user.pushToken.find((initToken) => initToken === token);
-    if (found) {
-      return { continueRemind: true };
+    if (user.pushToken) {
+      const found = user.pushToken.find((initToken) => initToken === token);
+      if (found) {
+        return { continueRemind: true };
+      } else {
+        const newTokenArr = [...user.pushToken, token];
+        return {
+          continueRemind: true,
+          pushToken: newTokenArr,
+        };
+      }
     } else {
-      const newTokenArr = [...user.pushToken, token];
+      const newTokenArr = [token];
       return {
         continueRemind: true,
         pushToken: newTokenArr,

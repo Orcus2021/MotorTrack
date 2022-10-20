@@ -18,7 +18,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import Chart from "./pages/Chart/Chart";
-// import swDev from "./swDev";
+import swDev from "./swDev";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -47,4 +47,4 @@ root.render(
     </Provider>
   </BrowserRouter>
 );
-// swDev();
+swDev();

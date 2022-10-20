@@ -95,7 +95,9 @@ const asyncRecordAction = {
         }
       };
       try {
-        dispatch(recordActions.deleteRepair(recordID));
+        dispatch(
+          recordActions.deleteRepair({ recordID, amount: record.amount })
+        );
         await remove();
       } catch (e) {
         console.log(e);
@@ -142,6 +144,7 @@ const asyncRecordAction = {
       };
       try {
         const record = await add();
+
         dispatch(recordActions.addExpense(record));
       } catch (e) {
         console.log(e);

@@ -10,6 +10,7 @@ import asyncUserAction from "../../store/user/asyncUserAction";
 import { userActions } from "../../store/user/userReducer";
 import CarsBox from "./CarsBox";
 import SubCarsBox from "./SubCarsBox";
+import { createMessage } from "../../utils/calcFunc";
 
 import barIcon from "../../assets/icon/bar.png";
 import chartWhiteIcon from "../../assets/icon/chart-white.png";
@@ -23,6 +24,7 @@ import setWhiteIcon from "../../assets/icon/setting-white.png";
 import setIcon from "../../assets/icon/setting.png";
 import navIcon from "../../assets/icon/triangle.png";
 import backImg from "../../assets/img/back-bike3.jpg";
+import logoIcon from "../../assets/icon/logo192.png";
 
 const RecordContainer = styled.div`
   display: flex;
@@ -178,6 +180,7 @@ const Manage = () => {
   const isNav = useAppSelector((state) => state.user.isNav);
   const isAuth = useAppSelector((state) => state.user.isAuth);
   const isLoading = useAppSelector((state) => state.user.isLoading);
+  const car = useAppSelector((state) => state.car.car);
   const recordPage = useRef<HTMLDivElement>(null);
   const user = useAppSelector((state) => state.user.user);
   const navigate = useNavigate();
@@ -275,7 +278,7 @@ const Manage = () => {
       <RecordContainer ref={recordPage}>
         <Navigation $isNav={isNav}>
           <UserImg
-            src={user.userImg}
+            src={user.userImg || logoIcon}
             $isNav={isNav}
             onClick={() => {
               navBarHandler("profile");
@@ -320,7 +323,12 @@ const Manage = () => {
             <Nav
               $selected={selectNav === "edit"}
               onClick={() => {
-                navBarHandler("edit");
+                console.log(car);
+                if (car && car.id) {
+                  navBarHandler("edit");
+                } else {
+                  createMessage("alert", dispatch, "尚未有車輛紀錄");
+                }
               }}
             >
               <ImgBx>
