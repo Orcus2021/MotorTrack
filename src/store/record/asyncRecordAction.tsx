@@ -16,7 +16,7 @@ const asyncRecordAction = {
     return async (dispatch: AppDispatch) => {
       const add = async () => {
         const url = `/carsRecords/${carId}/repairRecords`;
-        const response = await firebase.setRecordDoc(url, data);
+        const response = (await firebase.setRecordDoc(url, data)) as repairType;
 
         const dateArr = data.date.split("-");
         const newRecordAnnual = { ...recordAnnual };

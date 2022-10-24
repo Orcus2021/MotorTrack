@@ -27,6 +27,7 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
   value?: string | number;
   width?: number;
   calendarPosition?: "top" | "bottom";
+  maxDate?: boolean;
 }
 
 const InputBox: React.FC<Props> = ({
@@ -40,6 +41,7 @@ const InputBox: React.FC<Props> = ({
   value,
   width,
   calendarPosition,
+  maxDate,
 }) => {
   return (
     <Container>
@@ -53,6 +55,7 @@ const InputBox: React.FC<Props> = ({
         value={value}
         width={width}
         calendarPosition={calendarPosition}
+        maxDate={maxDate}
       />
       <ErrorMsg>{message}</ErrorMsg>
     </Container>

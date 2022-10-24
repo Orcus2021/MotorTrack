@@ -247,10 +247,18 @@ const StoreMap = () => {
       timeout: 5000,
       maximumAge: 0,
     };
-    const position = await getUserLocation(options);
-    if (position.lat && position.lng) {
-      setLocation(position);
-      getNearBy(position.lat, position.lng);
+    try {
+      const position = await getUserLocation(options);
+      if (position.lat && position.lng) {
+        setLocation(position);
+        getNearBy(position.lat, position.lng);
+      }
+    } catch (e: unknown) {
+      console.log(e);
+      if ((e as string).includes("User denied Geolocation")) {
+        createMessage("error", dispatch, "拒絕存取位置");
+      }
+      setSearchLoading(false);
     }
   };
 

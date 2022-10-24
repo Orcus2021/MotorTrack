@@ -189,6 +189,10 @@ const CalendarWrapper = styled.div<{ $position: boolean }>`
       max-width: initial !important;
     }
   }
+  .react-calendar__tile:disabled,
+  .react-calendar__navigation button:disabled {
+    opacity: 0.3;
+  }
 `;
 const CalendarBack = styled.div`
   position: fixed;
@@ -211,6 +215,7 @@ export type Props = {
   value?: string | number;
   width?: number;
   calendarPosition?: "top" | "bottom";
+  maxDate?: boolean;
 };
 
 const Input: React.FC<Props> = ({
@@ -223,6 +228,7 @@ const Input: React.FC<Props> = ({
   value,
   width = undefined,
   calendarPosition = "bottom",
+  maxDate,
 }) => {
   const methods = useFormContext();
   const { register, setValue, watch, getValues, clearErrors } = methods;
@@ -290,7 +296,11 @@ const Input: React.FC<Props> = ({
           <>
             {showDate && (
               <CalendarWrapper $position={calendarPosition === "top"}>
-                <Calendar onClickDay={dateHandler} value={date} />
+                <Calendar
+                  onClickDay={dateHandler}
+                  value={date}
+                  maxDate={maxDate ? new Date() : undefined}
+                />
               </CalendarWrapper>
             )}
 

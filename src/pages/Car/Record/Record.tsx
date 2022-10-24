@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../../store";
+import { useAppSelector, useAppDispatch } from "../../../store";
 
 import { useLocation, useOutletContext } from "react-router-dom";
 import styled from "styled-components/macro";
@@ -11,6 +11,7 @@ import TableBoxRecord from "../../../components/Table/TableBoxRecord";
 import Expenses from "./Expenses/Expenses";
 import RecordList from "./RecordList";
 import Repair from "./Repair/Repair";
+import { createMessage } from "../../../utils/calcFunc";
 
 import allIcon from "../../../assets/icon/chart-white.png";
 import feeIcon from "../../../assets/icon/moneyBag.png";
@@ -169,6 +170,7 @@ const tableTitlesRwd = [
 const Record = () => {
   const [selectCategory, setSelectCategory] = useState<string>("all");
   const [updateId, setUpdate] = useState<string>("");
+  const dispatch = useAppDispatch();
   const location = useLocation().state as string;
   const outletProps =
     useOutletContext<{
@@ -179,6 +181,7 @@ const Record = () => {
   const { isFormLoading, recordCategory, onRecord } = outletProps;
 
   const expenses = useAppSelector((state) => state.record.expenses);
+  const car = useAppSelector((state) => state.car.car);
 
   useEffect(() => {
     if (location === "repair") {
@@ -194,6 +197,10 @@ const Record = () => {
   }, [location, onRecord]);
 
   const recordCategoryHandler = (category: string) => {
+    if (!car?.id) {
+      createMessage("alert", dispatch, "請先新增車輛");
+      return;
+    }
     onRecord(category);
     setUpdate("");
   };
@@ -213,7 +220,7 @@ const Record = () => {
   const clearUpdateIdHandler = () => {
     setUpdate("");
   };
-  console.log(expenses);
+
   const CardInfo = [
     { title: "總費用", icon: allIcon, expense: expenses.allExpenses },
     { title: "維修", icon: repairIcon, expense: expenses.repairExpenses },

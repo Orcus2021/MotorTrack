@@ -218,8 +218,7 @@ export const getUserLocation = (options: geolocationOptionType) => {
           };
           resolve(position);
         };
-        const error = (err: any) => {
-          console.warn(`ERROR(${err.code}): ${err.message}`);
+        const error = (err: { code: number; message: string }) => {
           reject(`ERROR(${err.code}): ${err.message}`);
         };
         navigator.geolocation.getCurrentPosition(success, error, options);

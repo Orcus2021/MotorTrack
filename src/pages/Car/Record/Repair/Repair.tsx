@@ -214,7 +214,6 @@ const Repair: React.FC<{
     if (record?.mileage === carMileage) {
       dispatch(asyncCarAction.updateCar(carID, { mileage: secondMileage }));
     }
-    console.log(record);
     dispatch(
       asyncRecordAction.deleteRepair(
         carID as string,
@@ -273,6 +272,7 @@ const Repair: React.FC<{
                   require={{ required: true }}
                   type="date"
                   message={errors.date && "日期尚未填寫"}
+                  maxDate={true}
                 />
               </InputWrapper>
               <InputWrapper>

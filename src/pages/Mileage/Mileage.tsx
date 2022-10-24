@@ -157,14 +157,20 @@ const Mileage = () => {
       maximumAge: 0,
     };
     if (navigator.geolocation) {
-      if (timerGPS.current) clearTimeout(timerGPS.current);
-      const position = await getUserLocation(options);
-      distanceHandler(position);
-      timerGPS.current = setInterval(async () => {
+      try {
+        if (timerGPS.current) clearTimeout(timerGPS.current);
         const position = await getUserLocation(options);
         distanceHandler(position);
-      }, 5000);
-      setStartRecord(true);
+        timerGPS.current = setInterval(async () => {
+          const position = await getUserLocation(options);
+          distanceHandler(position);
+        }, 5000);
+        setStartRecord(true);
+      } catch (e) {
+        if ((e as string).includes("User denied Geolocation")) {
+          createMessage("error", dispatch, "拒絕存取位置");
+        }
+      }
     } else {
       createMessage("error", dispatch, "GPS不支援");
     }

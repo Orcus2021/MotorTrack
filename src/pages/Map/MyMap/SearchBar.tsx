@@ -63,10 +63,11 @@ type Props = {
   onMarker: React.Dispatch<React.SetStateAction<positionType | null>>;
   onDirection: () => void;
   isDirection: boolean;
+  map: google.maps.Map | undefined;
 };
 
 const SearchBar: FC<Props> = (props) => {
-  const { onMarker, onDirection, isDirection } = props;
+  const { onMarker, onDirection, isDirection, map } = props;
   const searchBar = useRef<HTMLInputElement | null>(null);
   const searchResult = useRef<google.maps.places.PlaceResult | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -92,7 +93,7 @@ const SearchBar: FC<Props> = (props) => {
       lng: searchResult.current?.geometry?.location?.lng(),
     };
     if (!position.lat || !position.lng) return;
-
+    map?.panTo(position as positionType);
     onMarker(position as positionType);
     if (searchBar.current) {
       searchBar.current.value = "";

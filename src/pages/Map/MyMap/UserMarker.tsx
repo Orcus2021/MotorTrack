@@ -125,6 +125,7 @@ const getPositionOnBound = (
     return null;
   }
 };
+type googlePosition = google.maps.LatLng;
 
 const UserMarker: FC<Props> = (props) => {
   const { roomUsers, boundAndCenter, showFriends, onClearPanto, map } = props;

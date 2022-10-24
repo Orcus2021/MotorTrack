@@ -323,7 +323,6 @@ const Manage = () => {
             <Nav
               $selected={selectNav === "edit"}
               onClick={() => {
-                console.log(car);
                 if (car && car.id) {
                   navBarHandler("edit");
                 } else {

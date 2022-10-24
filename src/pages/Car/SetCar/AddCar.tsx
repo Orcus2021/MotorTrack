@@ -233,6 +233,7 @@ const AddCar = () => {
                 calendarPosition={"top"}
                 type="date"
                 message={errors.licenseDate && "尚未填寫"}
+                maxDate={true}
               />
             </InputWrapper>
             <InputWrapper>

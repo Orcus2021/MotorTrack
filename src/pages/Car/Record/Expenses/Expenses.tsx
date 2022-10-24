@@ -218,6 +218,7 @@ const Expenses: React.FC<{
                     error={typeof errors?.date?.type === "string"}
                     require={{ required: true }}
                     type="date"
+                    maxDate={true}
                   />
                 </InputWrapper>
 

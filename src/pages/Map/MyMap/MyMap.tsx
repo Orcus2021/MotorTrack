@@ -156,7 +156,7 @@ const StoreMap = () => {
     googleMapsApiKey: process.env.REACT_APP_GOOGLEMAP as string,
     libraries,
   });
-  //AIzaSyA7KmYl-KuklJQftsDDrWPoLrkOjY7nmGI
+
   useEffect(() => {
     if (isLoaded && !isOffline) {
       setTimeout(() => {
@@ -575,6 +575,7 @@ const StoreMap = () => {
                     isDirection={directionResponse !== null}
                     onMarker={setSelectMarker}
                     onDirection={directionHandler}
+                    map={map}
                   />
                   <UserMarker
                     map={map}

@@ -56,17 +56,14 @@ const firebaseConfig = {
 };
 const messageKey = process.env.REACT_APP_FIREBASE_MESSAGEKEY;
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 export const database = getDatabase(app);
 export const messaging = getMessaging(app);
-type dataType = {
-  id: string;
-  [index: string]: any;
-};
+
+type dataType = repairType | feeType;
 
 const firebase = {
   async signUp(user: userLogin) {
@@ -147,7 +144,7 @@ const firebase = {
       }
     });
   },
-  async setRecordDoc(url: string, data: dataType): Promise<dataType> {
+  async setRecordDoc(url: string, data: repairType): Promise<dataType> {
     return new Promise(async (resolve) => {
       const newId = doc(collection(db, url));
       data.id = newId.id;
